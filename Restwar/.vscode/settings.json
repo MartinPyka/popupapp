@@ -1,0 +1,11 @@
+{
+    "eslint.validate": [
+      "javascript",
+      "javascriptreact",
+      "typescript",
+      "typescriptreact",
+    ],
+    "editor.formatOnSave": true,
+    "prettier.enableDebugLogs": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
