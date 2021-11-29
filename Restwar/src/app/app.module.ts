@@ -3,10 +3,12 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { SceneViewComponent } from './components/scene-view/scene-view.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    SceneViewComponent
   ],
   imports: [
     BrowserModule,
