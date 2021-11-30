@@ -1,4 +1,4 @@
-import { ElementRef, Injectable, NgZone } from '@angular/core';
+import { ElementRef, Inject, Injectable, NgZone } from '@angular/core';
 import {
   ArcRotateCamera,
   Color3,
@@ -14,6 +14,7 @@ import {
   StandardMaterial,
   Vector3,
 } from '@babylonjs/core';
+import { DOCUMENT } from '@angular/common';
 import '@babylonjs/inspector';
 
 @Injectable({
@@ -26,9 +27,10 @@ export class BasicRenderService {
   protected light!: Light;
 
   rootMesh!: Mesh;
+  cube!: Mesh;
   scene!: Scene;
 
-  public constructor(private readonly ngZone: NgZone, private document: Document) {}
+  public constructor(private readonly ngZone: NgZone, @Inject(DOCUMENT) readonly document: Document) {}
 
   createScene(canvas: ElementRef<HTMLCanvasElement>): void {
     this.canvas = canvas.nativeElement;
@@ -38,7 +40,7 @@ export class BasicRenderService {
 
     this.scene = new Scene(this.engine);
     this.scene.clearColor = new Color4(0.1, 0.1, 0.1, 1);
-    this.rootMesh = MeshBuilder.CreateDisc('root', { radius: 0.01 }, this.scene);
+    this.rootMesh = MeshBuilder.CreateDisc('root', { radius: 2 }, this.scene);
 
     this.light = new HemisphericLight('light1', new Vector3(0, 1, 0), this.scene);
 
@@ -78,6 +80,7 @@ export class BasicRenderService {
 
     this.camera = new ArcRotateCamera('Camera', 0, 0.8, 35, Vector3.Zero(), this.scene);
     this.camera.setTarget(this.rootMesh);
+    this.camera.attachControl(false);
 
     canvas.nativeElement.addEventListener('pointerdown', (evt) => {
       currentPosition.x = evt.clientX;
@@ -85,6 +88,7 @@ export class BasicRenderService {
       currentRotation.x = this.rootMesh.rotation.x;
       currentRotation.y = this.rootMesh.rotation.y;
       clicked = true;
+      console.log('PointerDown');
     });
 
     canvas.nativeElement.addEventListener('pointermove', (evt) => {
@@ -127,6 +131,12 @@ export class BasicRenderService {
     this.engine.dispose();
     this.camera.dispose();
     window.removeEventListener('resize', () => {});
+  }
+
+  createCube(): Mesh {
+    this.cube = MeshBuilder.CreateBox('box', { size: 2 }, this.scene);
+    this.cube.translate(new Vector3(1, 0, -2), 2);
+    return this.cube;
   }
 
   private startTheEngine() {
