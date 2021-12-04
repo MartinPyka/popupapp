@@ -1,5 +1,6 @@
 import { ElementRef, Inject, Injectable, NgZone } from '@angular/core';
 import {
+  ActionManager,
   ArcRotateCamera,
   Color3,
   Color4,
@@ -26,8 +27,6 @@ export class BasicRenderService {
   protected camera!: FreeCamera | ArcRotateCamera;
   protected light!: Light;
 
-  rootMesh!: Mesh;
-  cube!: Mesh;
   scene!: Scene;
 
   public constructor(private readonly ngZone: NgZone, @Inject(DOCUMENT) readonly document: Document) {}
@@ -40,7 +39,6 @@ export class BasicRenderService {
 
     this.scene = new Scene(this.engine);
     this.scene.clearColor = new Color4(0.1, 0.1, 0.1, 1);
-    this.rootMesh = MeshBuilder.CreateDisc('root', { radius: 2 }, this.scene);
 
     this.light = new HemisphericLight('light1', new Vector3(0, 1, 0), this.scene);
 
@@ -68,27 +66,20 @@ export class BasicRenderService {
       if (!mousemov && framecount < mxframecount) {
         lastAngleDiff.x = lastAngleDiff.x / 1.1;
         lastAngleDiff.y = lastAngleDiff.y / 1.1;
-        this.rootMesh.rotation.x += lastAngleDiff.x;
-        this.rootMesh.rotation.y += lastAngleDiff.y;
         framecount++;
-        currentRotation.x = this.rootMesh.rotation.x;
-        currentRotation.y = this.rootMesh.rotation.y;
       } else if (framecount >= mxframecount) {
         framecount = 0;
       }
     };
 
     this.camera = new ArcRotateCamera('Camera', 0, 0.8, 35, Vector3.Zero(), this.scene);
-    this.camera.setTarget(this.rootMesh);
+    this.camera.setTarget(new Vector3(0, 0, 0));
     this.camera.attachControl(false);
 
     canvas.nativeElement.addEventListener('pointerdown', (evt) => {
       currentPosition.x = evt.clientX;
       currentPosition.y = evt.clientY;
-      currentRotation.x = this.rootMesh.rotation.x;
-      currentRotation.y = this.rootMesh.rotation.y;
       clicked = true;
-      console.log('PointerDown');
     });
 
     canvas.nativeElement.addEventListener('pointermove', (evt) => {
@@ -98,12 +89,6 @@ export class BasicRenderService {
       if (!clicked) {
         return;
       }
-      oldAngle.x = this.rootMesh.rotation.x;
-      oldAngle.y = this.rootMesh.rotation.y;
-      this.rootMesh.rotation.y -= (evt.clientX - currentPosition.x) / 300.0;
-      this.rootMesh.rotation.x -= (evt.clientY - currentPosition.y) / 300.0;
-      newAngle.x = this.rootMesh.rotation.x;
-      newAngle.y = this.rootMesh.rotation.y;
       lastAngleDiff.x = newAngle.x - oldAngle.x;
       lastAngleDiff.y = newAngle.y - oldAngle.y;
       currentPosition.x = evt.clientX;
@@ -133,10 +118,11 @@ export class BasicRenderService {
     window.removeEventListener('resize', () => {});
   }
 
-  createCube(): Mesh {
-    this.cube = MeshBuilder.CreateBox('box', { size: 2 }, this.scene);
-    this.cube.translate(new Vector3(1, 0, -2), 2);
-    return this.cube;
+  createCube(position: Vector3): Mesh {
+    var cube = MeshBuilder.CreateBox('box', { size: 2 }, this.scene);
+    cube.position = position;
+    cube.actionManager = new ActionManager(this.scene);
+    return cube;
   }
 
   private startTheEngine() {

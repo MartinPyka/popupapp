@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Mesh } from '@babylonjs/core';
+import { Vector3 } from '@babylonjs/core';
+import { Cube } from 'src/app/model/cube';
 import { BasicRenderService } from 'src/app/services/BasicRenderService';
 
 @Component({
@@ -8,7 +9,7 @@ import { BasicRenderService } from 'src/app/services/BasicRenderService';
   styleUrls: ['./control-view.component.scss'],
 })
 export class ControlViewComponent implements OnInit {
-  cube?: Mesh;
+  cube?: Cube;
 
   constructor(protected readonly brs: BasicRenderService) {}
 
@@ -18,6 +19,6 @@ export class ControlViewComponent implements OnInit {
    * adds a cube to the scene
    */
   addCube() {
-    this.cube = this.brs.createCube();
+    this.cube = new Cube(new Vector3(3, 2, 1), this.brs);
   }
 }

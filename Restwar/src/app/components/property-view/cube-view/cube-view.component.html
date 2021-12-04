@@ -1,0 +1,3 @@
+<p>Works</p>
+<input type="number" [ngModel]="(cube?.position | async)?.x" (ngModelChange)="changePositionX($event)" />
+<p>{{ (cube?.position | async)?.x }}</p>
