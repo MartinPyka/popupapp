@@ -1,5 +1,6 @@
-import { Mesh, PointerDragBehavior, Vector3 } from '@babylonjs/core';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { PointerDragBehavior, Vector3 } from '@babylonjs/core';
+import { Subscription } from 'rxjs';
+import { ClosureCommands } from '../core/undo/Command';
 import { BasicRenderService } from '../services/BasicRenderService';
 import { Object3D } from './abstract/object3d';
 
