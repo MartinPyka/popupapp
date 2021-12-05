@@ -119,10 +119,17 @@ export class BasicRenderService {
   }
 
   createCube(position: Vector3): Mesh {
-    var cube = MeshBuilder.CreateBox('box', { size: 2 }, this.scene);
-    cube.position = position;
-    cube.actionManager = new ActionManager(this.scene);
-    return cube;
+    var mesh = MeshBuilder.CreateBox('box', { size: 2 }, this.scene);
+    mesh.position = position;
+    mesh.actionManager = new ActionManager(this.scene);
+    return mesh;
+  }
+
+  createSphere(position: Vector3): Mesh {
+    var mesh = MeshBuilder.CreateSphere('sphere', { diameter: 2 }, this.scene);
+    mesh.position = position;
+    mesh.actionManager = new ActionManager(this.scene);
+    return mesh;
   }
 
   private startTheEngine() {
