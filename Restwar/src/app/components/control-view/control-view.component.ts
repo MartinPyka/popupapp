@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Vector3 } from '@babylonjs/core';
 import { SphereEmitterGridComponent } from '@babylonjs/inspector/components/actionTabs/tabs/propertyGrids/particleSystems/sphereEmitterGridComponent';
+import { CommandInvoker } from 'src/app/core/undo/CommandInvoker';
 import { Cube } from 'src/app/model/cube';
 import { Sphere } from 'src/app/model/sphere';
 import { BasicRenderService } from 'src/app/services/BasicRenderService';
@@ -14,7 +15,7 @@ export class ControlViewComponent implements OnInit {
   cube?: Cube;
   sphere?: Sphere;
 
-  constructor(protected readonly brs: BasicRenderService) {}
+  constructor(protected readonly brs: BasicRenderService, private commandInvoker: CommandInvoker) {}
 
   ngOnInit(): void {}
 
@@ -33,5 +34,13 @@ export class ControlViewComponent implements OnInit {
    */
   addSphere() {
     this.sphere = new Sphere(new Vector3(1, 2, 3), this.brs);
+  }
+
+  undo() {
+    this.commandInvoker.undo();
+  }
+
+  redo() {
+    this.commandInvoker.redo();
   }
 }

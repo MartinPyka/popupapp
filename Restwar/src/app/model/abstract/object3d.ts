@@ -1,15 +1,52 @@
-import { Mesh, Vector3 } from '@babylonjs/core';
+import { ActionManager, ExecuteCodeAction, Mesh, PointerDragBehavior, Vector3 } from '@babylonjs/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
-import { BasicRenderService } from 'src/app/services/BasicRenderService';
+import { AppInjector } from 'src/app/app.module';
+import { ClosureCommands, CommandParts } from 'src/app/core/undo/Command';
+import { CommandInvoker } from 'src/app/core/undo/CommandInvoker';
 
 export abstract class Object3D {
   // list of subscriptions that need to be unsubscribed on destroy
   readonly subscriptionlist: Subscription[] = [];
   readonly position: BehaviorSubject<Vector3>;
+  oldPosition: Vector3;
   mesh: Mesh;
 
-  constructor(position: Vector3) {
+  constructor(position: Vector3, mesh: Mesh) {
+    let commmandInvoker = AppInjector.get(CommandInvoker);
+
     this.position = new BehaviorSubject<Vector3>(position);
+    this.mesh = mesh;
+
+    this.subscriptionlist.push(this.position.subscribe((x) => (this.mesh.position = x)));
+
+    this.mesh.addBehavior(new PointerDragBehavior({ dragPlaneNormal: new Vector3(0, 1, 0) }));
+
+    this.mesh.actionManager?.registerAction(
+      new ExecuteCodeAction(ActionManager.OnPickDownTrigger, (evt) => (this.oldPosition = this.position.value.clone()))
+    );
+
+    this.mesh.actionManager?.registerAction(
+      new ExecuteCodeAction(ActionManager.OnPickUpTrigger, (evt) => {
+        let doAction = (): CommandParts => {
+          let oldValue = this.oldPosition;
+          let newValue = this.mesh.position;
+          this.position.next(newValue);
+
+          let undo = (): boolean => {
+            this.position.next(oldValue);
+            return true;
+          };
+
+          let redo = (): boolean => {
+            this.position.next(newValue);
+            return true;
+          };
+
+          return new CommandParts(undo, redo, undefined, undefined);
+        };
+        commmandInvoker.do(new ClosureCommands(doAction));
+      })
+    );
   }
 
   /**

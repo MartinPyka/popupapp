@@ -36,11 +36,16 @@ export class CommandParts {
 
   public redo: BoolAction;
 
-  public destroyFromUndo: BoolAction;
+  public destroyFromUndo: BoolAction | undefined;
 
-  public destroyFromRedo: BoolAction;
+  public destroyFromRedo: BoolAction | undefined;
 
-  public constructor(undo: BoolAction, redo: BoolAction, destroyFromUndo: BoolAction, destroyFromRedo: BoolAction) {
+  public constructor(
+    undo: BoolAction,
+    redo: BoolAction,
+    destroyFromUndo: BoolAction | undefined,
+    destroyFromRedo: BoolAction | undefined
+  ) {
     this.undo = undo;
     this.redo = redo;
     this.destroyFromUndo = destroyFromUndo;
