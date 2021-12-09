@@ -1,5 +1,5 @@
 import { LimitedStack } from './LimitedStack';
-import { Command } from './Command';
+import { ClosureCommands, Command } from './Command';
 import { Injectable } from '@angular/core';
 
 /**

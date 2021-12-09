@@ -27,13 +27,18 @@ export abstract class Object3D {
 
     this.mesh.actionManager?.registerAction(
       new ExecuteCodeAction(ActionManager.OnPickUpTrigger, (evt) => {
+        // the overly excessive use of the clone function is
+        // necessary to make sure that we have a call by value
+        // and not a call by reference, as this causes problems in
+        // reverting and redoing commands
+        let oldValue = this.oldPosition.clone();
+        let newValue = this.mesh.position.clone();
+
         let doAction = (): CommandParts => {
-          let oldValue = this.oldPosition;
-          let newValue = this.mesh.position;
-          this.position.next(newValue);
+          this.position.next(newValue.clone());
 
           let undo = (): boolean => {
-            this.position.next(oldValue);
+            this.position.next(oldValue.clone());
             return true;
           };
 
