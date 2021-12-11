@@ -26,14 +26,14 @@ export class ControlViewComponent implements OnInit {
     if (this.sphere != undefined) {
       this.sphere.dispose();
     }
-    this.cube = new Cube(new Vector3(3, 2, 1), this.brs);
+    this.cube = new Cube(new Vector3(3, 2, 1));
   }
 
   /**
    * adds a cube to the scene
    */
   addSphere() {
-    this.sphere = new Sphere(new Vector3(1, 2, 3), this.brs);
+    this.sphere = new Sphere(new Vector3(1, 2, 3));
   }
 
   undo() {
