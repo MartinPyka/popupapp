@@ -49,14 +49,9 @@ export class BasicRenderService {
     // https://www.babylonjs-playground.com/#CGXLT#5
 
     let clicked = false;
-    const currentPosition = { x: 0, y: 0 };
-    const currentRotation = { x: 0, y: 0 };
     let mousemov = false;
     let framecount = 0;
     const mxframecount = 120; //4 secs at 60 fps
-    const lastAngleDiff = { x: 0, y: 0 };
-    const oldAngle = { x: 0, y: 0 };
-    const newAngle = { x: 0, y: 0 };
 
     this.scene.beforeRender = () => {
       mousemov = false;
@@ -64,8 +59,6 @@ export class BasicRenderService {
 
     this.scene.afterRender = () => {
       if (!mousemov && framecount < mxframecount) {
-        lastAngleDiff.x = lastAngleDiff.x / 1.1;
-        lastAngleDiff.y = lastAngleDiff.y / 1.1;
         framecount++;
       } else if (framecount >= mxframecount) {
         framecount = 0;
@@ -77,8 +70,6 @@ export class BasicRenderService {
     this.camera.attachControl(false);
 
     canvas.nativeElement.addEventListener('pointerdown', (evt) => {
-      currentPosition.x = evt.clientX;
-      currentPosition.y = evt.clientY;
       clicked = true;
     });
 
@@ -89,10 +80,6 @@ export class BasicRenderService {
       if (!clicked) {
         return;
       }
-      lastAngleDiff.x = newAngle.x - oldAngle.x;
-      lastAngleDiff.y = newAngle.y - oldAngle.y;
-      currentPosition.x = evt.clientX;
-      currentPosition.y = evt.clientY;
     });
 
     canvas.nativeElement.addEventListener('pointerup', () => {
