@@ -17,10 +17,13 @@ export abstract class Object3D {
     this.position = new BehaviorSubject<Vector3>(position);
     this.mesh = mesh;
 
+    // any change in the model variable should affect the mesh
     this.subscriptionlist.push(this.position.subscribe((x) => (this.mesh.position = x)));
 
     this.mesh.addBehavior(new PointerDragBehavior({ dragPlaneNormal: new Vector3(0, 1, 0) }));
 
+    // when the mouse is pressed, we need to save the current position in order to have it
+    // for undo-functionality
     this.mesh.actionManager?.registerAction(
       new ExecuteCodeAction(ActionManager.OnPickDownTrigger, (evt) => (this.oldPosition = this.position.value.clone()))
     );

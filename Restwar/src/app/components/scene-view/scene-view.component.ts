@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { BasicRenderService } from 'src/app/services/BasicRenderService';
 
 @Component({
@@ -6,7 +6,7 @@ import { BasicRenderService } from 'src/app/services/BasicRenderService';
   templateUrl: './scene-view.component.html',
   styleUrls: ['./scene-view.component.scss'],
 })
-export class SceneViewComponent implements OnInit {
+export class SceneViewComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('rCanvas', { static: true })
   canvasRef!: ElementRef<HTMLCanvasElement>;
 

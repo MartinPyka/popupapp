@@ -1,6 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Vector3 } from '@babylonjs/core';
-import { SphereEmitterGridComponent } from '@babylonjs/inspector/components/actionTabs/tabs/propertyGrids/particleSystems/sphereEmitterGridComponent';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { EventState, Nullable, Observer, PointerInfo, Vector3 } from '@babylonjs/core';
 import { CommandInvoker } from 'src/app/core/undo/CommandInvoker';
 import { Cube } from 'src/app/model/cube';
 import { Sphere } from 'src/app/model/sphere';
@@ -11,13 +10,31 @@ import { BasicRenderService } from 'src/app/services/BasicRenderService';
   templateUrl: './control-view.component.html',
   styleUrls: ['./control-view.component.scss'],
 })
-export class ControlViewComponent implements OnInit {
+export class ControlViewComponent implements OnInit, OnDestroy, AfterViewInit {
   cube?: Cube;
   sphere?: Sphere;
+  picked: string = '';
+  sceneEvents: Nullable<Observer<PointerInfo>>;
 
-  constructor(protected readonly brs: BasicRenderService, private commandInvoker: CommandInvoker) {}
+  constructor(private commandInvoker: CommandInvoker, private bsr: BasicRenderService) {}
 
   ngOnInit(): void {}
+
+  ngAfterViewInit(): void {
+    this.sceneEvents = this.bsr.scene.onPointerObservable.add((pointerInfo: PointerInfo, eventState: EventState) => {
+      const mesh = pointerInfo.pickInfo?.pickedMesh;
+      if (mesh != undefined && mesh != null) {
+        this.picked = mesh.id;
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    const result = this.bsr.scene.onPointerObservable.remove(this.sceneEvents);
+    if (!result) {
+      alert('This observer could not be removed');
+    }
+  }
 
   /**
    * adds a cube to the scene
