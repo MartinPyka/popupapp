@@ -4,6 +4,7 @@ import {
   ArcRotateCamera,
   Color3,
   Color4,
+  DirectionalLight,
   DynamicTexture,
   Engine,
   FreeCamera,
@@ -12,6 +13,7 @@ import {
   Mesh,
   MeshBuilder,
   Scene,
+  SceneLoader,
   StandardMaterial,
   Vector3,
 } from '@babylonjs/core';
@@ -22,7 +24,7 @@ import '@babylonjs/inspector';
   providedIn: 'root',
 })
 export class BasicRenderService {
-  protected engine!: Engine;
+  engine!: Engine;
   protected canvas!: HTMLCanvasElement;
   protected camera!: FreeCamera | ArcRotateCamera;
   protected light!: Light;
@@ -40,7 +42,11 @@ export class BasicRenderService {
     this.scene = new Scene(this.engine);
     this.scene.clearColor = new Color4(0.1, 0.1, 0.1, 1);
 
+    // disable loading screen as it would interrupt the loading experience
+    SceneLoader.ShowLoadingScreen = false;
+
     this.light = new HemisphericLight('light1', new Vector3(0, 1, 0), this.scene);
+    const light2 = new DirectionalLight('light2', new Vector3(1, 1, 0), this.scene);
 
     // generates the world x-y-z axis for better understanding
     this.showWorldAxis(8);

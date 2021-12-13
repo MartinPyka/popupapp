@@ -1,5 +1,14 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
-import { EventState, Nullable, Observer, PointerInfo, Vector3 } from '@babylonjs/core';
+import {
+  EventState,
+  Nullable,
+  Observer,
+  PointerInfo,
+  Vector3,
+  Scene,
+  SceneLoader,
+  TransformNode,
+} from '@babylonjs/core';
 import { CommandInvoker } from 'src/app/core/undo/CommandInvoker';
 import { Cube } from 'src/app/model/cube';
 import { Sphere } from 'src/app/model/sphere';
@@ -51,6 +60,10 @@ export class ControlViewComponent implements OnInit, OnDestroy, AfterViewInit {
    */
   addSphere() {
     this.sphere = new Sphere(new Vector3(1, 2, 3));
+  }
+
+  addPlane() {
+    SceneLoader.Append('assets/models/elements/', 'plane.gltf', this.bsr.scene, function (scene: Scene) {});
   }
 
   undo() {
