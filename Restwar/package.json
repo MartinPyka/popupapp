@@ -26,6 +26,7 @@
     "prettier": "^2.5.0",
     "rxjs": "~7.4.0",
     "tslib": "^2.3.0",
+    "uuid": "^8.3.2",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
@@ -41,6 +42,7 @@
     "@babylonjs/inspector": "^5.0.0-alpha.62",
     "@types/jasmine": "~3.10.0",
     "@types/node": "^12.11.1",
+    "@types/uuid": "^8.3.3",
     "@typescript-eslint/eslint-plugin": "^5.3.0",
     "@typescript-eslint/parser": "^5.3.0",
     "eslint": "^8.3.0",
