@@ -1,16 +1,8 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
-import {
-  EventState,
-  Nullable,
-  Observer,
-  PointerInfo,
-  Vector3,
-  Scene,
-  SceneLoader,
-  TransformNode,
-} from '@babylonjs/core';
+import { EventState, Nullable, Observer, PointerInfo, Vector3, Scene, SceneLoader } from '@babylonjs/core';
 import { CommandInvoker } from 'src/app/core/undo/CommandInvoker';
 import { Cube } from 'src/app/model/cube';
+import { FaceRectangle } from 'src/app/model/faces/face.rectangle';
 import { Sphere } from 'src/app/model/sphere';
 import { BasicRenderService } from 'src/app/services/BasicRenderService';
 
@@ -63,6 +55,11 @@ export class ControlViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   addPlane() {
+    new FaceRectangle(4, 10, false, this.bsr.scene, null);
+    new FaceRectangle(4, 10, true, this.bsr.scene, null);
+  }
+
+  AppendModel() {
     SceneLoader.Append('assets/models/elements/', 'plane.gltf', this.bsr.scene, function (scene: Scene) {});
   }
 

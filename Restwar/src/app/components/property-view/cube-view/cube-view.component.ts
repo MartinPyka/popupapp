@@ -3,8 +3,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Vector3 } from '@babylonjs/core';
 import { ClosureCommands, CommandParts } from 'src/app/core/undo/Command';
 import { CommandInvoker } from 'src/app/core/undo/CommandInvoker';
-import { Object3D } from 'src/app/model/abstract/object3d';
-import { Cube } from 'src/app/model/cube';
+import { Volume3D } from 'src/app/model/abstract/volume3d';
 
 @Component({
   selector: 'cube-view',
@@ -12,7 +11,7 @@ import { Cube } from 'src/app/model/cube';
   styleUrls: ['./cube-view.component.scss'],
 })
 export class CubeViewComponent implements OnInit {
-  @Input() mesh?: Object3D;
+  @Input() mesh?: Volume3D;
 
   constructor(private commandInvoker: CommandInvoker) {}
 
