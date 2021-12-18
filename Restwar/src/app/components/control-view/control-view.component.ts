@@ -14,6 +14,7 @@ import { BasicRenderService } from 'src/app/services/BasicRenderService';
 export class ControlViewComponent implements OnInit, OnDestroy, AfterViewInit {
   cube?: Cube;
   sphere?: Sphere;
+  face?: FaceRectangle;
   picked: string = '';
   sceneEvents: Nullable<Observer<PointerInfo>>;
 
@@ -55,8 +56,9 @@ export class ControlViewComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   addPlane() {
-    new FaceRectangle(4, 10, false, this.bsr.scene, null);
-    new FaceRectangle(4, 10, true, this.bsr.scene, null);
+    this.face = new FaceRectangle(4, 10, false, this.bsr.scene, null);
+    this.face.onPickDown.subscribe((evt) => console.log(evt));
+    //new FaceRectangle(4, 10, true, this.bsr.scene, null);
   }
 
   AppendModel() {

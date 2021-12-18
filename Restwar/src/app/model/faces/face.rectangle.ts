@@ -1,4 +1,4 @@
-import { Mesh, MeshBuilder, Scene, Vector3, VertexBuffer } from '@babylonjs/core';
+import { ActionManager, ExecuteCodeAction, Mesh, MeshBuilder, Scene, Vector3, VertexBuffer } from '@babylonjs/core';
 import { BehaviorSubject } from 'rxjs';
 import { Face } from '../abstract/face';
 
@@ -8,9 +8,12 @@ import { Face } from '../abstract/face';
  * configurable property as it is usually parented to its plane object
  */
 export class FaceRectangle extends Face {
+  // Model parameters
   public readonly height: BehaviorSubject<number>;
   public readonly width: BehaviorSubject<number>;
   public readonly flipped: BehaviorSubject<boolean>;
+
+  // Events
 
   /**
    * Creates a new plane mesh
@@ -111,6 +114,7 @@ export class FaceRectangle extends Face {
         positions[6] = width / 2;
 
         this.mesh.updateVerticesData(VertexBuffer.PositionKind, positions);
+        this.mesh.refreshBoundingInfo();
       })
     );
 
@@ -128,7 +132,13 @@ export class FaceRectangle extends Face {
         positions[10] = height;
 
         this.mesh.updateVerticesData(VertexBuffer.PositionKind, positions);
+        this.mesh.refreshBoundingInfo();
       })
     );
+
+    this.mesh.actionManager = new ActionManager(this.mesh.getScene());
+
+    this.triggerOnPickDown = new ExecuteCodeAction(ActionManager.OnPickDownTrigger, (evt) => this.onPickDown.next(evt));
+    this.mesh.actionManager.registerAction(this.triggerOnPickDown);
   }
 }

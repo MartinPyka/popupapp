@@ -1,3 +1,4 @@
 <p>Works</p>
 <input type="number" [ngModel]="(mesh?.position | async)?.x" (ngModelChange)="changePositionX($event)" />
+<input type="number" [ngModel]="face?.height | async" (ngModelChange)="changeHeight($event)" />
 <p>{{ (mesh?.position | async)?.x }}</p>
