@@ -1,10 +1,9 @@
-import { unsupported } from '@angular/compiler/src/render3/view/util';
 import { Component, Input, OnInit } from '@angular/core';
 import { Vector3 } from '@babylonjs/core';
 import { ClosureCommands, CommandParts } from 'src/app/core/undo/Command';
 import { CommandInvoker } from 'src/app/core/undo/CommandInvoker';
 import { Volume3D } from 'src/app/model/abstract/volume3d';
-import { FaceRectangle } from 'src/app/model/faces/face.rectangle';
+import { PlaneRectangle } from 'src/app/model/planes/plane.rectangle';
 
 @Component({
   selector: 'cube-view',
@@ -14,7 +13,7 @@ import { FaceRectangle } from 'src/app/model/faces/face.rectangle';
 export class CubeViewComponent implements OnInit {
   @Input() mesh?: Volume3D;
 
-  @Input() face?: FaceRectangle;
+  @Input() plane?: PlaneRectangle;
 
   constructor(private commandInvoker: CommandInvoker) {}
 
@@ -52,23 +51,23 @@ export class CubeViewComponent implements OnInit {
   }
 
   changeHeight($event: number) {
-    if (this.face == undefined) {
+    if (this.plane == undefined) {
       return;
     }
 
     let doAction = (): CommandParts => {
-      let oldValue = this.face?.height.value ?? 1;
+      let oldValue = this.plane?.height.value ?? 1;
       let newValue = $event;
 
-      this.face?.height.next(newValue);
+      this.plane?.height.next(newValue);
 
       let undo = (): boolean => {
-        this.face?.height.next(oldValue);
+        this.plane?.height.next(oldValue);
         return true;
       };
 
       let redo = (): boolean => {
-        this.face?.height.next(newValue);
+        this.plane?.height.next(newValue);
         return true;
       };
 

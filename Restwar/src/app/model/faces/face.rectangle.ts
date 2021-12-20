@@ -1,6 +1,16 @@
-import { ActionManager, ExecuteCodeAction, Mesh, MeshBuilder, Scene, Vector3, VertexBuffer } from '@babylonjs/core';
+import {
+  ActionManager,
+  ExecuteCodeAction,
+  MeshBuilder,
+  Scene,
+  TransformNode,
+  Vector3,
+  VertexBuffer,
+} from '@babylonjs/core';
+import { sceneUboDeclaration } from '@babylonjs/core/Shaders/ShadersInclude/sceneUboDeclaration';
 import { BehaviorSubject } from 'rxjs';
 import { Face } from '../abstract/face';
+import { TransformObject3D } from '../abstract/transform.object3d';
 
 /**
  * This face class is typically used in mechanism to depict the faces
@@ -23,18 +33,18 @@ export class FaceRectangle extends Face {
    * @param scene the scene, to which the face will be added
    * @param parent null or a parent mesh, whose transform will be used as parent
    */
-  constructor(width: number = 1, height: number = 1, flipped: boolean, scene: Scene, parent: Mesh | null) {
-    super();
+  constructor(width: number = 1, height: number = 1, flipped: boolean, scene: Scene, parent: TransformObject3D | null) {
+    super(parent);
 
     this.width = new BehaviorSubject<number>(width);
     this.height = new BehaviorSubject<number>(height);
     this.flipped = new BehaviorSubject<boolean>(flipped);
 
-    this.createGeometry(scene, parent);
+    this.createGeometry(scene);
     this.registerEvents();
   }
 
-  protected createGeometry(scene: Scene, parent: Mesh | null) {
+  protected createGeometry(scene: Scene) {
     this.mesh = MeshBuilder.CreatePlane(
       this.id,
       { width: this.width.value, height: this.height.value, updatable: true },
@@ -44,8 +54,8 @@ export class FaceRectangle extends Face {
     this.realignMesh();
 
     // this mesh gets a parent, if parent is not null
-    if (parent != null) {
-      this.mesh.parent = parent;
+    if (this.parent != null) {
+      this.mesh.parent = this.parent.transform;
     }
   }
 
@@ -138,7 +148,18 @@ export class FaceRectangle extends Face {
 
     this.mesh.actionManager = new ActionManager(this.mesh.getScene());
 
-    this.triggerOnPickDown = new ExecuteCodeAction(ActionManager.OnPickDownTrigger, (evt) => this.onPickDown.next(evt));
+    this.triggerOnPickDown = new ExecuteCodeAction(ActionManager.OnPickDownTrigger, (evt) => {
+      const pickInfo = this.mesh.getScene().pick(evt.pointerX, evt.pointerY);
+      if (!pickInfo) return;
+      const rayDirection = pickInfo.ray?.direction;
+      const normalDirection = pickInfo.getNormal(true);
+      if (rayDirection != null && normalDirection != null) {
+        if (Vector3.Dot(rayDirection, normalDirection) > 0) {
+          return;
+        }
+      }
+      this.onPickDown.next({ face: this, event: evt });
+    });
     this.mesh.actionManager.registerAction(this.triggerOnPickDown);
   }
 }

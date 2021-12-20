@@ -1,25 +1,26 @@
-import { ActionEvent, ExecuteCodeAction, Mesh } from '@babylonjs/core';
+import { ActionEvent, ExecuteCodeAction, Mesh, TransformNode } from '@babylonjs/core';
 import { Object3D } from './object3d';
-import { IModelDisposable } from '../interfaces/interfaces';
+import { FaceClick, IModelDisposable } from '../interfaces/interfaces';
 import { Subject, Subscription } from 'rxjs';
 import { Action } from 'rxjs/internal/scheduler/Action';
+import { TransformObject3D } from './transform.object3d';
 
 /**
  * Abstract class for all objects, that represent a face mesh
  * for 3d and 2d.
  */
-export abstract class Face extends Object3D implements IModelDisposable {
-  public readonly onPickDown: Subject<ActionEvent>;
+export abstract class Face extends TransformObject3D implements IModelDisposable {
+  public readonly onPickDown: Subject<FaceClick>;
 
   // properties necessary for dispose-function
   public mesh: Mesh;
   readonly subscriptionList: Subscription[];
   protected triggerOnPickDown: ExecuteCodeAction;
 
-  constructor() {
-    super();
+  constructor(parent: TransformObject3D | null) {
+    super(parent);
     this.subscriptionList = [];
-    this.onPickDown = new Subject<ActionEvent>();
+    this.onPickDown = new Subject<FaceClick>();
   }
 
   dispose() {
@@ -31,5 +32,9 @@ export abstract class Face extends Object3D implements IModelDisposable {
     if (this.triggerOnPickDown) {
       this.mesh.actionManager?.unregisterAction(this.triggerOnPickDown);
     }
+  }
+
+  setParent(parent: TransformNode) {
+    this.mesh.parent = parent;
   }
 }
