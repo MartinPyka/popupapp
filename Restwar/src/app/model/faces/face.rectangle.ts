@@ -52,11 +52,7 @@ export class FaceRectangle extends Face {
     );
 
     this.realignMesh();
-
-    // this mesh gets a parent, if parent is not null
-    if (this.parent != null) {
-      this.mesh.parent = this.parent.transform;
-    }
+    this.mesh.parent = this.transform;
   }
 
   /**

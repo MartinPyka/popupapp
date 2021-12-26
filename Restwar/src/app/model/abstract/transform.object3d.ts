@@ -15,10 +15,14 @@ export abstract class TransformObject3D extends Object3D {
     return this._parent;
   }
 
+  /**
+   * if parent is set, then the transform of the parent is the
+   * parent of the transform of this object
+   */
   public set parent(parent: TransformObject3D | null) {
     this._parent = parent;
     if (this.parent) {
-      this._transform.parent = this.parent.transform.parent;
+      this._transform.parent = this.parent.transform;
     } else {
       this._transform.parent = null;
     }
@@ -27,6 +31,9 @@ export abstract class TransformObject3D extends Object3D {
   // internal property
   private _transform: TransformNode;
 
+  /**
+   * transform of the object
+   */
   public get transform(): TransformNode {
     return this._transform;
   }
