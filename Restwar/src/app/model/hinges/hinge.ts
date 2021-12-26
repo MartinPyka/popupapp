@@ -1,3 +1,4 @@
+import { TransformNode, Vector3 } from '@babylonjs/core';
 import { Plane } from '../abstract/plane';
 import { TransformObject3D } from '../abstract/transform.object3d';
 
@@ -5,16 +6,31 @@ import { TransformObject3D } from '../abstract/transform.object3d';
  * basic hinge class for all kinds of mechanisms that use
  * hinges
  */
-export class Hinge extends TransformObject3D {
-  //
+export abstract class Hinge extends TransformObject3D {
+  /**
+   * Left side of the hinge. Every object is attached to this
+   * transform
+   */
+  readonly leftTransform: TransformNode;
 
-  // geometry properties
-  readonly leftHingeSide: Plane;
-  readonly rightHingeSide: Plane;
+  /**
+   * Right side of the hinge. Every object is attached to this
+   * transform
+   */
+  readonly rightTransform: TransformNode;
 
-  constructor(leftHingeSide: Plane, rightHingeSide: Plane, parent: TransformObject3D | null) {
+  constructor(parent: TransformObject3D | null) {
     super(parent);
-    this.leftHingeSide = leftHingeSide;
-    this.rightHingeSide = rightHingeSide;
+    this.leftTransform = new TransformNode('transform');
+    this.rightTransform = new TransformNode('transform');
+
+    // transforms are parented to the main transform
+    this.leftTransform.parent = this.transform;
+    this.rightTransform.parent = this.transform;
+
+    // the right side is flipped by 180° on the y-axis,
+    // so that the z-axis of the faces are within the 0-180
+    // degree fold
+    this.rightTransform.rotate(new Vector3(0, 1, 0), Math.PI);
   }
 }
