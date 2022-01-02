@@ -1,4 +1,4 @@
-import { Vector3 } from '@babylonjs/core';
+import { Scene, Vector3 } from '@babylonjs/core';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { Plane } from '../abstract/plane';
 import { TransformObject3D } from '../abstract/transform.object3d';
@@ -16,19 +16,7 @@ import { Hinge } from './hinge';
  * y-direction of the global space. (if not parented to another
  * transform)
  */
-export abstract class HingeActive extends Hinge implements IModelDisposable {
-  readonly subscriptionList: Subscription[];
-
-  /**
-   * 3d representation of the left side of the hinge
-   */
-  abstract readonly leftPlane: Plane;
-
-  /**
-   * 3d representation of the right side of the hinge
-   */
-  abstract readonly rightPlane: Plane;
-
+export class HingeActive extends Hinge implements IModelDisposable {
   // Model parameters
 
   /** the left angle to which the hinge is opened */
@@ -37,8 +25,11 @@ export abstract class HingeActive extends Hinge implements IModelDisposable {
   /** the right angle to which the hinge is opened */
   public readonly rightAngle: BehaviorSubject<number>;
 
-  constructor(parent: TransformObject3D | null) {
-    super(parent);
+  constructor(parent: TransformObject3D | null, scene: Scene) {
+    super(parent, scene);
+    this.leftAngle = new BehaviorSubject<number>(0);
+    this.rightAngle = new BehaviorSubject<number>(0);
+
     this.subscriptionList.push(
       this.leftAngle.subscribe((angle) => {
         this.leftTransform.rotation.x = angle;
@@ -50,9 +41,5 @@ export abstract class HingeActive extends Hinge implements IModelDisposable {
         this.rightTransform.rotation.x = angle;
       })
     );
-  }
-
-  dispose() {
-    this.subscriptionList.forEach((subscription) => subscription.unsubscribe());
   }
 }

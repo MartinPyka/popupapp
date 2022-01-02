@@ -2,6 +2,7 @@ import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { EventState, Nullable, Observer, PointerInfo, Vector3, Scene, SceneLoader } from '@babylonjs/core';
 import { CommandInvoker } from 'src/app/core/undo/CommandInvoker';
 import { Cube } from 'src/app/model/cube';
+import { HingeActive } from 'src/app/model/hinges/hinge.active';
 import { PlaneRectangle } from 'src/app/model/planes/plane.rectangle';
 import { Sphere } from 'src/app/model/sphere';
 import { BasicRenderService } from 'src/app/services/BasicRenderService';
@@ -58,6 +59,10 @@ export class ControlViewComponent implements OnInit, OnDestroy, AfterViewInit {
   addPlane() {
     this.plane = new PlaneRectangle(4, 10, this.bsr.scene, null);
     this.plane.onPickDown.subscribe((evt) => console.log(evt));
+  }
+
+  addHinge() {
+    const hinge = new HingeActive(null, this.bsr.scene);
   }
 
   AppendModel() {

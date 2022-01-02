@@ -19,6 +19,7 @@ import {
 } from '@babylonjs/core';
 import { DOCUMENT } from '@angular/common';
 import '@babylonjs/inspector';
+import { MaterialService } from '../materials/material-service';
 
 @Injectable({
   providedIn: 'root',
@@ -52,8 +53,6 @@ export class BasicRenderService {
     this.showWorldAxis(8);
 
     // rotate scene by mouse-move
-    // https://www.babylonjs-playground.com/#CGXLT#5
-
     let clicked = false;
     let mousemov = false;
     let framecount = 0;
@@ -91,6 +90,8 @@ export class BasicRenderService {
     canvas.nativeElement.addEventListener('pointerup', () => {
       clicked = false;
     });
+
+    MaterialService.initializeMaterial(this.scene);
   }
 
   start(inZone = true): void {
