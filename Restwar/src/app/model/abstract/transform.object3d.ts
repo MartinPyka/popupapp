@@ -5,7 +5,7 @@ import { Object3D } from './object3d';
  * Abstract class for all application-related 3d objects that have
  * a transform
  */
-export abstract class TransformObject3D extends Object3D {
+export class TransformObject3D extends Object3D {
   // geometry properties
 
   // parent can be changed via getter and setter

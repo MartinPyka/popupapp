@@ -14,17 +14,15 @@ export abstract class Face extends TransformObject3D implements IModelDisposable
 
   // properties necessary for dispose-function
   public mesh: Mesh;
-  readonly subscriptionList: Subscription[];
   protected triggerOnPickDown: ExecuteCodeAction;
 
   constructor(parent: TransformObject3D | null) {
     super(parent);
-    this.subscriptionList = [];
     this.onPickDown = new Subject<FaceClick>();
   }
 
-  dispose() {
-    this.subscriptionList.forEach((subscription) => subscription.unsubscribe());
+  override dispose() {
+    super.dispose();
     if (this.mesh != undefined) {
       this.mesh.dispose();
     }

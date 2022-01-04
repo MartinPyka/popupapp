@@ -15,7 +15,7 @@ import { TransformObject3D } from '../abstract/transform.object3d';
 import { IModelDisposable } from '../interfaces/interfaces';
 
 // constants
-const CYLINDER_HEIGHT = 5;
+const CYLINDER_HEIGHT = 1;
 const CYLINDER_DIAMETER = 0.5;
 const CYLINDER_TESSELATION = 8;
 
@@ -24,19 +24,32 @@ const CYLINDER_TESSELATION = 8;
  * hinges
  */
 export abstract class Hinge extends TransformObject3D implements IModelDisposable {
+  private _width: number;
+
+  public get width(): number {
+    return this._width;
+  }
+
+  public set width(value: number) {
+    if (value < 0) {
+      return;
+    }
+    this._width = value;
+    this.mesh.scaling.y = value;
+  }
+
   /**
    * Left side of the hinge. Every object is attached to this
    * transform
    */
-  readonly leftTransform: TransformNode;
+  readonly leftTransform: TransformObject3D;
 
   /**
    * Right side of the hinge. Every object is attached to this
    * transform
    */
-  readonly rightTransform: TransformNode;
+  readonly rightTransform: TransformObject3D;
 
-  readonly subscriptionList: Subscription[];
   readonly actionList: Action[];
 
   protected materialDefault: Material;
@@ -53,27 +66,22 @@ export abstract class Hinge extends TransformObject3D implements IModelDisposabl
 
   constructor(parent: TransformObject3D | null, scene: Scene) {
     super(parent);
-    this.leftTransform = new TransformNode('transform');
-    this.rightTransform = new TransformNode('transform');
-    this.subscriptionList = [];
+    this.leftTransform = new TransformObject3D(parent);
+    this.rightTransform = new TransformObject3D(parent);
     this.actionList = [];
-
-    // transforms are parented to the main transform
-    this.leftTransform.parent = this.transform;
-    this.rightTransform.parent = this.transform;
 
     // the right side is flipped by 180° on the y-axis,
     // so that the z-axis of the faces are within the 0-180
     // degree fold
-    this.rightTransform.rotate(new Vector3(0, 1, 0), Math.PI);
+    this.rightTransform.transform.rotation.y = Math.PI;
 
     this.configureMaterials();
     this.createGeometry(scene);
     this.registerEvents();
   }
 
-  dispose(): void {
-    this.subscriptionList.forEach((subscription) => subscription.unsubscribe());
+  override dispose(): void {
+    super.dispose();
     this.actionList.forEach((action) => this.mesh.actionManager?.unregisterAction(action));
     if (this.mesh != undefined) {
       this.mesh.dispose();

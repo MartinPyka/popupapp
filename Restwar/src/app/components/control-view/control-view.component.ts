@@ -3,6 +3,7 @@ import { EventState, Nullable, Observer, PointerInfo, Vector3, Scene, SceneLoade
 import { CommandInvoker } from 'src/app/core/undo/CommandInvoker';
 import { Cube } from 'src/app/model/cube';
 import { HingeActive } from 'src/app/model/hinges/hinge.active';
+import { MechanismActive } from 'src/app/model/mechanisms/mechanism.active';
 import { PlaneRectangle } from 'src/app/model/planes/plane.rectangle';
 import { Sphere } from 'src/app/model/sphere';
 import { BasicRenderService } from 'src/app/services/BasicRenderService';
@@ -16,6 +17,7 @@ export class ControlViewComponent implements OnInit, OnDestroy, AfterViewInit {
   cube?: Cube;
   sphere?: Sphere;
   plane?: PlaneRectangle;
+  mecActive: MechanismActive;
   picked: string = '';
   sceneEvents: Nullable<Observer<PointerInfo>>;
 
@@ -63,6 +65,12 @@ export class ControlViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   addHinge() {
     const hinge = new HingeActive(null, this.bsr.scene);
+  }
+
+  addMecActive() {
+    this.mecActive = new MechanismActive(null, this.bsr.scene);
+    this.mecActive.leftAngle.next(-45);
+    this.mecActive.rightAngle.next(-60);
   }
 
   AppendModel() {

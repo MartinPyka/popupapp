@@ -1,0 +1,11 @@
+<p>booklet-view works!</p>
+<input
+  type="number"
+  [ngModel]="mecActive?.leftAngle | async"
+  (ngModelChange)="changeAngle($event, mecActive?.leftAngle)"
+/>
+<input
+  type="number"
+  [ngModel]="mecActive?.rightAngle | async"
+  (ngModelChange)="changeAngle($event, mecActive?.rightAngle)"
+/>

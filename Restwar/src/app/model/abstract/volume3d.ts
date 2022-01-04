@@ -11,7 +11,6 @@ import { Object3D } from './object3d';
  */
 export abstract class Volume3D extends Object3D {
   // list of subscriptions that need to be unsubscribed on destroy
-  readonly subscriptionlist: Subscription[] = [];
   readonly position: BehaviorSubject<Vector3>;
   oldPosition: Vector3;
   mesh: Mesh;
@@ -24,7 +23,7 @@ export abstract class Volume3D extends Object3D {
     this.mesh = mesh;
 
     // any change in the model variable should affect the mesh
-    this.subscriptionlist.push(this.position.subscribe((x) => (this.mesh.position = x)));
+    this.subscriptionList.push(this.position.subscribe((x) => (this.mesh.position = x)));
 
     this.mesh.addBehavior(new PointerDragBehavior({ dragPlaneNormal: new Vector3(0, 1, 0) }));
 
@@ -67,8 +66,8 @@ export abstract class Volume3D extends Object3D {
    * performs obligatory tasks before the object can be collected
    * by the garbage collection, e.g. unsubscribe all ongoing subscriptions
    */
-  dispose() {
-    this.subscriptionlist.forEach((subscription) => subscription.unsubscribe());
+  override dispose() {
+    super.dispose();
     if (this.mesh != undefined) {
       this.mesh.dispose();
     }

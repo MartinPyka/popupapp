@@ -7,6 +7,7 @@ import { SceneViewComponent } from './components/scene-view/scene-view.component
 import { ControlViewComponent } from './components/control-view/control-view.component';
 import { CubeViewComponent } from './components/property-view/cube-view/cube-view.component';
 import { FormsModule } from '@angular/forms';
+import { BookletViewComponent } from './components/booklet-view/booklet-view.component';
 
 /**
  * app injector is used in the entire app, in order to
@@ -15,7 +16,7 @@ import { FormsModule } from '@angular/forms';
 export let AppInjector: Injector;
 
 @NgModule({
-  declarations: [AppComponent, SceneViewComponent, ControlViewComponent, CubeViewComponent],
+  declarations: [AppComponent, SceneViewComponent, ControlViewComponent, CubeViewComponent, BookletViewComponent],
   imports: [BrowserModule, AppRoutingModule, FormsModule],
   providers: [],
   bootstrap: [AppComponent],

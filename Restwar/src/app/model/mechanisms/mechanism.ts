@@ -5,7 +5,4 @@ import { IModelDisposable } from '../interfaces/interfaces';
 /**
  * Generic class for all kinds of mechanisms
  */
-export abstract class Mechanism extends Object3D implements IModelDisposable {
-  readonly subscriptionList: Subscription[];
-  dispose(): void {}
-}
+export abstract class Mechanism extends Object3D {}

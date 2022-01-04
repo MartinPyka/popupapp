@@ -11,18 +11,17 @@ import { TransformObject3D } from './transform.object3d';
  */
 export abstract class Plane extends TransformObject3D implements IModelDisposable {
   public readonly onPickDown: Subject<PlaneClick>;
-  public readonly subscriptionList: Subscription[];
 
   protected abstract topSide: Face;
   protected abstract downSide: Face;
 
   constructor(parent: TransformObject3D | null) {
     super(parent);
-    this.subscriptionList = [];
     this.onPickDown = new Subject<PlaneClick>();
   }
 
-  dispose(): void {
+  override dispose(): void {
+    super.dispose();
     this.subscriptionList.forEach((subscription) => subscription.unsubscribe());
   }
 }
