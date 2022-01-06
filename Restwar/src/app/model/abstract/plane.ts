@@ -1,6 +1,6 @@
-import { ActionEvent, TransformNode } from '@babylonjs/core';
-import { BehaviorSubject, Subject, Subscription } from 'rxjs';
-import { IModelDisposable, PlaneClick } from '../interfaces/interfaces';
+import { Material } from '@babylonjs/core';
+import { Subject } from 'rxjs';
+import { PlaneClick } from '../interfaces/interfaces';
 import { Face } from './face';
 import { TransformObject3D } from './transform.object3d';
 
@@ -9,11 +9,16 @@ import { TransformObject3D } from './transform.object3d';
  * This could be part of the mechanism geometry or a plane that is used
  * as paper in the actual popup construction.
  */
-export abstract class Plane extends TransformObject3D implements IModelDisposable {
+export abstract class Plane extends TransformObject3D {
   public readonly onPickDown: Subject<PlaneClick>;
 
   protected abstract topSide: Face;
   protected abstract downSide: Face;
+
+  public set material(material: Material) {
+    this.topSide.mesh.material = material;
+    this.downSide.mesh.material = material;
+  }
 
   constructor(parent: TransformObject3D | null) {
     super(parent);
@@ -22,6 +27,5 @@ export abstract class Plane extends TransformObject3D implements IModelDisposabl
 
   override dispose(): void {
     super.dispose();
-    this.subscriptionList.forEach((subscription) => subscription.unsubscribe());
   }
 }

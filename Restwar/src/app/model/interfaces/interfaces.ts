@@ -2,6 +2,7 @@ import { ActionEvent, IDisposable } from '@babylonjs/core';
 import { Subscription } from 'rxjs';
 import { Face } from '../abstract/face';
 import { Plane } from '../abstract/plane';
+import { Mechanism } from '../mechanisms/mechanism';
 
 /**
  * Extends the IDisposable interface of Babylon by an
@@ -22,8 +23,13 @@ export interface FaceClick {
 /**
  * Interface for a plane click event
  */
-export interface PlaneClick {
+export interface PlaneClick extends FaceClick {
   plane: Plane;
-  face: Face;
-  event: ActionEvent;
+}
+
+/**
+ * Interface for a mechanism click event
+ */
+export interface MechanismClick extends PlaneClick {
+  mechanism: Mechanism;
 }

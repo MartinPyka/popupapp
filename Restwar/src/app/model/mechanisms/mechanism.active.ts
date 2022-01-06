@@ -4,6 +4,8 @@ import { TransformObject3D } from '../abstract/transform.object3d';
 import { HingeActive } from '../hinges/hinge.active';
 import { PlaneRectangle } from '../planes/plane.rectangle';
 import { Mechanism } from './mechanism';
+import { AppInjector } from 'src/app/app.module';
+import { EditorService } from 'src/app/core/editor-service';
 
 const DEFAULT_ANGLE_LEFT = 90;
 const DEFAULT_ANGLE_RIGHT = 90;
@@ -34,8 +36,12 @@ export class MechanismActive extends Mechanism {
   leftSide: PlaneRectangle;
   rightSide: PlaneRectangle;
 
-  constructor(parent: TransformObject3D | null, scene: Scene) {
+  constructor(parent: TransformObject3D | null) {
     super();
+
+    const editorService = AppInjector.get(EditorService);
+    const scene = editorService.scene;
+
     // create model parameters
     this.width = new BehaviorSubject<number>(DEFAULT_WIDTH);
     this.height = new BehaviorSubject<number>(DEFAULT_HEIGHT);
