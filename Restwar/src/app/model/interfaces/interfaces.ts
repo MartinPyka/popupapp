@@ -1,5 +1,6 @@
 import { ActionEvent, IDisposable } from '@babylonjs/core';
 import { Subscription } from 'rxjs';
+import { Behavior } from 'src/app/behaviors/behavior';
 import { Face } from '../abstract/face';
 import { Plane } from '../abstract/plane';
 import { Mechanism } from '../mechanisms/mechanism';
@@ -10,6 +11,25 @@ import { Mechanism } from '../mechanisms/mechanism';
  */
 export interface IModelDisposable extends IDisposable {
   readonly subscriptionList: Subscription[];
+}
+
+/**
+ * Interface for managing behaviors
+ */
+export interface IBehaviorCollection {
+  /** list of behaviors */
+  readonly behaviorList: Behavior[];
+
+  /**
+   * using generics in this manner allows the user to enter a type
+   * into the function and this method takes care of creating the
+   * instance, e.g.:
+   *
+   * .addBehavior(BehaviorBookletControl);
+   */
+  addBehavior<T extends Behavior>(c: new (mechanism: Mechanism) => T): T;
+  getBehavior<T extends Behavior>(c: new (mechanism: Mechanism) => T): T | null;
+  removeBehavior<T extends Behavior>(c: new (mechanism: Mechanism) => T): void;
 }
 
 /**

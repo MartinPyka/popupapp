@@ -55,7 +55,11 @@ export class MechanismActive extends Mechanism {
     this.registerEvents();
   }
 
-  private registerEvents() {
+  /**
+   * registers all events for changing the model parameter and for reacting
+   * to click events
+   */
+  protected registerEvents() {
     this.subscriptionList.push(this.leftAngle.subscribe((value) => (this.centerHinge.leftAngle = value)));
 
     this.subscriptionList.push(this.rightAngle.subscribe((value) => (this.centerHinge.rightAngle = value)));
@@ -73,6 +77,14 @@ export class MechanismActive extends Mechanism {
         this.leftSide.height.next(value);
         this.rightSide.height.next(value);
       })
+    );
+
+    this.subscriptionList.push(
+      this.leftSide.onPickDown.subscribe((planeClick) => this.onPickDown.next({ ...planeClick, mechanism: this }))
+    );
+
+    this.subscriptionList.push(
+      this.rightSide.onPickDown.subscribe((planeClick) => this.onPickDown.next({ ...planeClick, mechanism: this }))
     );
   }
 }

@@ -36,6 +36,7 @@ export class EditorService {
 
   constructor(basicRenderService: BasicRenderService) {
     this._scene = basicRenderService.scene;
+    this.onSelectionMode = new Emitter<boolean>();
   }
 
   /**

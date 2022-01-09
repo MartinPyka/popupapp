@@ -73,7 +73,7 @@ export class ControlViewComponent implements OnInit, OnDestroy, AfterViewInit {
     this.mecActive = new MechanismActive(null);
     this.mecActive.leftAngle.next(-45);
     this.mecActive.rightAngle.next(-60);
-    const beh = new BehaviorBookletControl(this.mecActive);
+    //const beh = new BehaviorBookletControl(this.mecActive);
   }
 
   AppendModel() {

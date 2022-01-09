@@ -6,18 +6,20 @@ import { PlaneRectangle } from 'src/app/model/planes/plane.rectangle';
 import { Vector3 } from '@babylonjs/core';
 import { MaterialService } from 'src/app/materials/material-service';
 import { Channel } from 'src/app/core/emitter.channels';
+import { Mechanism } from 'src/app/model/mechanisms/mechanism';
 
 const HANDLE_WIDTH = 3;
 const HANDLE_HEIGHT = 3;
 
 export class BehaviorBookletControl extends Behavior {
-  protected override mechanism: MechanismActive;
+  protected mechanism: MechanismActive;
 
   protected leftHandle: PlaneRectangle;
   protected rightHandle: PlaneRectangle;
 
   constructor(mechanism: MechanismActive) {
     super(mechanism);
+    this.mechanism = mechanism as MechanismActive;
     const editorService = AppInjector.get(EditorService);
     const scene = editorService.scene;
 
