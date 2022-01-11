@@ -25,12 +25,23 @@ export abstract class Mechanism extends Object3D implements IBehaviorCollection 
     this._behaviorList = [];
   }
 
+  /**
+   * @inheritdoc
+   */
   public addBehavior(type: Type<Behavior>): Behavior {
+    const result = this.getBehavior(type);
+    if (result) {
+      return result;
+    }
+
     const behavior = new type(this);
     this.behaviorList.push(behavior);
     return behavior;
   }
 
+  /**
+   * @inheritdoc
+   */
   public getBehavior(type: Type<Behavior>): Behavior | null {
     const result = this.behaviorList.filter((behavior) => behavior.constructor.name === type.name);
     if (result.length === 0) {
@@ -40,6 +51,9 @@ export abstract class Mechanism extends Object3D implements IBehaviorCollection 
     }
   }
 
+  /**
+   * @inheritdoc
+   */
   public removeBehavior(type: Type<Behavior>): void {
     const behavior = this.getBehavior(type);
     if (behavior) {

@@ -28,8 +28,26 @@ export interface IBehaviorCollection {
    *
    * .addBehavior(BehaviorBookletControl);
    */
+
+  /**
+   * Adds a behavior to the list. If it exist, the existing one
+   * will be returned.
+   * @param type Type of the behavior to be added
+   * @returns instance of the behavior
+   */
   addBehavior(type: Type<Behavior>): Behavior;
+
+  /**
+   * Returns the behavior from the list
+   * @param type Type of the behavior
+   * @returns the instance of the behavior if it exists
+   */
   getBehavior(type: Type<Behavior>): Behavior | null;
+
+  /**
+   * removes the behavior from the list, if it exists
+   * @param type the behavior to be removed
+   */
   removeBehavior(type: Type<Behavior>): void;
 }
 
