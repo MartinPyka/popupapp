@@ -75,4 +75,10 @@ export class PlaneRectangle extends Plane {
       })
     );
   }
+
+  override dispose(): void {
+    super.dispose();
+    this.height.complete();
+    this.width.complete();
+  }
 }

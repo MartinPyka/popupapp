@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { EventState, Nullable, Observer, PointerInfo, Vector3, Scene, SceneLoader } from '@babylonjs/core';
+import { Behavior } from 'src/app/behaviors/behavior';
 import { BehaviorBookletControl } from 'src/app/behaviors/mechanism/Behavior.BookletControl';
 import { Emitter } from 'src/app/core/emitter';
 import { CommandInvoker } from 'src/app/core/undo/CommandInvoker';
@@ -73,7 +74,10 @@ export class ControlViewComponent implements OnInit, OnDestroy, AfterViewInit {
     this.mecActive = new MechanismActive(null);
     this.mecActive.leftAngle.next(-45);
     this.mecActive.rightAngle.next(-60);
-    //const beh = new BehaviorBookletControl(this.mecActive);
+    this.mecActive.addBehavior(BehaviorBookletControl);
+    console.log(this.mecActive.behaviorList.length);
+    this.mecActive.removeBehavior(BehaviorBookletControl);
+    console.log(this.mecActive.behaviorList.length);
   }
 
   AppendModel() {

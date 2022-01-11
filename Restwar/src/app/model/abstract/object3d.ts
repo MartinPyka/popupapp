@@ -22,5 +22,6 @@ export abstract class Object3D implements IModelDisposable {
 
   dispose(): void {
     this.subscriptionList.forEach((subscription) => subscription.unsubscribe());
+    this.subscriptionList.length = 0;
   }
 }

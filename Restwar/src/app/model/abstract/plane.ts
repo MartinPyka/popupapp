@@ -27,5 +27,8 @@ export abstract class Plane extends TransformObject3D {
 
   override dispose(): void {
     super.dispose();
+    this.onPickDown.complete();
+    this.topSide.dispose();
+    this.downSide.dispose();
   }
 }

@@ -12,40 +12,39 @@ import { IBehaviorCollection, IModelDisposable, MechanismClick } from '../interf
  */
 export abstract class Mechanism extends Object3D implements IBehaviorCollection {
   public readonly onPickDown: Subject<MechanismClick>;
-  public readonly behaviorList: Behavior[];
+
+  private _behaviorList: Behavior[];
+
+  public get behaviorList(): Behavior[] {
+    return this._behaviorList;
+  }
 
   constructor() {
     super();
     this.onPickDown = new Subject<MechanismClick>();
-    this.behaviorList = [];
-    this.test(BehaviorBookletControl);
-    //this.getBehavior(BehaviorBookletControl);
+    this._behaviorList = [];
   }
 
-  public test<T extends Behavior>(type: Type<T>): T {
+  public addBehavior(type: Type<Behavior>): Behavior {
     const behavior = new type(this);
     this.behaviorList.push(behavior);
     return behavior;
   }
 
-  public addBehavior<T extends Behavior>(c: new (mechanism: Mechanism) => T): T {
-    // first, check, whether the behavior already exists
-    const behavior = new c(this);
-    this.behaviorList.push(behavior);
-    return behavior;
+  public getBehavior(type: Type<Behavior>): Behavior | null {
+    const result = this.behaviorList.filter((behavior) => behavior.constructor.name === type.name);
+    if (result.length === 0) {
+      return null;
+    } else {
+      return result[0];
+    }
   }
 
-  public getBehavior<T extends Behavior>(c: new (mechanism: Mechanism) => T): T | null {
-    let result: T | null = null;
-    console.log(c.toString());
-    this.behaviorList.forEach((behavior) => {
-      console.log(behavior.toString());
-      if (behavior.toString() === c.toString()) {
-        result = behavior as T;
-      }
-    });
-    return result;
+  public removeBehavior(type: Type<Behavior>): void {
+    const behavior = this.getBehavior(type);
+    if (behavior) {
+      behavior.dispose();
+    }
+    this._behaviorList = this.behaviorList.filter((behavior) => behavior.constructor.name != type.name);
   }
-
-  public removeBehavior<T extends Behavior>(c: new (mechanism: Mechanism) => T): void {}
 }

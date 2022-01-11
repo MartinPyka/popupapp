@@ -1,8 +1,6 @@
-import { ActionEvent, ExecuteCodeAction, Mesh, TransformNode } from '@babylonjs/core';
-import { Object3D } from './object3d';
+import { ExecuteCodeAction, Mesh, TransformNode } from '@babylonjs/core';
 import { FaceClick, IModelDisposable } from '../interfaces/interfaces';
-import { Subject, Subscription } from 'rxjs';
-import { Action } from 'rxjs/internal/scheduler/Action';
+import { Subject } from 'rxjs';
 import { TransformObject3D } from './transform.object3d';
 
 /**

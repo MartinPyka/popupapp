@@ -1,3 +1,4 @@
+import { Type } from '@angular/core';
 import { ActionEvent, IDisposable } from '@babylonjs/core';
 import { Subscription } from 'rxjs';
 import { Behavior } from 'src/app/behaviors/behavior';
@@ -27,9 +28,9 @@ export interface IBehaviorCollection {
    *
    * .addBehavior(BehaviorBookletControl);
    */
-  addBehavior<T extends Behavior>(c: new (mechanism: Mechanism) => T): T;
-  getBehavior<T extends Behavior>(c: new (mechanism: Mechanism) => T): T | null;
-  removeBehavior<T extends Behavior>(c: new (mechanism: Mechanism) => T): void;
+  addBehavior(type: Type<Behavior>): Behavior;
+  getBehavior(type: Type<Behavior>): Behavior | null;
+  removeBehavior(type: Type<Behavior>): void;
 }
 
 /**

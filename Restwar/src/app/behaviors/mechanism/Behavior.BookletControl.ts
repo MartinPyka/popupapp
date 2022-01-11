@@ -6,12 +6,12 @@ import { PlaneRectangle } from 'src/app/model/planes/plane.rectangle';
 import { Vector3 } from '@babylonjs/core';
 import { MaterialService } from 'src/app/materials/material-service';
 import { Channel } from 'src/app/core/emitter.channels';
-import { Mechanism } from 'src/app/model/mechanisms/mechanism';
+import { IDisposable } from '@babylonjs/core';
 
 const HANDLE_WIDTH = 3;
 const HANDLE_HEIGHT = 3;
 
-export class BehaviorBookletControl extends Behavior {
+export class BehaviorBookletControl extends Behavior implements IDisposable {
   protected mechanism: MechanismActive;
 
   protected leftHandle: PlaneRectangle;
@@ -40,5 +40,11 @@ export class BehaviorBookletControl extends Behavior {
     this.rightHandle.material = MaterialService.matBookletHandle;
 
     editorService.onSelectionMode.on(Channel.BOOKLET_HANDLE, (value: boolean) => {});
+  }
+
+  public override dispose(): void {
+    super.dispose();
+    this.leftHandle.dispose();
+    this.rightHandle.dispose();
   }
 }
