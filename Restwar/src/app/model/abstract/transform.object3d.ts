@@ -1,4 +1,6 @@
 import { TransformNode } from '@babylonjs/core';
+import { Subject } from 'rxjs';
+import { Click } from '../interfaces/interfaces';
 import { Object3D } from './object3d';
 
 /**
@@ -6,8 +8,6 @@ import { Object3D } from './object3d';
  * a transform
  */
 export class TransformObject3D extends Object3D {
-  // geometry properties
-
   // parent can be changed via getter and setter
   private _parent: TransformObject3D | null;
 

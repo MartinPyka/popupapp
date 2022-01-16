@@ -1,17 +1,16 @@
 import { Type } from '@angular/core';
-import { passCubePixelShader } from '@babylonjs/core/Shaders/passCube.fragment';
-import { BehaviorSubject, Subject, Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
 import { Behavior } from 'src/app/behaviors/behavior';
-import { BehaviorBookletControl } from 'src/app/behaviors/mechanism/Behavior.BookletControl';
 import { Object3D } from '../abstract/object3d';
-import { TransformObject3D } from '../abstract/transform.object3d';
-import { IBehaviorCollection, IModelDisposable, MechanismClick } from '../interfaces/interfaces';
+import { IBehaviorCollection, IClickable, IModelDisposable, MechanismClick } from '../interfaces/interfaces';
 
 /**
  * Generic class for all kinds of mechanisms
  */
-export abstract class Mechanism extends Object3D implements IBehaviorCollection {
-  public readonly onPickDown: Subject<MechanismClick>;
+export abstract class Mechanism extends Object3D implements IBehaviorCollection, IClickable {
+  public readonly onMouseDown: Subject<MechanismClick>;
+  public readonly onMouseUp: Subject<MechanismClick>;
+  public readonly onMouseMove: Subject<MechanismClick>;
 
   private _behaviorList: Behavior[];
 
@@ -21,8 +20,18 @@ export abstract class Mechanism extends Object3D implements IBehaviorCollection 
 
   constructor() {
     super();
-    this.onPickDown = new Subject<MechanismClick>();
+    this.onMouseDown = new Subject<MechanismClick>();
     this._behaviorList = [];
+  }
+
+  override dispose(): void {
+    super.dispose();
+
+    this.behaviorList.forEach((behavior) => behavior.dispose());
+
+    this.onMouseDown.complete();
+    this.onMouseUp.complete();
+    this.onMouseMove.complete();
   }
 
   /**

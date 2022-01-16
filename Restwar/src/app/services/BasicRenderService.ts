@@ -73,6 +73,7 @@ export class BasicRenderService {
     this.camera = new ArcRotateCamera('Camera', 0, 0.8, 35, Vector3.Zero(), this.scene);
     this.camera.setTarget(new Vector3(0, 0, 0));
     this.camera.attachControl(false);
+    this.camera.inputs.clear();
 
     canvas.nativeElement.addEventListener('pointerdown', (evt) => {
       clicked = true;

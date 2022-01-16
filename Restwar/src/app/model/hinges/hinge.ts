@@ -1,14 +1,4 @@
-import {
-  ActionManager,
-  ExecuteCodeAction,
-  Material,
-  Mesh,
-  MeshBuilder,
-  Scene,
-  TransformNode,
-  Vector3,
-  Action,
-} from '@babylonjs/core';
+import { ActionManager, ExecuteCodeAction, Material, Mesh, MeshBuilder, Scene, Vector3, Action } from '@babylonjs/core';
 import { Subscription } from 'rxjs';
 import { MaterialService } from 'src/app/materials/material-service';
 import { TransformObject3D } from '../abstract/transform.object3d';
@@ -104,6 +94,7 @@ export abstract class Hinge extends TransformObject3D implements IModelDisposabl
       scene
     );
 
+    this.mesh.parent = this.transform;
     // rotate the hinge by 90° into its standard orientation
     this.mesh.rotate(new Vector3(0, 0, 1), Math.PI / 2);
     this.mesh.material = this.materialDefault;

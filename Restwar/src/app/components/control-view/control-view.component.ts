@@ -63,7 +63,7 @@ export class ControlViewComponent implements OnInit, OnDestroy, AfterViewInit {
 
   addPlane() {
     this.plane = new PlaneRectangle(4, 10, this.bsr.scene, null);
-    this.plane.onPickDown.subscribe((evt) => console.log(evt));
+    this.plane.onMouseDown.subscribe((evt) => console.log(evt));
   }
 
   addHinge() {

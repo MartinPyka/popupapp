@@ -1,13 +1,16 @@
 import {
+  ActionEvent,
   ActionManager,
   ExecuteCodeAction,
   MeshBuilder,
+  Observer,
+  PointerEventTypes,
+  PointerInfo,
   Scene,
-  TransformNode,
   Vector3,
   VertexBuffer,
 } from '@babylonjs/core';
-import { sceneUboDeclaration } from '@babylonjs/core/Shaders/ShadersInclude/sceneUboDeclaration';
+import { Nullable } from '@babylonjs/core';
 import { BehaviorSubject } from 'rxjs';
 import { Face } from '../abstract/face';
 import { TransformObject3D } from '../abstract/transform.object3d';
@@ -42,6 +45,13 @@ export class FaceRectangle extends Face {
 
     this.createGeometry(scene);
     this.registerEvents();
+  }
+
+  override dispose(): void {
+    super.dispose();
+    this.width.complete();
+    this.height.complete();
+    this.flipped.complete();
   }
 
   protected createGeometry(scene: Scene) {
@@ -144,18 +154,58 @@ export class FaceRectangle extends Face {
 
     this.mesh.actionManager = new ActionManager(this.mesh.getScene());
 
-    this.triggerOnPickDown = new ExecuteCodeAction(ActionManager.OnPickDownTrigger, (evt) => {
-      const pickInfo = this.mesh.getScene().pick(evt.pointerX, evt.pointerY);
-      if (!pickInfo) return;
-      const rayDirection = pickInfo.ray?.direction;
-      const normalDirection = pickInfo.getNormal(true);
-      if (rayDirection != null && normalDirection != null) {
-        if (Vector3.Dot(rayDirection, normalDirection) > 0) {
-          return;
-        }
+    let moveEvent: Nullable<Observer<PointerInfo>>;
+
+    const triggerOnMouseDown = new ExecuteCodeAction(ActionManager.OnPickDownTrigger, (evt) => {
+      if (!this.isRayFromFront(evt)) {
+        return;
       }
-      this.onPickDown.next({ face: this, event: evt });
+
+      // if there is an old instance of moveEvent, remove it
+      if (moveEvent) {
+        this.mesh.getScene().onPointerObservable.remove(moveEvent);
+      }
+      // when mouse down is pressed create a new moveEvent
+      moveEvent = this.mesh.getScene().onPointerObservable.add((pointerInfo) => {
+        // to avoid problems, when the user leaves the window with the mouse
+        if (pointerInfo.type === PointerEventTypes.POINTERMOVE && pointerInfo.event.buttons === 1) {
+          this.onMouseMove.next({ face: this, event: pointerInfo });
+        }
+      });
+      this.onMouseDown.next({ face: this, event: evt });
     });
-    this.mesh.actionManager.registerAction(this.triggerOnPickDown);
+    this.executeActionList.push(triggerOnMouseDown);
+    this.mesh.actionManager.registerAction(triggerOnMouseDown);
+
+    const triggerOnMouseUp = new ExecuteCodeAction(ActionManager.OnPickUpTrigger, (evt) => {
+      this.mesh.getScene().onPointerObservable.remove(moveEvent);
+      if (moveEvent) {
+        moveEvent.unregisterOnNextCall = false;
+        moveEvent = null;
+      }
+      this.onMouseUp.next({ face: this, event: evt });
+    });
+    this.executeActionList.push(triggerOnMouseUp);
+    this.mesh.actionManager.registerAction(triggerOnMouseUp);
+  }
+
+  /**
+   * checks, whether the ray came from the front side
+   * or the back side of the plane
+   *
+   * @param evt action event with mouse coordinates
+   * @returns true, if ray came from front, else false
+   */
+  protected isRayFromFront(evt: ActionEvent): boolean {
+    const pickInfo = this.mesh.getScene().pick(evt.pointerX, evt.pointerY);
+    if (!pickInfo) return false;
+    const rayDirection = pickInfo.ray?.direction;
+    const normalDirection = pickInfo.getNormal(true);
+    if (rayDirection != null && normalDirection != null) {
+      if (Vector3.Dot(rayDirection, normalDirection) > 0) {
+        return false;
+      }
+    }
+    return true;
   }
 }

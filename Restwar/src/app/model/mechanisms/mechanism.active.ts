@@ -1,4 +1,3 @@
-import { CubeMapToSphericalPolynomialTools, Scene } from '@babylonjs/core';
 import { BehaviorSubject } from 'rxjs';
 import { TransformObject3D } from '../abstract/transform.object3d';
 import { HingeActive } from '../hinges/hinge.active';
@@ -55,6 +54,19 @@ export class MechanismActive extends Mechanism {
     this.registerEvents();
   }
 
+  override dispose(): void {
+    super.dispose();
+
+    this.leftAngle.complete();
+    this.rightAngle.complete();
+    this.width.complete();
+    this.height.complete();
+
+    this.centerHinge.dispose();
+    this.leftSide.dispose();
+    this.rightSide.dispose();
+  }
+
   /**
    * registers all events for changing the model parameter and for reacting
    * to click events
@@ -80,11 +92,11 @@ export class MechanismActive extends Mechanism {
     );
 
     this.subscriptionList.push(
-      this.leftSide.onPickDown.subscribe((planeClick) => this.onPickDown.next({ ...planeClick, mechanism: this }))
+      this.leftSide.onMouseDown.subscribe((planeClick) => this.onMouseDown.next({ ...planeClick, mechanism: this }))
     );
 
     this.subscriptionList.push(
-      this.rightSide.onPickDown.subscribe((planeClick) => this.onPickDown.next({ ...planeClick, mechanism: this }))
+      this.rightSide.onMouseDown.subscribe((planeClick) => this.onMouseDown.next({ ...planeClick, mechanism: this }))
     );
   }
 }

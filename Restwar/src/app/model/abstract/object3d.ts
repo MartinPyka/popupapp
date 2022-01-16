@@ -1,4 +1,5 @@
-import { Subscription } from 'rxjs';
+import { ExecuteCodeAction } from '@babylonjs/core';
+import { Subject, Subscription } from 'rxjs';
 import { v4 } from 'uuid';
 import { IModelDisposable } from '../interfaces/interfaces';
 
@@ -13,6 +14,8 @@ export abstract class Object3D implements IModelDisposable {
   // in a deserialized state
   readonly id: string;
 
+  // subscriptions are collected in order to be able to
+  // unsubscribe to everything
   readonly subscriptionList: Subscription[];
 
   constructor() {

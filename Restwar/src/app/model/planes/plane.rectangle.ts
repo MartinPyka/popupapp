@@ -64,15 +64,15 @@ export class PlaneRectangle extends Plane {
    */
   protected registerInputEvents() {
     this.subscriptionList.push(
-      this.topSide.onPickDown.subscribe((faceClick) => {
-        this.onPickDown.next({ ...faceClick, plane: this });
-      })
+      this.topSide.onMouseDown.subscribe((faceClick) => this.onMouseDown.next({ ...faceClick, plane: this })),
+      this.topSide.onMouseUp.subscribe((faceClick) => this.onMouseUp.next({ ...faceClick, plane: this })),
+      this.topSide.onMouseMove.subscribe((faceMove) => this.onMouseMove.next({ ...faceMove, plane: this }))
     );
 
     this.subscriptionList.push(
-      this.downSide.onPickDown.subscribe((faceClick) => {
-        this.onPickDown.next({ ...faceClick, plane: this });
-      })
+      this.downSide.onMouseDown.subscribe((faceClick) => this.onMouseDown.next({ ...faceClick, plane: this })),
+      this.downSide.onMouseUp.subscribe((faceClick) => this.onMouseUp.next({ ...faceClick, plane: this })),
+      this.downSide.onMouseMove.subscribe((faceMove) => this.onMouseMove.next({ ...faceMove, plane: this }))
     );
   }
 

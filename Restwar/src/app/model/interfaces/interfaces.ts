@@ -1,6 +1,6 @@
 import { Type } from '@angular/core';
-import { ActionEvent, IDisposable } from '@babylonjs/core';
-import { Subscription } from 'rxjs';
+import { ActionEvent, IDisposable, PointerInfo } from '@babylonjs/core';
+import { Subject, Subscription } from 'rxjs';
 import { Behavior } from 'src/app/behaviors/behavior';
 import { Face } from '../abstract/face';
 import { Plane } from '../abstract/plane';
@@ -52,9 +52,22 @@ export interface IBehaviorCollection {
 }
 
 /**
+ * Interface for all click events an object can have
+ */
+export interface IClickable {
+  onMouseDown: Subject<any>;
+  onMouseUp: Subject<any>;
+  onMouseMove: Subject<any>;
+}
+
+export interface Click {
+  event: ActionEvent;
+}
+
+/**
  * Interface for a face click event (can be also down or up event)
  */
-export interface FaceClick {
+export interface FaceClick extends Click {
   face: Face;
   event: ActionEvent;
 }
@@ -71,4 +84,19 @@ export interface PlaneClick extends FaceClick {
  */
 export interface MechanismClick extends PlaneClick {
   mechanism: Mechanism;
+}
+
+/**
+ * Interface for a face movement event
+ */
+export interface FaceMove {
+  face: Face;
+  event: PointerInfo;
+}
+
+/**
+ * Interface for a plane movement event
+ */
+export interface PlaneMove extends FaceMove {
+  plane: Plane;
 }

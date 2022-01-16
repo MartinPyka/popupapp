@@ -3,14 +3,16 @@ import { Behavior } from '../behavior';
 import { AppInjector } from 'src/app/app.module';
 import { EditorService } from 'src/app/core/editor-service';
 import { PlaneRectangle } from 'src/app/model/planes/plane.rectangle';
-import { Scene, Vector3 } from '@babylonjs/core';
+import { Angle, DeepImmutableObject, Mesh, MeshBuilder, Scene, Vector2, Vector3 } from '@babylonjs/core';
 import { MaterialService } from 'src/app/materials/material-service';
 import { Channel } from 'src/app/core/emitter.channels';
 import { IDisposable } from '@babylonjs/core';
-import { first } from 'rxjs';
+import { debounceTime } from 'rxjs';
 
 const HANDLE_WIDTH = 3;
 const HANDLE_HEIGHT = 3;
+const HITPLANE_WIDTH = 1000;
+const HITPLANE_HEIGHT = 1000;
 
 export class BehaviorBookletControl extends Behavior implements IDisposable {
   // mechanism this behavior is operating on
@@ -18,6 +20,11 @@ export class BehaviorBookletControl extends Behavior implements IDisposable {
 
   protected leftHandle: PlaneRectangle;
   protected rightHandle: PlaneRectangle;
+
+  // this plane is used to determine the difference between the current
+  // position of the handle and the target position indicated by the
+  // mouse cursor
+  protected hitPlane: Mesh;
 
   // temporary storage of current value for CommandInvoker
   private leftAngle: number = 0;
@@ -49,6 +56,14 @@ export class BehaviorBookletControl extends Behavior implements IDisposable {
       0
     );
     this.rightHandle.material = MaterialService.matBookletHandle;
+
+    this.hitPlane = MeshBuilder.CreatePlane('HitPlane', { width: HITPLANE_WIDTH, height: HITPLANE_HEIGHT }, undefined);
+    this.hitPlane.parent = this.mechanism.centerHinge.transform;
+    /* the hit plane should be orthogonal to the hinge and at the
+    edge of the plane */
+    this.hitPlane.rotate(new Vector3(0, 1, 0), -Math.PI / 2);
+    this.hitPlane.translate(new Vector3(0, 0, -1), this.mechanism.width.getValue() / 2);
+    this.hitPlane.isVisible = false;
   }
 
   private registerEvents(editorService: EditorService) {
@@ -56,9 +71,24 @@ export class BehaviorBookletControl extends Behavior implements IDisposable {
     editorService.onSelectionMode.on(Channel.BOOKLET_HANDLE, (value: boolean) => {});
 
     this.subscriptionList.push(
-      this.leftHandle.onPickDown.subscribe((planeClick) => {
+      this.leftHandle.onMouseDown.subscribe((planeClick) => {
         this.leftAngle = this.mechanism.leftAngle.getValue();
         this.rightAngle = this.mechanism.rightAngle.getValue();
+      }),
+      this.leftHandle.onMouseMove.subscribe((planeMove) => {
+        console.log(planeMove.face.id);
+        if (planeMove.event.pickInfo?.ray) {
+          const pickingInfo = planeMove.event.pickInfo.ray.intersectsMesh(
+            <DeepImmutableObject<Mesh>>(<unknown>this.hitPlane)
+          );
+          if (!pickingInfo.pickedPoint) {
+            return;
+          }
+          const position = new Vector2(pickingInfo.pickedPoint.y, pickingInfo.pickedPoint.z);
+          const angle = Angle.BetweenTwoPoints(new Vector2(0, 0), position);
+          console.log(angle.degrees());
+          this.mechanism.leftAngle.next(angle.degrees() - 360);
+        }
       })
     );
   }
