@@ -24,7 +24,6 @@ export class BookletViewComponent implements OnInit {
     let doAction = (): CommandParts => {
       let oldValue = parameter.getValue() ?? 1;
       let newValue = $event;
-
       parameter.next(newValue);
 
       let undo = (): boolean => {

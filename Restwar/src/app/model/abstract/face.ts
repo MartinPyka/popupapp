@@ -1,5 +1,5 @@
 import { ExecuteCodeAction, Mesh, TransformNode } from '@babylonjs/core';
-import { FaceClick, FaceMove, IClickable, IModelDisposable } from '../interfaces/interfaces';
+import { FaceClick, FaceMove, FaceUp, IClickable, IModelDisposable } from '../interfaces/interfaces';
 import { Subject } from 'rxjs';
 import { TransformObject3D } from './transform.object3d';
 
@@ -9,7 +9,7 @@ import { TransformObject3D } from './transform.object3d';
  */
 export abstract class Face extends TransformObject3D implements IModelDisposable, IClickable {
   public readonly onMouseDown: Subject<FaceClick>;
-  public readonly onMouseUp: Subject<FaceClick>;
+  public readonly onMouseUp: Subject<FaceUp>;
   public readonly onMouseMove: Subject<FaceMove>;
 
   // properties necessary for dispose-function
@@ -19,7 +19,7 @@ export abstract class Face extends TransformObject3D implements IModelDisposable
   constructor(parent: TransformObject3D | null) {
     super(parent);
     this.onMouseDown = new Subject<FaceClick>();
-    this.onMouseUp = new Subject<FaceClick>();
+    this.onMouseUp = new Subject<FaceUp>();
     this.onMouseMove = new Subject<FaceMove>();
     this.executeActionList = [];
   }

@@ -156,6 +156,12 @@ export class FaceRectangle extends Face {
 
     let moveEvent: Nullable<Observer<PointerInfo>>;
 
+    function getMoveEvent(): Nullable<Observer<PointerInfo>> {
+      return moveEvent;
+    }
+
+    let outPointerInfo;
+
     const triggerOnMouseDown = new ExecuteCodeAction(ActionManager.OnPickDownTrigger, (evt) => {
       if (!this.isRayFromFront(evt)) {
         return;
@@ -165,28 +171,30 @@ export class FaceRectangle extends Face {
       if (moveEvent) {
         this.mesh.getScene().onPointerObservable.remove(moveEvent);
       }
+
       // when mouse down is pressed create a new moveEvent
       moveEvent = this.mesh.getScene().onPointerObservable.add((pointerInfo) => {
-        // to avoid problems, when the user leaves the window with the mouse
+        // check for pointer move events
         if (pointerInfo.type === PointerEventTypes.POINTERMOVE && pointerInfo.event.buttons === 1) {
+          outPointerInfo = pointerInfo;
           this.onMouseMove.next({ face: this, event: pointerInfo });
         }
+
+        // check for pointer up events and delete this event
+        if (pointerInfo.type === PointerEventTypes.POINTERUP) {
+          const _moveEvent = getMoveEvent();
+          if (_moveEvent) {
+            _moveEvent.unregisterOnNextCall = true;
+          }
+          this.onMouseUp.next({ face: this, event: pointerInfo });
+        }
       });
+
+      this.mesh.getScene().onPointerUp;
       this.onMouseDown.next({ face: this, event: evt });
     });
     this.executeActionList.push(triggerOnMouseDown);
     this.mesh.actionManager.registerAction(triggerOnMouseDown);
-
-    const triggerOnMouseUp = new ExecuteCodeAction(ActionManager.OnPickUpTrigger, (evt) => {
-      this.mesh.getScene().onPointerObservable.remove(moveEvent);
-      if (moveEvent) {
-        moveEvent.unregisterOnNextCall = false;
-        moveEvent = null;
-      }
-      this.onMouseUp.next({ face: this, event: evt });
-    });
-    this.executeActionList.push(triggerOnMouseUp);
-    this.mesh.actionManager.registerAction(triggerOnMouseUp);
   }
 
   /**

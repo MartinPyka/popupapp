@@ -1,6 +1,6 @@
 import { Material } from '@babylonjs/core';
 import { Subject } from 'rxjs';
-import { IClickable, PlaneClick, PlaneMove } from '../interfaces/interfaces';
+import { IClickable, PlaneClick, PlaneMove, PlaneUp } from '../interfaces/interfaces';
 import { Face } from './face';
 import { TransformObject3D } from './transform.object3d';
 
@@ -11,7 +11,7 @@ import { TransformObject3D } from './transform.object3d';
  */
 export abstract class Plane extends TransformObject3D implements IClickable {
   public readonly onMouseDown: Subject<PlaneClick>;
-  public readonly onMouseUp: Subject<PlaneClick>;
+  public readonly onMouseUp: Subject<PlaneUp>;
   public readonly onMouseMove: Subject<PlaneMove>;
 
   protected abstract topSide: Face;
@@ -25,7 +25,7 @@ export abstract class Plane extends TransformObject3D implements IClickable {
   constructor(parent: TransformObject3D | null) {
     super(parent);
     this.onMouseDown = new Subject<PlaneClick>();
-    this.onMouseUp = new Subject<PlaneClick>();
+    this.onMouseUp = new Subject<PlaneUp>();
     this.onMouseMove = new Subject<PlaneMove>();
   }
 

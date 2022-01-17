@@ -95,8 +95,20 @@ export interface FaceMove {
 }
 
 /**
+ * Interface for a face up event
+ */
+export interface FaceUp {
+  face: Face;
+  event: PointerInfo;
+}
+
+/**
  * Interface for a plane movement event
  */
 export interface PlaneMove extends FaceMove {
+  plane: Plane;
+}
+
+export interface PlaneUp extends FaceUp {
   plane: Plane;
 }

@@ -9,8 +9,8 @@ import { Channel } from 'src/app/core/emitter.channels';
 import { IDisposable } from '@babylonjs/core';
 import { debounceTime } from 'rxjs';
 
-const HANDLE_WIDTH = 3;
-const HANDLE_HEIGHT = 3;
+const HANDLE_WIDTH = 2;
+const HANDLE_HEIGHT = 2;
 const HITPLANE_WIDTH = 1000;
 const HITPLANE_HEIGHT = 1000;
 
@@ -62,13 +62,15 @@ export class BehaviorBookletControl extends Behavior implements IDisposable {
     /* the hit plane should be orthogonal to the hinge and at the
     edge of the plane */
     this.hitPlane.rotate(new Vector3(0, 1, 0), -Math.PI / 2);
-    this.hitPlane.translate(new Vector3(0, 0, -1), this.mechanism.width.getValue() / 2);
+    this.hitPlane.translate(new Vector3(0, 0, -1), this.mechanism.width.getValue() / 2 + HANDLE_WIDTH / 2);
     this.hitPlane.isVisible = false;
   }
 
   private registerEvents(editorService: EditorService) {
     // list on Booklet_Handle-Events
     editorService.onSelectionMode.on(Channel.BOOKLET_HANDLE, (value: boolean) => {});
+
+    let i = 0;
 
     this.subscriptionList.push(
       this.leftHandle.onMouseDown.subscribe((planeClick) => {
@@ -77,6 +79,8 @@ export class BehaviorBookletControl extends Behavior implements IDisposable {
       }),
       this.leftHandle.onMouseMove.subscribe((planeMove) => {
         console.log(planeMove.face.id);
+
+        i += 1;
         if (planeMove.event.pickInfo?.ray) {
           const pickingInfo = planeMove.event.pickInfo.ray.intersectsMesh(
             <DeepImmutableObject<Mesh>>(<unknown>this.hitPlane)
@@ -88,6 +92,23 @@ export class BehaviorBookletControl extends Behavior implements IDisposable {
           const angle = Angle.BetweenTwoPoints(new Vector2(0, 0), position);
           console.log(angle.degrees());
           this.mechanism.leftAngle.next(angle.degrees() - 360);
+        }
+      }),
+      this.rightHandle.onMouseMove.subscribe((planeMove) => {
+        console.log(planeMove.face.id);
+
+        i += 1;
+        if (planeMove.event.pickInfo?.ray) {
+          const pickingInfo = planeMove.event.pickInfo.ray.intersectsMesh(
+            <DeepImmutableObject<Mesh>>(<unknown>this.hitPlane)
+          );
+          if (!pickingInfo.pickedPoint) {
+            return;
+          }
+          const position = new Vector2(pickingInfo.pickedPoint.y, pickingInfo.pickedPoint.z);
+          const angle = Angle.BetweenTwoPoints(new Vector2(0, 0), position);
+          console.log(angle.degrees());
+          this.mechanism.rightAngle.next(-angle.degrees());
         }
       })
     );
