@@ -160,7 +160,7 @@ export class FaceRectangle extends Face {
       return moveEvent;
     }
 
-    let outPointerInfo;
+    let outPointerInfo: PointerInfo;
 
     const triggerOnMouseDown = new ExecuteCodeAction(ActionManager.OnPickDownTrigger, (evt) => {
       if (!this.isRayFromFront(evt)) {
@@ -176,6 +176,16 @@ export class FaceRectangle extends Face {
       moveEvent = this.mesh.getScene().onPointerObservable.add((pointerInfo) => {
         // check for pointer move events
         if (pointerInfo.type === PointerEventTypes.POINTERMOVE && pointerInfo.event.buttons === 1) {
+          /** somehow, this is necessary, as the pointermove event gets
+           * fired twice, but we only want to propagate it one time
+           */
+          if (
+            outPointerInfo &&
+            outPointerInfo.event.offsetX === pointerInfo.event.offsetX &&
+            outPointerInfo.event.offsetY === pointerInfo.event.offsetY
+          ) {
+            return;
+          }
           outPointerInfo = pointerInfo;
           this.onMouseMove.next({ face: this, event: pointerInfo });
         }
