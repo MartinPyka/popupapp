@@ -8,7 +8,11 @@ import { MaterialService } from 'src/app/materials/material-service';
 import { Channel } from 'src/app/core/emitter.channels';
 import { IDisposable } from '@babylonjs/core';
 import { debounceTime } from 'rxjs';
+import { ClosureCommands, CommandParts } from 'src/app/core/undo/Command';
+import { snapDegree } from 'src/app/utils/math';
 
+const SNAPPING_ANLGE = 5;
+const SNAPPING_STEPS = 45;
 const HANDLE_WIDTH = 2;
 const HANDLE_HEIGHT = 2;
 const HITPLANE_WIDTH = 1000;
@@ -73,13 +77,52 @@ export class BehaviorBookletControl extends Behavior implements IDisposable {
     let i = 0;
 
     this.subscriptionList.push(
+      // Left handle, down event
       this.leftHandle.onMouseDown.subscribe((planeClick) => {
         this.leftAngle = this.mechanism.leftAngle.getValue();
+      }),
+      // Left handle, move event
+      this.leftHandle.onMouseMove.subscribe((planeMove) => {
+        i += 1;
+        if (planeMove.event.pickInfo?.ray) {
+          const pickingInfo = planeMove.event.pickInfo.ray.intersectsMesh(
+            <DeepImmutableObject<Mesh>>(<unknown>this.hitPlane)
+          );
+          if (!pickingInfo.pickedPoint) {
+            return;
+          }
+          const position = new Vector2(pickingInfo.pickedPoint.y, pickingInfo.pickedPoint.z);
+          const angle = Angle.BetweenTwoPoints(new Vector2(0, 0), position);
+          const mecDegree = snapDegree(angle.degrees() - 360, SNAPPING_ANLGE, SNAPPING_STEPS);
+          this.mechanism.leftAngle.next(mecDegree);
+        }
+      }),
+      // Left handle, up event
+      this.leftHandle.onMouseUp.subscribe((planeUp) => {
+        const doAction = (): CommandParts => {
+          const currentPosition = this.mechanism.leftAngle.getValue();
+          const previousPosition = this.leftAngle;
+
+          const undo = (): boolean => {
+            this.mechanism.leftAngle.next(previousPosition);
+            return true;
+          };
+
+          const redo = (): boolean => {
+            this.mechanism.leftAngle.next(currentPosition);
+            return true;
+          };
+
+          return new CommandParts(undo, redo, undefined, undefined);
+        };
+        this.commandInvoker.do(new ClosureCommands(doAction));
+      }),
+      // Right handle, down event
+      this.rightHandle.onMouseDown.subscribe((planeClick) => {
         this.rightAngle = this.mechanism.rightAngle.getValue();
       }),
-      this.leftHandle.onMouseMove.subscribe((planeMove) => {
-        console.log(planeMove.face.id);
-
+      // Right handle, move event
+      this.rightHandle.onMouseMove.subscribe((planeMove) => {
         i += 1;
         if (planeMove.event.pickInfo?.ray) {
           const pickingInfo = planeMove.event.pickInfo.ray.intersectsMesh(
@@ -90,26 +133,29 @@ export class BehaviorBookletControl extends Behavior implements IDisposable {
           }
           const position = new Vector2(pickingInfo.pickedPoint.y, pickingInfo.pickedPoint.z);
           const angle = Angle.BetweenTwoPoints(new Vector2(0, 0), position);
-          console.log(angle.degrees());
-          this.mechanism.leftAngle.next(angle.degrees() - 360);
+          const mecDegree = snapDegree(-angle.degrees(), SNAPPING_ANLGE, SNAPPING_STEPS);
+          this.mechanism.rightAngle.next(mecDegree);
         }
       }),
-      this.rightHandle.onMouseMove.subscribe((planeMove) => {
-        console.log(planeMove.face.id);
+      // Right handle, up event
+      this.rightHandle.onMouseUp.subscribe((planeUp) => {
+        const doAction = (): CommandParts => {
+          const currentPosition = this.mechanism.rightAngle.getValue();
+          const previousPosition = this.rightAngle;
 
-        i += 1;
-        if (planeMove.event.pickInfo?.ray) {
-          const pickingInfo = planeMove.event.pickInfo.ray.intersectsMesh(
-            <DeepImmutableObject<Mesh>>(<unknown>this.hitPlane)
-          );
-          if (!pickingInfo.pickedPoint) {
-            return;
-          }
-          const position = new Vector2(pickingInfo.pickedPoint.y, pickingInfo.pickedPoint.z);
-          const angle = Angle.BetweenTwoPoints(new Vector2(0, 0), position);
-          console.log(angle.degrees());
-          this.mechanism.rightAngle.next(-angle.degrees());
-        }
+          const undo = (): boolean => {
+            this.mechanism.rightAngle.next(previousPosition);
+            return true;
+          };
+
+          const redo = (): boolean => {
+            this.mechanism.rightAngle.next(currentPosition);
+            return true;
+          };
+
+          return new CommandParts(undo, redo, undefined, undefined);
+        };
+        this.commandInvoker.do(new ClosureCommands(doAction));
       })
     );
   }
