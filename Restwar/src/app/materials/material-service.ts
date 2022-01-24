@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
 import { Color3, Scene, StandardMaterial } from '@babylonjs/core';
-import { AppInjector } from 'src/app/app.module';
-import { BasicRenderService } from '../services/BasicRenderService';
 
 const COLOR_HINGE = new Color3(0, 0.9, 0);
 const COLOR_BOOKLET_HANDLE = new Color3(0.9, 0.0, 0.0);
+
+// projection consts
+export const COLOR_STROKE = 'black';
 
 export class MaterialService {
   static matHingeSelected: StandardMaterial;

@@ -156,6 +156,16 @@ export class BehaviorBookletControl extends Behavior implements IDisposable {
           return new CommandParts(undo, redo, undefined, undefined);
         };
         this.commandInvoker.do(new ClosureCommands(doAction));
+      }),
+      // change of width
+      this.mechanism.width.subscribe((value) => {
+        this.leftHandle.transform.position.x = value / 2 + HANDLE_WIDTH / 2;
+        this.rightHandle.transform.position.x = -value / 2 - HANDLE_WIDTH / 2;
+      }),
+      // change of height
+      this.mechanism.height.subscribe((value) => {
+        this.leftHandle.transform.position.y = value - HANDLE_HEIGHT;
+        this.rightHandle.transform.position.y = value - HANDLE_HEIGHT;
       })
     );
   }

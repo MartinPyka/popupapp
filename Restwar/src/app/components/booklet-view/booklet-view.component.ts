@@ -16,7 +16,7 @@ export class BookletViewComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  changeAngle($event: number, parameter: BehaviorSubject<number> | undefined) {
+  changeValue($event: number, parameter: BehaviorSubject<number> | undefined) {
     if (!parameter) {
       return;
     }

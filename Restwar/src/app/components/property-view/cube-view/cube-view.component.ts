@@ -76,4 +76,31 @@ export class CubeViewComponent implements OnInit {
 
     this.commandInvoker.do(new ClosureCommands(doAction));
   }
+
+  changeWidth($event: number) {
+    if (this.plane == undefined) {
+      return;
+    }
+
+    let doAction = (): CommandParts => {
+      let oldValue = this.plane?.width.value ?? 1;
+      let newValue = $event;
+
+      this.plane?.width.next(newValue);
+
+      let undo = (): boolean => {
+        this.plane?.width.next(oldValue);
+        return true;
+      };
+
+      let redo = (): boolean => {
+        this.plane?.width.next(newValue);
+        return true;
+      };
+
+      return new CommandParts(undo, redo, undefined, undefined);
+    };
+
+    this.commandInvoker.do(new ClosureCommands(doAction));
+  }
 }

@@ -1,11 +1,14 @@
-<p>booklet-view works!</p>
+<p>Angle of Booklet view</p>
 <input
   type="number"
   [ngModel]="mecActive?.leftAngle | async"
-  (ngModelChange)="changeAngle($event, mecActive?.leftAngle)"
+  (ngModelChange)="changeValue($event, mecActive?.leftAngle)"
 />
 <input
   type="number"
   [ngModel]="mecActive?.rightAngle | async"
-  (ngModelChange)="changeAngle($event, mecActive?.rightAngle)"
+  (ngModelChange)="changeValue($event, mecActive?.rightAngle)"
 />
+<p>Dimensions</p>
+<input type="number" [ngModel]="mecActive?.width | async" (ngModelChange)="changeValue($event, mecActive?.width)" />
+<input type="number" [ngModel]="mecActive?.height | async" (ngModelChange)="changeValue($event, mecActive?.height)" />

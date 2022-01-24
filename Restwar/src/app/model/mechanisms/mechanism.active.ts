@@ -5,6 +5,9 @@ import { PlaneRectangle } from '../planes/plane.rectangle';
 import { Mechanism } from './mechanism';
 import { AppInjector } from 'src/app/app.module';
 import { EditorService } from 'src/app/core/editor-service';
+import { IProjectable } from '../interfaces/interfaces';
+import { Group } from 'paper';
+import { Point } from 'paper/dist/paper-core';
 
 const DEFAULT_ANGLE_LEFT = 90;
 const DEFAULT_ANGLE_RIGHT = 90;
@@ -15,7 +18,7 @@ const DEFAULT_HEIGHT = 10;
  * The active mechanism can be modified by the user directly. The user
  * applies the force directly to the mechanism. E.g. book-site
  */
-export class MechanismActive extends Mechanism {
+export class MechanismActive extends Mechanism implements IProjectable {
   // Model parameters
 
   /** the left angle to which the hinge is opened */
@@ -35,6 +38,9 @@ export class MechanismActive extends Mechanism {
   leftSide: PlaneRectangle;
   rightSide: PlaneRectangle;
 
+  protected projectionTop: paper.Group;
+  protected projectionDown: paper.Group;
+
   constructor(parent: TransformObject3D | null) {
     super();
 
@@ -51,7 +57,34 @@ export class MechanismActive extends Mechanism {
     this.leftSide = new PlaneRectangle(DEFAULT_WIDTH, DEFAULT_HEIGHT, scene, this.centerHinge.leftTransform);
     this.rightSide = new PlaneRectangle(DEFAULT_WIDTH, DEFAULT_HEIGHT, scene, this.centerHinge.rightTransform);
 
+    this.projectionTop = new Group([
+      new Group(this.leftSide.projectTopSide()),
+      new Group(this.rightSide.projectTopSide()),
+    ]);
+    //this.projectionDown = new Group([this.leftSide.projectDownSide(), this.rightSide.projectDownSide()]);
+
+    this.configureProjectionSetting(this.projectionTop);
+    this.projectionTop.position = new Point(150, 120);
+
+    //this.projectionDown.applyMatrix = false;
+    //this.projectionDown.position = new Point(200, 50);
+
     this.registerEvents();
+  }
+
+  /**
+   * configures the layout of a paperjs group for an active mechanism
+   */
+  private configureProjectionSetting(group: paper.Group) {
+    group.applyMatrix = false;
+
+    group.children[0].applyMatrix = false;
+    group.children[0].rotate(90);
+    group.children[0].position = new Point(-5, 0);
+
+    group.children[1].applyMatrix = false;
+    group.children[1].rotate(-90);
+    group.children[1].position = new Point(5, 0);
   }
 
   override dispose(): void {
@@ -65,6 +98,14 @@ export class MechanismActive extends Mechanism {
     this.centerHinge.dispose();
     this.leftSide.dispose();
     this.rightSide.dispose();
+  }
+
+  public projectTopSide(): paper.Item {
+    return this.projectionTop;
+  }
+
+  public projectDownSide(): paper.Item {
+    return this.projectionDown;
   }
 
   /**

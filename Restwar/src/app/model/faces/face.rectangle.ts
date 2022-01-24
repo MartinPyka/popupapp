@@ -14,17 +14,25 @@ import { Nullable } from '@babylonjs/core';
 import { BehaviorSubject } from 'rxjs';
 import { Face } from '../abstract/face';
 import { TransformObject3D } from '../abstract/transform.object3d';
+import { IProjectable } from '../interfaces/interfaces';
+import { Path } from 'paper';
+import { COLOR_STROKE } from 'src/app/materials/material-service';
+import { Point } from 'paper/dist/paper-core';
 
 /**
  * This face class is typically used in mechanism to depict the faces
  * of a plane. It does not contain any transformation matrix as
  * configurable property as it is usually parented to its plane object
  */
-export class FaceRectangle extends Face {
+export class FaceRectangle extends Face implements IProjectable {
   // Model parameters
   public readonly height: BehaviorSubject<number>;
   public readonly width: BehaviorSubject<number>;
   public readonly flipped: BehaviorSubject<boolean>;
+
+  // Points of the ThreeJS plane. They are also used for the 2d projection
+  private positions: any;
+  private projection: paper.Path;
 
   // Events
 
@@ -44,6 +52,7 @@ export class FaceRectangle extends Face {
     this.flipped = new BehaviorSubject<boolean>(flipped);
 
     this.createGeometry(scene);
+    this.createProjection();
     this.registerEvents();
   }
 
@@ -54,6 +63,24 @@ export class FaceRectangle extends Face {
     this.flipped.complete();
   }
 
+  /**
+   * Returns the topside projection of this mesh
+   *
+   * @returns the path of this mesh
+   */
+  public projectTopSide(): paper.Item {
+    return this.projection;
+  }
+
+  /**
+   * Returns the downside projection of this mesh
+   *
+   * @returns the path of this mesh
+   */
+  public projectDownSide(): paper.Item {
+    return this.projection;
+  }
+
   protected createGeometry(scene: Scene) {
     this.mesh = MeshBuilder.CreatePlane(
       this.id,
@@ -61,8 +88,32 @@ export class FaceRectangle extends Face {
       scene
     );
 
+    // store the positions in a separate array so that we can quickly access them
+    this.positions = this.mesh.getVerticesData(VertexBuffer.PositionKind);
+    if (this.positions == null) {
+      return;
+    }
+
     this.realignMesh();
     this.mesh.parent = this.transform;
+  }
+
+  /**
+   * projection of the rectangle into 2d
+   */
+  protected createProjection() {
+    this.projection = new Path({
+      strokeColor: COLOR_STROKE,
+    });
+
+    this.projection.add(
+      new Point(this.positions[0], this.positions[1]),
+      new Point(this.positions[9], this.positions[10]),
+      new Point(this.positions[6], this.positions[7]),
+      new Point(this.positions[3], this.positions[4])
+    );
+
+    this.projection.fillColor = null;
   }
 
   /**
@@ -70,34 +121,28 @@ export class FaceRectangle extends Face {
    * positioned at 0,0 for the bottom left corner
    */
   protected realignMesh() {
-    // realign the vertices
-    var positions = this.mesh.getVerticesData(VertexBuffer.PositionKind);
-    if (positions == null) {
-      return;
-    }
-
     // when looking at the plane with y-Axis as up and x-Axis as right
     // bottom left
-    positions[0] = -this.width.value / 2;
-    positions[1] = 0;
-    positions[2] = 0;
+    this.positions[0] = -this.width.value / 2;
+    this.positions[1] = 0;
+    this.positions[2] = 0;
 
     // bottom right
-    positions[3] = this.width.value / 2;
-    positions[4] = 0;
-    positions[5] = 0;
+    this.positions[3] = this.width.value / 2;
+    this.positions[4] = 0;
+    this.positions[5] = 0;
 
     // top right
-    positions[6] = this.width.value / 2;
-    positions[7] = this.height.value;
-    positions[8] = 0;
+    this.positions[6] = this.width.value / 2;
+    this.positions[7] = this.height.value;
+    this.positions[8] = 0;
 
     // top left
-    positions[9] = -this.width.value / 2;
-    positions[10] = this.height.value;
-    positions[11] = 0;
+    this.positions[9] = -this.width.value / 2;
+    this.positions[10] = this.height.value;
+    this.positions[11] = 0;
 
-    this.mesh.updateVerticesData(VertexBuffer.PositionKind, positions);
+    this.mesh.updateVerticesData(VertexBuffer.PositionKind, this.positions);
   }
 
   protected registerEvents() {
@@ -115,40 +160,18 @@ export class FaceRectangle extends Face {
     this.subscriptionList.push(
       this.width.subscribe((width) => {
         // update the width on the mesh
-        var positions = this.mesh.getVerticesData(VertexBuffer.PositionKind);
-        if (positions == null) {
-          return;
-        }
         // bottom left
-        positions[0] = -width / 2;
-        // top left
-        positions[9] = -width / 2;
-
-        // bottom right
-        positions[3] = width / 2;
-        // top right
-        positions[6] = width / 2;
-
-        this.mesh.updateVerticesData(VertexBuffer.PositionKind, positions);
-        this.mesh.refreshBoundingInfo();
+        this.updateMeshWidth(width);
+        this.updateProjectionWidth(width);
       })
     );
 
     this.subscriptionList.push(
       this.height.subscribe((height) => {
-        // update the width on the mesh
-        var positions = this.mesh.getVerticesData(VertexBuffer.PositionKind);
-        if (positions == null) {
-          return;
-        }
-
+        // update the height on the mesh
         // top right
-        positions[7] = height;
-        // top left
-        positions[10] = height;
-
-        this.mesh.updateVerticesData(VertexBuffer.PositionKind, positions);
-        this.mesh.refreshBoundingInfo();
+        this.updateMeshHeight(height);
+        this.updateProjectionHeight(height);
       })
     );
 
@@ -205,6 +228,43 @@ export class FaceRectangle extends Face {
     });
     this.executeActionList.push(triggerOnMouseDown);
     this.mesh.actionManager.registerAction(triggerOnMouseDown);
+  }
+
+  private updateMeshHeight(height: number) {
+    this.positions[7] = height;
+    // top left
+    this.positions[10] = height;
+
+    this.mesh.updateVerticesData(VertexBuffer.PositionKind, this.positions);
+    this.mesh.refreshBoundingInfo();
+  }
+
+  private updateMeshWidth(width: number) {
+    const offsetWidth = width / 2;
+    this.positions[0] = -offsetWidth;
+    // top left
+    this.positions[9] = -offsetWidth;
+
+    // bottom right
+    this.positions[3] = offsetWidth;
+    // top right
+    this.positions[6] = offsetWidth;
+
+    this.mesh.updateVerticesData(VertexBuffer.PositionKind, this.positions);
+    this.mesh.refreshBoundingInfo();
+  }
+
+  private updateProjectionWidth(width: number) {
+    const offsetWidth = width / 2;
+    this.projection.segments[0].point.x = -offsetWidth;
+    this.projection.segments[1].point.x = -offsetWidth;
+    this.projection.segments[2].point.x = offsetWidth;
+    this.projection.segments[3].point.x = offsetWidth;
+  }
+
+  private updateProjectionHeight(height: number) {
+    this.projection.segments[1].point.y = height;
+    this.projection.segments[2].point.y = height;
   }
 
   /**
