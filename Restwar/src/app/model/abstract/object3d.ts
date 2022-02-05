@@ -14,17 +14,16 @@ export abstract class Object3D implements IModelDisposable {
   // in a deserialized state
   readonly id: string;
 
-  // subscriptions are collected in order to be able to
-  // unsubscribe to everything
-  readonly subscriptionList: Subscription[];
+  // an event that fires, when the Object3D is diposed
+  readonly onDispose: Subject<void>;
 
   constructor() {
     this.id = v4();
-    this.subscriptionList = [];
+    this.onDispose = new Subject<void>();
   }
 
   dispose(): void {
-    this.subscriptionList.forEach((subscription) => subscription.unsubscribe());
-    this.subscriptionList.length = 0;
+    this.onDispose.next();
+    this.onDispose.complete();
   }
 }

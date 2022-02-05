@@ -7,9 +7,9 @@ import { Angle, DeepImmutableObject, Mesh, MeshBuilder, Scene, Vector2, Vector3 
 import { MaterialService } from 'src/app/materials/material-service';
 import { Channel } from 'src/app/core/emitter.channels';
 import { IDisposable } from '@babylonjs/core';
-import { debounceTime } from 'rxjs';
 import { ClosureCommands, CommandParts } from 'src/app/core/undo/Command';
 import { snapDegree } from 'src/app/utils/math';
+import { takeUntil } from 'rxjs';
 
 const SNAPPING_ANLGE = 5;
 const SNAPPING_STEPS = 45;
@@ -76,53 +76,53 @@ export class BehaviorBookletControl extends Behavior implements IDisposable {
 
     let i = 0;
 
-    this.subscriptionList.push(
-      // Left handle, down event
-      this.leftHandle.onMouseDown.subscribe((planeClick) => {
-        this.leftAngle = this.mechanism.leftAngle.getValue();
-      }),
-      // Left handle, move event
-      this.leftHandle.onMouseMove.subscribe((planeMove) => {
-        i += 1;
-        if (planeMove.event.pickInfo?.ray) {
-          const pickingInfo = planeMove.event.pickInfo.ray.intersectsMesh(
-            <DeepImmutableObject<Mesh>>(<unknown>this.hitPlane)
-          );
-          if (!pickingInfo.pickedPoint) {
-            return;
-          }
-          const position = new Vector2(pickingInfo.pickedPoint.y, pickingInfo.pickedPoint.z);
-          const angle = Angle.BetweenTwoPoints(new Vector2(0, 0), position);
-          const mecDegree = snapDegree(angle.degrees() - 360, SNAPPING_ANLGE, SNAPPING_STEPS);
-          this.mechanism.leftAngle.next(mecDegree);
+    // Left handle, down event
+    this.leftHandle.onMouseDown.pipe(takeUntil(this.onDispose)).subscribe((planeClick) => {
+      this.leftAngle = this.mechanism.leftAngle.getValue();
+    });
+
+    // Left handle, move event
+    this.leftHandle.onMouseMove.pipe(takeUntil(this.onDispose)).subscribe((planeMove) => {
+      i += 1;
+      if (planeMove.event.pickInfo?.ray) {
+        const pickingInfo = planeMove.event.pickInfo.ray.intersectsMesh(
+          <DeepImmutableObject<Mesh>>(<unknown>this.hitPlane)
+        );
+        if (!pickingInfo.pickedPoint) {
+          return;
         }
-      }),
-      // Left handle, up event
-      this.leftHandle.onMouseUp.subscribe((planeUp) => {
-        const doAction = (): CommandParts => {
-          const currentPosition = this.mechanism.leftAngle.getValue();
-          const previousPosition = this.leftAngle;
+        const position = new Vector2(pickingInfo.pickedPoint.y, pickingInfo.pickedPoint.z);
+        const angle = Angle.BetweenTwoPoints(new Vector2(0, 0), position);
+        const mecDegree = snapDegree(angle.degrees() - 360, SNAPPING_ANLGE, SNAPPING_STEPS);
+        this.mechanism.leftAngle.next(mecDegree);
+      }
+    });
+    // Left handle, up event
+    this.leftHandle.onMouseUp.pipe(takeUntil(this.onDispose)).subscribe((planeUp) => {
+      const doAction = (): CommandParts => {
+        const currentPosition = this.mechanism.leftAngle.getValue();
+        const previousPosition = this.leftAngle;
 
-          const undo = (): boolean => {
-            this.mechanism.leftAngle.next(previousPosition);
-            return true;
-          };
-
-          const redo = (): boolean => {
-            this.mechanism.leftAngle.next(currentPosition);
-            return true;
-          };
-
-          return new CommandParts(undo, redo, undefined, undefined);
+        const undo = (): boolean => {
+          this.mechanism.leftAngle.next(previousPosition);
+          return true;
         };
-        this.commandInvoker.do(new ClosureCommands(doAction));
-      }),
-      // Right handle, down event
-      this.rightHandle.onMouseDown.subscribe((planeClick) => {
-        this.rightAngle = this.mechanism.rightAngle.getValue();
-      }),
+
+        const redo = (): boolean => {
+          this.mechanism.leftAngle.next(currentPosition);
+          return true;
+        };
+
+        return new CommandParts(undo, redo, undefined, undefined);
+      };
+      this.commandInvoker.do(new ClosureCommands(doAction));
+    });
+    // Right handle, down event
+    this.rightHandle.onMouseDown.pipe(takeUntil(this.onDispose)).subscribe((planeClick) => {
+      this.rightAngle = this.mechanism.rightAngle.getValue();
+    }),
       // Right handle, move event
-      this.rightHandle.onMouseMove.subscribe((planeMove) => {
+      this.rightHandle.onMouseMove.pipe(takeUntil(this.onDispose)).subscribe((planeMove) => {
         i += 1;
         if (planeMove.event.pickInfo?.ray) {
           const pickingInfo = planeMove.event.pickInfo.ray.intersectsMesh(
@@ -136,38 +136,37 @@ export class BehaviorBookletControl extends Behavior implements IDisposable {
           const mecDegree = snapDegree(-angle.degrees(), SNAPPING_ANLGE, SNAPPING_STEPS);
           this.mechanism.rightAngle.next(mecDegree);
         }
-      }),
-      // Right handle, up event
-      this.rightHandle.onMouseUp.subscribe((planeUp) => {
-        const doAction = (): CommandParts => {
-          const currentPosition = this.mechanism.rightAngle.getValue();
-          const previousPosition = this.rightAngle;
+      });
+    // Right handle, up event
+    this.rightHandle.onMouseUp.pipe(takeUntil(this.onDispose)).subscribe((planeUp) => {
+      const doAction = (): CommandParts => {
+        const currentPosition = this.mechanism.rightAngle.getValue();
+        const previousPosition = this.rightAngle;
 
-          const undo = (): boolean => {
-            this.mechanism.rightAngle.next(previousPosition);
-            return true;
-          };
-
-          const redo = (): boolean => {
-            this.mechanism.rightAngle.next(currentPosition);
-            return true;
-          };
-
-          return new CommandParts(undo, redo, undefined, undefined);
+        const undo = (): boolean => {
+          this.mechanism.rightAngle.next(previousPosition);
+          return true;
         };
-        this.commandInvoker.do(new ClosureCommands(doAction));
-      }),
-      // change of width
-      this.mechanism.width.subscribe((value) => {
-        this.leftHandle.transform.position.x = value / 2 + HANDLE_WIDTH / 2;
-        this.rightHandle.transform.position.x = -value / 2 - HANDLE_WIDTH / 2;
-      }),
-      // change of height
-      this.mechanism.height.subscribe((value) => {
-        this.leftHandle.transform.position.y = value - HANDLE_HEIGHT;
-        this.rightHandle.transform.position.y = value - HANDLE_HEIGHT;
-      })
-    );
+
+        const redo = (): boolean => {
+          this.mechanism.rightAngle.next(currentPosition);
+          return true;
+        };
+
+        return new CommandParts(undo, redo, undefined, undefined);
+      };
+      this.commandInvoker.do(new ClosureCommands(doAction));
+    });
+    // change of width
+    this.mechanism.width.pipe(takeUntil(this.onDispose)).subscribe((value) => {
+      this.leftHandle.transform.position.x = value / 2 + HANDLE_WIDTH / 2;
+      this.rightHandle.transform.position.x = -value / 2 - HANDLE_WIDTH / 2;
+    });
+    // change of height
+    this.mechanism.height.pipe(takeUntil(this.onDispose)).subscribe((value) => {
+      this.leftHandle.transform.position.y = value - HANDLE_HEIGHT;
+      this.rightHandle.transform.position.y = value - HANDLE_HEIGHT;
+    });
   }
 
   public override dispose(): void {

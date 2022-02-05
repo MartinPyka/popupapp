@@ -1,4 +1,4 @@
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, takeUntil } from 'rxjs';
 import { TransformObject3D } from '../abstract/transform.object3d';
 import { HingeActive } from '../hinges/hinge.active';
 import { PlaneRectangle } from '../planes/plane.rectangle';
@@ -6,8 +6,7 @@ import { Mechanism } from './mechanism';
 import { AppInjector } from 'src/app/app.module';
 import { EditorService } from 'src/app/core/editor-service';
 import { IProjectable } from '../interfaces/interfaces';
-import { Group } from 'paper';
-import { Point } from 'paper/dist/paper-core';
+import { Path, Group, Point } from 'paper';
 
 const DEFAULT_ANGLE_LEFT = 90;
 const DEFAULT_ANGLE_RIGHT = 90;
@@ -38,8 +37,10 @@ export class MechanismActive extends Mechanism implements IProjectable {
   leftSide: PlaneRectangle;
   rightSide: PlaneRectangle;
 
+  // projection assets
   protected projectionTop: paper.Group;
   protected projectionDown: paper.Group;
+  protected pathFoldLine: paper.Path;
 
   constructor(parent: TransformObject3D | null) {
     super();
@@ -57,17 +58,29 @@ export class MechanismActive extends Mechanism implements IProjectable {
     this.leftSide = new PlaneRectangle(DEFAULT_WIDTH, DEFAULT_HEIGHT, scene, this.centerHinge.leftTransform);
     this.rightSide = new PlaneRectangle(DEFAULT_WIDTH, DEFAULT_HEIGHT, scene, this.centerHinge.rightTransform);
 
+    this.pathFoldLine = new Path({
+      strokeColor: 'black',
+    });
+    this.pathFoldLine.add(new Point(0, -this.width.getValue() / 2));
+    this.pathFoldLine.add(new Point(0, this.width.getValue() / 2));
+    this.pathFoldLine.style.dashArray = [2, 2];
+
     this.projectionTop = new Group([
       new Group(this.leftSide.projectTopSide()),
       new Group(this.rightSide.projectTopSide()),
+      this.pathFoldLine,
     ]);
-    //this.projectionDown = new Group([this.leftSide.projectDownSide(), this.rightSide.projectDownSide()]);
+
+    this.projectionDown = new Group([
+      new Group(this.leftSide.projectDownSide()),
+      new Group(this.rightSide.projectDownSide()),
+    ]);
 
     this.configureProjectionSetting(this.projectionTop);
-    this.projectionTop.position = new Point(150, 120);
+    this.projectionTop.position = new Point(150, 100);
 
-    //this.projectionDown.applyMatrix = false;
-    //this.projectionDown.position = new Point(200, 50);
+    this.configureProjectionSetting(this.projectionDown);
+    this.projectionDown.position = new Point(150, 130);
 
     this.registerEvents();
   }
@@ -113,31 +126,30 @@ export class MechanismActive extends Mechanism implements IProjectable {
    * to click events
    */
   protected registerEvents() {
-    this.subscriptionList.push(this.leftAngle.subscribe((value) => (this.centerHinge.leftAngle = value)));
+    this.leftAngle.pipe(takeUntil(this.onDispose)).subscribe((value) => (this.centerHinge.leftAngle = value));
 
-    this.subscriptionList.push(this.rightAngle.subscribe((value) => (this.centerHinge.rightAngle = value)));
+    this.rightAngle.pipe(takeUntil(this.onDispose)).subscribe((value) => (this.centerHinge.rightAngle = value));
 
-    this.subscriptionList.push(
-      this.width.subscribe((value) => {
-        this.leftSide.width.next(value);
-        this.rightSide.width.next(value);
-        this.centerHinge.width = value;
-      })
-    );
+    this.width.pipe(takeUntil(this.onDispose)).subscribe((value) => {
+      this.leftSide.width.next(value);
+      this.rightSide.width.next(value);
+      this.centerHinge.width = value;
 
-    this.subscriptionList.push(
-      this.height.subscribe((value) => {
-        this.leftSide.height.next(value);
-        this.rightSide.height.next(value);
-      })
-    );
+      this.pathFoldLine.segments[0].point.y = -value / 2;
+      this.pathFoldLine.segments[1].point.y = value / 2;
+    });
 
-    this.subscriptionList.push(
-      this.leftSide.onMouseDown.subscribe((planeClick) => this.onMouseDown.next({ ...planeClick, mechanism: this }))
-    );
+    this.height.pipe(takeUntil(this.onDispose)).subscribe((value) => {
+      this.leftSide.height.next(value);
+      this.rightSide.height.next(value);
+    });
 
-    this.subscriptionList.push(
-      this.rightSide.onMouseDown.subscribe((planeClick) => this.onMouseDown.next({ ...planeClick, mechanism: this }))
-    );
+    this.leftSide.onMouseDown
+      .pipe(takeUntil(this.onDispose))
+      .subscribe((planeClick) => this.onMouseDown.next({ ...planeClick, mechanism: this }));
+
+    this.rightSide.onMouseDown
+      .pipe(takeUntil(this.onDispose))
+      .subscribe((planeClick) => this.onMouseDown.next({ ...planeClick, mechanism: this }));
   }
 }

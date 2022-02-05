@@ -1,5 +1,5 @@
 import { Scene, TransformNode } from '@babylonjs/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, takeUntil } from 'rxjs';
 import { Plane } from '../abstract/plane';
 import { TransformObject3D } from '../abstract/transform.object3d';
 import { FaceRectangle } from '../faces/face.rectangle';
@@ -62,37 +62,41 @@ export class PlaneRectangle extends Plane implements IProjectable {
    */
   protected registerPropertyEvents() {
     // handle events for width changes
-    this.subscriptionList.push(
-      this.width.subscribe((width) => {
-        this.topSide.width.next(width);
-        this.downSide.width.next(width);
-      })
-    );
+    this.width.pipe(takeUntil(this.onDispose)).subscribe((width) => {
+      this.topSide.width.next(width);
+      this.downSide.width.next(width);
+    });
 
     // handle vents for height changes
-    this.subscriptionList.push(
-      this.height.subscribe((height) => {
-        this.topSide.height.next(height);
-        this.downSide.height.next(height);
-      })
-    );
+    this.height.pipe(takeUntil(this.onDispose)).subscribe((height) => {
+      this.topSide.height.next(height);
+      this.downSide.height.next(height);
+    });
   }
 
   /**
    * registers all events that are related to mouse or click events
    */
   protected registerInputEvents() {
-    this.subscriptionList.push(
-      this.topSide.onMouseDown.subscribe((faceClick) => this.onMouseDown.next({ ...faceClick, plane: this })),
-      this.topSide.onMouseUp.subscribe((faceClick) => this.onMouseUp.next({ ...faceClick, plane: this })),
-      this.topSide.onMouseMove.subscribe((faceMove) => this.onMouseMove.next({ ...faceMove, plane: this }))
-    );
+    this.topSide.onMouseDown
+      .pipe(takeUntil(this.onDispose))
+      .subscribe((faceClick) => this.onMouseDown.next({ ...faceClick, plane: this })),
+      this.topSide.onMouseUp
+        .pipe(takeUntil(this.onDispose))
+        .subscribe((faceClick) => this.onMouseUp.next({ ...faceClick, plane: this })),
+      this.topSide.onMouseMove
+        .pipe(takeUntil(this.onDispose))
+        .subscribe((faceMove) => this.onMouseMove.next({ ...faceMove, plane: this }));
 
-    this.subscriptionList.push(
-      this.downSide.onMouseDown.subscribe((faceClick) => this.onMouseDown.next({ ...faceClick, plane: this })),
-      this.downSide.onMouseUp.subscribe((faceClick) => this.onMouseUp.next({ ...faceClick, plane: this })),
-      this.downSide.onMouseMove.subscribe((faceMove) => this.onMouseMove.next({ ...faceMove, plane: this }))
-    );
+    this.downSide.onMouseDown
+      .pipe(takeUntil(this.onDispose))
+      .subscribe((faceClick) => this.onMouseDown.next({ ...faceClick, plane: this })),
+      this.downSide.onMouseUp
+        .pipe(takeUntil(this.onDispose))
+        .subscribe((faceClick) => this.onMouseUp.next({ ...faceClick, plane: this })),
+      this.downSide.onMouseMove
+        .pipe(takeUntil(this.onDispose))
+        .subscribe((faceMove) => this.onMouseMove.next({ ...faceMove, plane: this }));
   }
 
   override dispose(): void {

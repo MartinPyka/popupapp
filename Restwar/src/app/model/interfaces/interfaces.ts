@@ -9,10 +9,10 @@ import { Item } from 'paper';
 
 /**
  * Extends the IDisposable interface of Babylon by an
- * object that holds all subscriptions
+ * a subject that fires, when the instance is disposed
  */
 export interface IModelDisposable extends IDisposable {
-  readonly subscriptionList: Subscription[];
+  readonly onDispose: Subject<void>;
 }
 
 /**

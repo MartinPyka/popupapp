@@ -1,5 +1,5 @@
 import { ActionManager, ExecuteCodeAction, Mesh, PointerDragBehavior, Vector3 } from '@babylonjs/core';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, takeUntil } from 'rxjs';
 import { AppInjector } from 'src/app/app.module';
 import { ClosureCommands, CommandParts } from 'src/app/core/undo/Command';
 import { CommandInvoker } from 'src/app/core/undo/CommandInvoker';
@@ -23,7 +23,7 @@ export abstract class Volume3D extends Object3D {
     this.mesh = mesh;
 
     // any change in the model variable should affect the mesh
-    this.subscriptionList.push(this.position.subscribe((x) => (this.mesh.position = x)));
+    this.position.pipe(takeUntil(this.onDispose)).subscribe((x) => (this.mesh.position = x));
 
     this.mesh.addBehavior(new PointerDragBehavior({ dragPlaneNormal: new Vector3(0, 1, 0) }));
 

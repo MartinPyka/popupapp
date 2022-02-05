@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { PointerEventTypes } from '@babylonjs/core';
 import { Project, Path, Color, Point, Group, MouseEvent } from 'paper';
 
 @Component({
@@ -7,6 +8,8 @@ import { Project, Path, Color, Point, Group, MouseEvent } from 'paper';
   styleUrls: ['./projection-view.component.scss'],
 })
 export class ProjectionViewComponent implements AfterViewInit {
+  point: paper.Point;
+  path3: paper.Path;
   constructor() {}
 
   ngAfterViewInit(): void {
@@ -32,19 +35,25 @@ export class ProjectionViewComponent implements AfterViewInit {
     group.addChild(path);
     group.addChild(path2);
 
-    const path3 = new Path({ strokeColor: 'black' });
-    path3.add(new Point(10, 10));
-    path3.add(new Point(20, 10));
-    path3.add(new Point(30, 20));
+    this.path3 = new Path({ strokeColor: 'black' });
+    this.path3.add(new Point(10, 10));
+    this.path3.add(new Point(20, 10));
 
-    path3.segments[1].point.y = 40;
+    this.point = new Point(30, 20);
+    this.path3.add(this.point);
+    this.path3.segments[1].point.y = 40;
 
+    project.view.onMouseDown = (event: any) => this.onMouseDown(event);
     */
-
-    project.view.onMouseDown = this.onMouseDown;
   }
 
   onMouseDown(event: any) {
+    console.log(this.point);
+    if (this.point) {
+      console.log('if clause triggered');
+      //this.point.x = 50;
+      this.path3.segments[2].point.x = 50;
+    }
     console.log('You pressed the mouse!');
     console.log(event);
   }

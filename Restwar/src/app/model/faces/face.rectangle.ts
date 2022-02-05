@@ -2,6 +2,7 @@ import {
   ActionEvent,
   ActionManager,
   ExecuteCodeAction,
+  FloatArray,
   MeshBuilder,
   Observer,
   PointerEventTypes,
@@ -11,7 +12,7 @@ import {
   VertexBuffer,
 } from '@babylonjs/core';
 import { Nullable } from '@babylonjs/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, takeUntil } from 'rxjs';
 import { Face } from '../abstract/face';
 import { TransformObject3D } from '../abstract/transform.object3d';
 import { IProjectable } from '../interfaces/interfaces';
@@ -31,7 +32,7 @@ export class FaceRectangle extends Face implements IProjectable {
   public readonly flipped: BehaviorSubject<boolean>;
 
   // Points of the ThreeJS plane. They are also used for the 2d projection
-  private positions: any;
+  private positions: FloatArray;
   private projection: paper.Path;
 
   // Events
@@ -61,6 +62,7 @@ export class FaceRectangle extends Face implements IProjectable {
     this.width.complete();
     this.height.complete();
     this.flipped.complete();
+    this.projection.remove();
   }
 
   /**
@@ -89,10 +91,11 @@ export class FaceRectangle extends Face implements IProjectable {
     );
 
     // store the positions in a separate array so that we can quickly access them
-    this.positions = this.mesh.getVerticesData(VertexBuffer.PositionKind);
-    if (this.positions == null) {
+    const positions = this.mesh.getVerticesData(VertexBuffer.PositionKind);
+    if (positions == null) {
       return;
     }
+    this.positions = positions;
 
     this.realignMesh();
     this.mesh.parent = this.transform;
@@ -104,6 +107,7 @@ export class FaceRectangle extends Face implements IProjectable {
   protected createProjection() {
     this.projection = new Path({
       strokeColor: COLOR_STROKE,
+      fillColor: null,
     });
 
     this.projection.add(
@@ -113,7 +117,7 @@ export class FaceRectangle extends Face implements IProjectable {
       new Point(this.positions[3], this.positions[4])
     );
 
-    this.projection.fillColor = null;
+    this.projection.closed = true;
   }
 
   /**
@@ -147,33 +151,27 @@ export class FaceRectangle extends Face implements IProjectable {
 
   protected registerEvents() {
     // subscription to flipped value
-    this.subscriptionList.push(
-      this.flipped.subscribe((value) => {
-        if (value) {
-          this.mesh.rotation = new Vector3(0, Math.PI, 0);
-        } else {
-          this.mesh.rotation = new Vector3(0, 0, 0);
-        }
-      })
-    );
+    this.flipped.pipe(takeUntil(this.onDispose)).subscribe((value) => {
+      if (value) {
+        this.mesh.rotation = new Vector3(0, Math.PI, 0);
+      } else {
+        this.mesh.rotation = new Vector3(0, 0, 0);
+      }
+    });
 
-    this.subscriptionList.push(
-      this.width.subscribe((width) => {
-        // update the width on the mesh
-        // bottom left
-        this.updateMeshWidth(width);
-        this.updateProjectionWidth(width);
-      })
-    );
+    this.width.pipe(takeUntil(this.onDispose)).subscribe((width) => {
+      // update the width on the mesh
+      // bottom left
+      this.updateMeshWidth(width);
+      this.updateProjectionWidth(width);
+    });
 
-    this.subscriptionList.push(
-      this.height.subscribe((height) => {
-        // update the height on the mesh
-        // top right
-        this.updateMeshHeight(height);
-        this.updateProjectionHeight(height);
-      })
-    );
+    this.height.pipe(takeUntil(this.onDispose)).subscribe((height) => {
+      // update the height on the mesh
+      // top right
+      this.updateMeshHeight(height);
+      this.updateProjectionHeight(height);
+    });
 
     this.mesh.actionManager = new ActionManager(this.mesh.getScene());
 
