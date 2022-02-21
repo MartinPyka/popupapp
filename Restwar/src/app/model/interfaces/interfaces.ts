@@ -5,7 +5,6 @@ import { Behavior } from 'src/app/behaviors/behavior';
 import { Face } from '../abstract/face';
 import { Plane } from '../abstract/plane';
 import { Mechanism } from '../mechanisms/mechanism';
-import { Item } from 'paper';
 
 /**
  * Extends the IDisposable interface of Babylon by an
@@ -50,6 +49,15 @@ export interface IBehaviorCollection {
    * @param type the behavior to be removed
    */
   removeBehavior(type: Type<Behavior>): void;
+}
+
+/**
+ * Interface for all classes which provide points that
+ * can be used for 2d projections
+ */
+export interface IProjectionPoints {
+  projectionPointsTopSide(): paper.Point[];
+  projectionPointsDownSide(): paper.Point[];
 }
 
 /**

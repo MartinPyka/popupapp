@@ -3,7 +3,7 @@ import { BehaviorSubject, takeUntil } from 'rxjs';
 import { Plane } from '../abstract/plane';
 import { TransformObject3D } from '../abstract/transform.object3d';
 import { FaceRectangle } from '../faces/face.rectangle';
-import { IProjectable } from '../interfaces/interfaces';
+import { IProjectable, IProjectionPoints } from '../interfaces/interfaces';
 
 // this constant is used in order to facilitate face picking based
 // on the scene picking method which relies on bounding boxes. If
@@ -15,7 +15,7 @@ const OFFSET_FACE = 0.001;
  * Rectangle plane, that can be used e.g. for book shelfs or
  * parallelograms
  */
-export class PlaneRectangle extends Plane implements IProjectable {
+export class PlaneRectangle extends Plane implements IProjectionPoints {
   // Model parameters
   public readonly height: BehaviorSubject<number>;
   public readonly width: BehaviorSubject<number>;
@@ -44,8 +44,8 @@ export class PlaneRectangle extends Plane implements IProjectable {
    *
    * @returns
    */
-  public projectTopSide(): paper.Item {
-    return this.topSide.projectTopSide();
+  public projectionPointsTopSide(): paper.Point[] {
+    return this.topSide.projectionPointsTopSide();
   }
 
   /**
@@ -53,8 +53,8 @@ export class PlaneRectangle extends Plane implements IProjectable {
    *
    * @returns
    */
-  public projectDownSide(): paper.Item {
-    return this.downSide.projectDownSide();
+  public projectionPointsDownSide(): paper.Point[] {
+    return this.downSide.projectionPointsDownSide();
   }
 
   /**

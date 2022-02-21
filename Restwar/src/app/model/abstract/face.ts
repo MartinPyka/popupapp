@@ -7,7 +7,7 @@ import { TransformObject3D } from './transform.object3d';
  * Abstract class for all objects, that represent a face mesh
  * for 3d and 2d.
  */
-export abstract class Face extends TransformObject3D implements IModelDisposable, IClickable {
+export abstract class Face extends TransformObject3D implements IClickable {
   public readonly onMouseDown: Subject<FaceClick>;
   public readonly onMouseUp: Subject<FaceUp>;
   public readonly onMouseMove: Subject<FaceMove>;

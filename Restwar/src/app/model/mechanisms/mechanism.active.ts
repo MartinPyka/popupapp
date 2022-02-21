@@ -7,6 +7,7 @@ import { AppInjector } from 'src/app/app.module';
 import { EditorService } from 'src/app/core/editor-service';
 import { IProjectable } from '../interfaces/interfaces';
 import { Path, Group, Point } from 'paper';
+import * as projection from 'src/app/utils/projection';
 
 const DEFAULT_ANGLE_LEFT = 90;
 const DEFAULT_ANGLE_RIGHT = 90;
@@ -66,14 +67,14 @@ export class MechanismActive extends Mechanism implements IProjectable {
     this.pathFoldLine.style.dashArray = [2, 2];
 
     this.projectionTop = new Group([
-      new Group(this.leftSide.projectTopSide()),
-      new Group(this.rightSide.projectTopSide()),
+      new Group(projection.createPathRectangleOpen(this.leftSide.projectionPointsTopSide())),
+      new Group(projection.createPathRectangleOpen(this.rightSide.projectionPointsTopSide())),
       this.pathFoldLine,
     ]);
 
     this.projectionDown = new Group([
-      new Group(this.leftSide.projectDownSide()),
-      new Group(this.rightSide.projectDownSide()),
+      new Group(projection.createPathRectangleOpen(this.leftSide.projectionPointsDownSide())),
+      new Group(projection.createPathRectangleOpen(this.rightSide.projectionPointsDownSide())),
     ]);
 
     this.configureProjectionSetting(this.projectionTop);

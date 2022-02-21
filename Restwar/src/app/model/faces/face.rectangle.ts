@@ -15,9 +15,7 @@ import { Nullable } from '@babylonjs/core';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { Face } from '../abstract/face';
 import { TransformObject3D } from '../abstract/transform.object3d';
-import { IProjectable } from '../interfaces/interfaces';
-import { Path } from 'paper';
-import { COLOR_STROKE } from 'src/app/materials/material-service';
+import { IProjectionPoints } from '../interfaces/interfaces';
 import { Point } from 'paper/dist/paper-core';
 
 /**
@@ -25,7 +23,7 @@ import { Point } from 'paper/dist/paper-core';
  * of a plane. It does not contain any transformation matrix as
  * configurable property as it is usually parented to its plane object
  */
-export class FaceRectangle extends Face implements IProjectable {
+export class FaceRectangle extends Face implements IProjectionPoints {
   // Model parameters
   public readonly height: BehaviorSubject<number>;
   public readonly width: BehaviorSubject<number>;
@@ -33,7 +31,7 @@ export class FaceRectangle extends Face implements IProjectable {
 
   // Points of the ThreeJS plane. They are also used for the 2d projection
   private positions: FloatArray;
-  private projection: paper.Path;
+  private projection: paper.Point[];
 
   // Events
 
@@ -62,7 +60,7 @@ export class FaceRectangle extends Face implements IProjectable {
     this.width.complete();
     this.height.complete();
     this.flipped.complete();
-    this.projection.remove();
+    this.projection = [];
   }
 
   /**
@@ -70,7 +68,7 @@ export class FaceRectangle extends Face implements IProjectable {
    *
    * @returns the path of this mesh
    */
-  public projectTopSide(): paper.Item {
+  public projectionPointsTopSide(): paper.Point[] {
     return this.projection;
   }
 
@@ -79,7 +77,7 @@ export class FaceRectangle extends Face implements IProjectable {
    *
    * @returns the path of this mesh
    */
-  public projectDownSide(): paper.Item {
+  public projectionPointsDownSide(): paper.Point[] {
     return this.projection;
   }
 
@@ -105,19 +103,14 @@ export class FaceRectangle extends Face implements IProjectable {
    * projection of the rectangle into 2d
    */
   protected createProjection() {
-    this.projection = new Path({
-      strokeColor: COLOR_STROKE,
-      fillColor: null,
-    });
+    this.projection = [];
 
-    this.projection.add(
+    this.projection.push(
       new Point(this.positions[0], this.positions[1]),
       new Point(this.positions[9], this.positions[10]),
       new Point(this.positions[6], this.positions[7]),
       new Point(this.positions[3], this.positions[4])
     );
-
-    this.projection.closed = true;
   }
 
   /**
@@ -254,15 +247,15 @@ export class FaceRectangle extends Face implements IProjectable {
 
   private updateProjectionWidth(width: number) {
     const offsetWidth = width / 2;
-    this.projection.segments[0].point.x = -offsetWidth;
-    this.projection.segments[1].point.x = -offsetWidth;
-    this.projection.segments[2].point.x = offsetWidth;
-    this.projection.segments[3].point.x = offsetWidth;
+    this.projection[0].x = -offsetWidth;
+    this.projection[1].x = -offsetWidth;
+    this.projection[2].x = offsetWidth;
+    this.projection[3].x = offsetWidth;
   }
 
   private updateProjectionHeight(height: number) {
-    this.projection.segments[1].point.y = height;
-    this.projection.segments[2].point.y = height;
+    this.projection[1].y = height;
+    this.projection[2].y = height;
   }
 
   /**
