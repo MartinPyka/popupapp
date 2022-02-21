@@ -1,4 +1,4 @@
-import { BehaviorSubject, takeUntil } from 'rxjs';
+import { BehaviorSubject, pipe, takeUntil } from 'rxjs';
 import { TransformObject3D } from '../abstract/transform.object3d';
 import { HingeActive } from '../hinges/hinge.active';
 import { PlaneRectangle } from '../planes/plane.rectangle';
@@ -7,6 +7,7 @@ import { AppInjector } from 'src/app/app.module';
 import { EditorService } from 'src/app/core/editor-service';
 import { IProjectable } from '../interfaces/interfaces';
 import { Path, Group, Point } from 'paper';
+import * as projection from 'src/app/utils/projection';
 
 const DEFAULT_ANGLE_LEFT = 90;
 const DEFAULT_ANGLE_RIGHT = 90;
@@ -66,14 +67,14 @@ export class MechanismActive extends Mechanism implements IProjectable {
     this.pathFoldLine.style.dashArray = [2, 2];
 
     this.projectionTop = new Group([
-      new Group(this.leftSide.projectTopSide()),
-      new Group(this.rightSide.projectTopSide()),
+      new Group(projection.createPathRectangleOpen(this.leftSide.projectionPointsTopSideValue())),
+      new Group(projection.createPathRectangleOpen(this.rightSide.projectionPointsTopSideValue())),
       this.pathFoldLine,
     ]);
 
     this.projectionDown = new Group([
-      new Group(this.leftSide.projectDownSide()),
-      new Group(this.rightSide.projectDownSide()),
+      new Group(projection.createPathRectangleOpen(this.leftSide.projectionPointsDownSideValue())),
+      new Group(projection.createPathRectangleOpen(this.rightSide.projectionPointsDownSideValue())),
     ]);
 
     this.configureProjectionSetting(this.projectionTop);
@@ -143,6 +144,34 @@ export class MechanismActive extends Mechanism implements IProjectable {
       this.leftSide.height.next(value);
       this.rightSide.height.next(value);
     });
+
+    this.leftSide
+      .projectionPointsTopSide()
+      .pipe(takeUntil(this.onDispose))
+      .subscribe((points) =>
+        projection.updatePathRecangleOpen(this.projectionTop.children[0].children[0] as paper.Path, points)
+      );
+
+    this.leftSide
+      .projectionPointsDownSide()
+      .pipe(takeUntil(this.onDispose))
+      .subscribe((points) =>
+        projection.updatePathRecangleOpen(this.projectionDown.children[0].children[0] as paper.Path, points)
+      );
+
+    this.rightSide
+      .projectionPointsTopSide()
+      .pipe(takeUntil(this.onDispose))
+      .subscribe((points) =>
+        projection.updatePathRecangleOpen(this.projectionTop.children[1].children[0] as paper.Path, points)
+      );
+
+    this.rightSide
+      .projectionPointsDownSide()
+      .pipe(takeUntil(this.onDispose))
+      .subscribe((points) =>
+        projection.updatePathRecangleOpen(this.projectionDown.children[1].children[0] as paper.Path, points)
+      );
 
     this.leftSide.onMouseDown
       .pipe(takeUntil(this.onDispose))

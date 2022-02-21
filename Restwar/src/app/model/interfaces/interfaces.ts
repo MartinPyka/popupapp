@@ -1,11 +1,10 @@
 import { Type } from '@angular/core';
 import { ActionEvent, IDisposable, PointerInfo } from '@babylonjs/core';
-import { Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { Behavior } from 'src/app/behaviors/behavior';
 import { Face } from '../abstract/face';
 import { Plane } from '../abstract/plane';
 import { Mechanism } from '../mechanisms/mechanism';
-import { Item } from 'paper';
 
 /**
  * Extends the IDisposable interface of Babylon by an
@@ -50,6 +49,17 @@ export interface IBehaviorCollection {
    * @param type the behavior to be removed
    */
   removeBehavior(type: Type<Behavior>): void;
+}
+
+/**
+ * Interface for all classes which provide points that
+ * can be used for 2d projections
+ */
+export interface IProjectionPoints {
+  projectionPointsTopSide(): BehaviorSubject<paper.Point[]>;
+  projectionPointsDownSide(): BehaviorSubject<paper.Point[]>;
+  projectionPointsTopSideValue(): paper.Point[];
+  projectionPointsDownSideValue(): paper.Point[];
 }
 
 /**
