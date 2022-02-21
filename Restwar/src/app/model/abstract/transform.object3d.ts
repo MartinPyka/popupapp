@@ -1,6 +1,5 @@
 import { TransformNode } from '@babylonjs/core';
 import { Subject } from 'rxjs';
-import { Click } from '../interfaces/interfaces';
 import { Object3D } from './object3d';
 
 /**

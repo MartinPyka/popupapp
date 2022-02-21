@@ -1,5 +1,5 @@
 import { Scene, TransformNode } from '@babylonjs/core';
-import { BehaviorSubject, takeUntil } from 'rxjs';
+import { BehaviorSubject, Observable, takeUntil } from 'rxjs';
 import { Plane } from '../abstract/plane';
 import { TransformObject3D } from '../abstract/transform.object3d';
 import { FaceRectangle } from '../faces/face.rectangle';
@@ -44,7 +44,7 @@ export class PlaneRectangle extends Plane implements IProjectionPoints {
    *
    * @returns
    */
-  public projectionPointsTopSide(): paper.Point[] {
+  public projectionPointsTopSide(): BehaviorSubject<paper.Point[]> {
     return this.topSide.projectionPointsTopSide();
   }
 
@@ -53,8 +53,26 @@ export class PlaneRectangle extends Plane implements IProjectionPoints {
    *
    * @returns
    */
-  public projectionPointsDownSide(): paper.Point[] {
+  public projectionPointsDownSide(): BehaviorSubject<paper.Point[]> {
     return this.downSide.projectionPointsDownSide();
+  }
+
+  /**
+   * Returns the topside projection as point list
+   *
+   * @returns
+   */
+  public projectionPointsTopSideValue(): paper.Point[] {
+    return this.topSide.projectionPointsTopSideValue();
+  }
+
+  /**
+   * Returns the downside projection as point list
+   *
+   * @returns
+   */
+  public projectionPointsDownSideValue(): paper.Point[] {
+    return this.downSide.projectionPointsDownSideValue();
   }
 
   /**

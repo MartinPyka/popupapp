@@ -1,6 +1,6 @@
 import { Type } from '@angular/core';
 import { ActionEvent, IDisposable, PointerInfo } from '@babylonjs/core';
-import { Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { Behavior } from 'src/app/behaviors/behavior';
 import { Face } from '../abstract/face';
 import { Plane } from '../abstract/plane';
@@ -56,8 +56,10 @@ export interface IBehaviorCollection {
  * can be used for 2d projections
  */
 export interface IProjectionPoints {
-  projectionPointsTopSide(): paper.Point[];
-  projectionPointsDownSide(): paper.Point[];
+  projectionPointsTopSide(): BehaviorSubject<paper.Point[]>;
+  projectionPointsDownSide(): BehaviorSubject<paper.Point[]>;
+  projectionPointsTopSideValue(): paper.Point[];
+  projectionPointsDownSideValue(): paper.Point[];
 }
 
 /**

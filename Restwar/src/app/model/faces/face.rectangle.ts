@@ -12,7 +12,7 @@ import {
   VertexBuffer,
 } from '@babylonjs/core';
 import { Nullable } from '@babylonjs/core';
-import { BehaviorSubject, takeUntil } from 'rxjs';
+import { BehaviorSubject, Observable, takeUntil } from 'rxjs';
 import { Face } from '../abstract/face';
 import { TransformObject3D } from '../abstract/transform.object3d';
 import { IProjectionPoints } from '../interfaces/interfaces';
@@ -31,7 +31,7 @@ export class FaceRectangle extends Face implements IProjectionPoints {
 
   // Points of the ThreeJS plane. They are also used for the 2d projection
   private positions: FloatArray;
-  private projection: paper.Point[];
+  private projection: BehaviorSubject<paper.Point[]>;
 
   // Events
 
@@ -60,7 +60,7 @@ export class FaceRectangle extends Face implements IProjectionPoints {
     this.width.complete();
     this.height.complete();
     this.flipped.complete();
-    this.projection = [];
+    this.projection.complete();
   }
 
   /**
@@ -68,7 +68,7 @@ export class FaceRectangle extends Face implements IProjectionPoints {
    *
    * @returns the path of this mesh
    */
-  public projectionPointsTopSide(): paper.Point[] {
+  public projectionPointsTopSide(): BehaviorSubject<paper.Point[]> {
     return this.projection;
   }
 
@@ -77,8 +77,26 @@ export class FaceRectangle extends Face implements IProjectionPoints {
    *
    * @returns the path of this mesh
    */
-  public projectionPointsDownSide(): paper.Point[] {
+  public projectionPointsDownSide(): BehaviorSubject<paper.Point[]> {
     return this.projection;
+  }
+
+  /**
+   * Returns the topside projection points as value
+   *
+   * @returns point list of projection
+   */
+  public projectionPointsTopSideValue(): paper.Point[] {
+    return this.projection.getValue();
+  }
+
+  /**
+   * Returns the downside projection points as value
+   *
+   * @returns point list of projection
+   */
+  public projectionPointsDownSideValue(): paper.Point[] {
+    return this.projection.getValue();
   }
 
   protected createGeometry(scene: Scene) {
@@ -103,14 +121,15 @@ export class FaceRectangle extends Face implements IProjectionPoints {
    * projection of the rectangle into 2d
    */
   protected createProjection() {
-    this.projection = [];
+    let points = [];
 
-    this.projection.push(
+    points.push(
       new Point(this.positions[0], this.positions[1]),
       new Point(this.positions[9], this.positions[10]),
       new Point(this.positions[6], this.positions[7]),
       new Point(this.positions[3], this.positions[4])
     );
+    this.projection = new BehaviorSubject<paper.Point[]>(points);
   }
 
   /**
@@ -169,7 +188,6 @@ export class FaceRectangle extends Face implements IProjectionPoints {
     this.mesh.actionManager = new ActionManager(this.mesh.getScene());
 
     let moveEvent: Nullable<Observer<PointerInfo>>;
-
     function getMoveEvent(): Nullable<Observer<PointerInfo>> {
       return moveEvent;
     }
@@ -246,16 +264,20 @@ export class FaceRectangle extends Face implements IProjectionPoints {
   }
 
   private updateProjectionWidth(width: number) {
+    let points = this.projection.getValue();
     const offsetWidth = width / 2;
-    this.projection[0].x = -offsetWidth;
-    this.projection[1].x = -offsetWidth;
-    this.projection[2].x = offsetWidth;
-    this.projection[3].x = offsetWidth;
+    points[0].x = -offsetWidth;
+    points[1].x = -offsetWidth;
+    points[2].x = offsetWidth;
+    points[3].x = offsetWidth;
+    this.projection.next(points);
   }
 
   private updateProjectionHeight(height: number) {
-    this.projection[1].y = height;
-    this.projection[2].y = height;
+    let points = this.projection.getValue();
+    points[1].y = height;
+    points[2].y = height;
+    this.projection.next(points);
   }
 
   /**

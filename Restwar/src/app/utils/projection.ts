@@ -19,3 +19,15 @@ export function createPathRectangleOpen(points: paper.Point[]): paper.Path {
 
   return result;
 }
+
+/**
+ * Updates the points of a rectangle path
+ *
+ * @param path to be updated
+ * @param points that should be used for updating the path
+ * @returns the new version of the path
+ */
+export function updatePathRecangleOpen(path: paper.Path, points: paper.Point[]): paper.Path {
+  path.segments.forEach((segment, index) => (segment.point = points[index]));
+  return path;
+}
