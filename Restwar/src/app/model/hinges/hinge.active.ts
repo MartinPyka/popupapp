@@ -17,7 +17,7 @@ import { Hinge } from './hinge';
  * y-direction of the global space. (if not parented to another
  * transform)
  */
-export class HingeActive extends Hinge implements IModelDisposable {
+export class HingeActive extends Hinge {
   // Model parameters
 
   /** the left angle to which the hinge is opened */
