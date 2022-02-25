@@ -56,8 +56,8 @@ export abstract class Hinge extends TransformObject3D implements IModelDisposabl
 
   constructor(parent: TransformObject3D | null, scene: Scene) {
     super(parent);
-    this.leftTransform = new TransformObject3D(parent);
-    this.rightTransform = new TransformObject3D(parent);
+    this.leftTransform = new TransformObject3D(this);
+    this.rightTransform = new TransformObject3D(this);
     this.actionList = [];
 
     // the right side is flipped by 180° on the y-axis,

@@ -1,12 +1,11 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { EventState, Nullable, Observer, PointerInfo, Vector3, Scene, SceneLoader } from '@babylonjs/core';
-import { Behavior } from 'src/app/behaviors/behavior';
 import { BehaviorBookletControl } from 'src/app/behaviors/mechanism/Behavior.BookletControl';
-import { Emitter } from 'src/app/core/emitter';
 import { CommandInvoker } from 'src/app/core/undo/CommandInvoker';
 import { Cube } from 'src/app/model/cube';
 import { HingeActive } from 'src/app/model/hinges/hinge.active';
 import { MechanismActive } from 'src/app/model/mechanisms/mechanism.active';
+import { MechanismParallel } from 'src/app/model/mechanisms/mechanism.parallel';
 import { PlaneRectangle } from 'src/app/model/planes/plane.rectangle';
 import { Sphere } from 'src/app/model/sphere';
 import { BasicRenderService } from 'src/app/services/BasicRenderService';
@@ -21,6 +20,7 @@ export class ControlViewComponent implements OnInit, OnDestroy, AfterViewInit {
   sphere?: Sphere;
   plane?: PlaneRectangle;
   mecActive: MechanismActive;
+  mecParallel: MechanismParallel;
   picked: string = '';
   sceneEvents: Nullable<Observer<PointerInfo>>;
 
@@ -75,6 +75,10 @@ export class ControlViewComponent implements OnInit, OnDestroy, AfterViewInit {
     this.mecActive.leftAngle.next(-45);
     this.mecActive.rightAngle.next(-60);
     this.mecActive.addBehavior(BehaviorBookletControl);
+  }
+
+  addMecParallel() {
+    this.mecParallel = new MechanismParallel(this.mecActive.centerHinge);
   }
 
   AppendModel() {

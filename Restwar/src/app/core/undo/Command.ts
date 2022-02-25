@@ -1,3 +1,5 @@
+import { BehaviorSubject } from 'rxjs';
+import { Behavior } from 'src/app/behaviors/behavior';
 import { BoolAction } from './delegates';
 
 export interface Command {
@@ -126,4 +128,32 @@ export class ClosureCommands implements Command {
       return false;
     }
   }
+}
+
+/**
+ * Creates a closure command for changing a numeric value
+ * @param value value that should be used
+ * @param parameter BehaviorSubject<number> on which the new value should be applied
+ * @returns ClosureCommand for applying this value in an undo/redo-context (e.g. for CommandInvoker)
+ */
+export function changeNumberCommand(value: number, parameter: BehaviorSubject<number>): ClosureCommands {
+  let doAction = (): CommandParts => {
+    let oldValue = parameter.getValue() ?? 1;
+    let newValue = value;
+    parameter.next(newValue);
+
+    let undo = (): boolean => {
+      parameter.next(oldValue);
+      return true;
+    };
+
+    let redo = (): boolean => {
+      parameter.next(newValue);
+      return true;
+    };
+
+    return new CommandParts(undo, redo, undefined, undefined);
+  };
+
+  return new ClosureCommands(doAction);
 }

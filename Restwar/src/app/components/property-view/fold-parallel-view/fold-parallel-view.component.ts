@@ -1,16 +1,16 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { changeNumberCommand, ClosureCommands, CommandParts } from 'src/app/core/undo/Command';
+import { changeNumberCommand } from 'src/app/core/undo/Command';
 import { CommandInvoker } from 'src/app/core/undo/CommandInvoker';
-import { MechanismActive } from 'src/app/model/mechanisms/mechanism.active';
+import { MechanismParallel } from 'src/app/model/mechanisms/mechanism.parallel';
 
 @Component({
-  selector: 'booklet-view',
-  templateUrl: './booklet-view.component.html',
-  styleUrls: ['./booklet-view.component.scss'],
+  selector: 'fold-parallel-view',
+  templateUrl: './fold-parallel-view.component.html',
+  styleUrls: ['./fold-parallel-view.component.scss'],
 })
-export class BookletViewComponent implements OnInit {
-  @Input() mecActive?: MechanismActive;
+export class FoldParallelViewComponent implements OnInit {
+  @Input() mecParallel: MechanismParallel;
 
   constructor(private commandInvoker: CommandInvoker) {}
 
