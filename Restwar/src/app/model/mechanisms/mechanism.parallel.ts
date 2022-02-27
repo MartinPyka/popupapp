@@ -1,4 +1,8 @@
+import { Vector3 } from '@babylonjs/core';
 import { BehaviorSubject, takeUntil } from 'rxjs';
+import { AppInjector } from 'src/app/app.module';
+import { EditorService } from 'src/app/core/editor-service';
+import { calc_triangle_angle } from 'src/app/utils/math';
 import { Hinge } from '../hinges/hinge';
 import { MechanismFolding } from './mechanism.folding';
 
@@ -49,8 +53,35 @@ export class MechanismParallel extends MechanismFolding {
   public readonly height: BehaviorSubject<number>;
 
   // internal model parameters
+
+  /** length of the b-side of the triangle */
   protected b_side: number = 0;
+
+  /** length of the d-side of the triangle */
   protected d_side: number = 0;
+
+  /**
+   * angle of the triangle consisting of the side d and c
+   */
+  protected alpha: number;
+
+  /**
+   * angle of the triangle consisting of the side b and a
+   */
+  protected beta: number;
+
+  protected alpha_under: number;
+  protected beta_under: number;
+
+  /**
+   * rotation of the left hinge to look at the top fold
+   */
+  protected fold_angle_alpha: number;
+
+  /**
+   * rotation of the right hinge to look at the top fold
+   */
+  protected fold_angle_beta: number;
 
   constructor(parent: Hinge) {
     super(parent);
@@ -60,6 +91,11 @@ export class MechanismParallel extends MechanismFolding {
     this.height = new BehaviorSubject<number>(DEFAULT_HEIGHT);
 
     this.registerEvents();
+    const editorSerivce = AppInjector.get(EditorService);
+    const scene = editorSerivce.scene;
+    scene.onBeforeRenderObservable.add(() => {
+      this.calcFoldPosition();
+    });
   }
 
   /**
@@ -131,5 +167,72 @@ export class MechanismParallel extends MechanismFolding {
     const length = this.leftDistance.getValue() + this.rightDistance.getValue();
     this.b_side = (1 - this.height.getValue()) * length;
     this.d_side = this.height.getValue() * length;
+  }
+
+  /**
+   * Updates the orientation of the hinges
+   */
+  protected updateHingeOrientation() {}
+
+  protected calcFoldPosition() {
+    // calc distance between both hinges in world coordinates
+    const hinge_distance = this.leftHinge.transform.absolutePosition
+      .subtract(this.rightHinge.transform.absolutePosition)
+      .length();
+    // calculate angle alpha (left corner) which opposes the b-side
+    this.alpha = calc_triangle_angle(this.b_side, this.d_side, hinge_distance);
+    // calculate the angle between distance and the plane on the left side
+    this.alpha_under = calc_triangle_angle(this.rightDistance.getValue(), this.leftDistance.getValue(), hinge_distance);
+
+    // calculate angle beta (left corner) which opposes the d-side
+    this.beta = calc_triangle_angle(this.d_side, this.b_side, hinge_distance);
+    // calculate the angle between distance and the plane on the right side
+    this.beta_under = calc_triangle_angle(this.leftDistance.getValue(), this.rightDistance.getValue(), hinge_distance);
+
+    if (this.foldingForm.getValue().TopFoldSwitch) {
+      this.fold_angle_alpha = this.alpha - this.alpha_under;
+      this.fold_angle_beta = this.beta - this.beta_under;
+    } else {
+      this.fold_angle_alpha = this.alpha + this.alpha_under;
+      this.fold_angle_beta = this.beta + this.beta_under;
+    }
+
+    if (this.foldingForm.getValue().LeftSideSwitch == this.foldingForm.getValue().RightSideSwitch) {
+      this.calcFoldPosition0to180And360to180();
+    } else {
+      this.calcFoldPosition180to0();
+    }
+  }
+
+  protected calcFoldPosition0to180And360to180() {
+    this.leftHinge.rightAngle = this.fold_angle_alpha;
+    this.rightHinge.leftAngle = this.fold_angle_beta;
+    /*
+    this.LeftSide.transform.localRotation = 
+        Quaternion.Euler(
+            (FoldingForm.TopFoldSwitch ? ((Height > 0) ? 1 : -1) : -1) * fold_angle_alpha + ((FoldingForm.TopFoldSwitch) ? 1 : 0) * 180, 
+            parallelogramDefaultAngle, 
+            0.0f);
+    RightSide.transform.localRotation = 
+        Quaternion.Euler(
+            (FoldingForm.TopFoldSwitch ? ((Height > 0) ? 1 : -1) : -1) * fold_angle_beta + ((FoldingForm.TopFoldSwitch) ? 1 : 0) * 180,
+            parallelogramDefaultAngle, 
+            0.0f);
+          */
+  }
+
+  protected calcFoldPosition180to0() {
+    /*
+    LeftSide.transform.localRotation = 
+        Quaternion.Euler(
+            (FoldingForm.TopFoldSwitch ? (leftSideLonger ? -1 : 1) : 1) * fold_angle_alpha + -180, 
+            parallelogramDefaultAngle, 
+            0.0f);
+    RightSide.transform.localRotation = 
+        Quaternion.Euler(
+            (FoldingForm.TopFoldSwitch ? (!leftSideLonger ? -1 : 1) : 1) * fold_angle_beta + -180,
+            parallelogramDefaultAngle, 
+            0.0f);
+            */
   }
 }
