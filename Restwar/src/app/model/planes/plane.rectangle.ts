@@ -1,5 +1,6 @@
 import { Scene, TransformNode } from '@babylonjs/core';
 import { BehaviorSubject, Observable, takeUntil } from 'rxjs';
+import { MaterialService } from 'src/app/materials/material-service';
 import { Plane } from '../abstract/plane';
 import { TransformObject3D } from '../abstract/transform.object3d';
 import { FaceRectangle } from '../faces/face.rectangle';
@@ -24,10 +25,25 @@ export class PlaneRectangle extends Plane implements IProjectionPoints {
   protected override topSide: FaceRectangle;
   protected override downSide: FaceRectangle;
 
-  constructor(width: number = 1, height: number = 1, scene: Scene, parent: TransformObject3D | null) {
+  /**
+   * Creates a plane with rectangles
+   * @param width Width of the rectangle
+   * @param height Height of the rectangle
+   * @param scene The scene, in which the rectangle should be displayed
+   * @param parent parent of the rectangle
+   * @param debug if true, the backside gets a different color
+   */
+  constructor(
+    width: number = 1,
+    height: number = 1,
+    scene: Scene,
+    parent: TransformObject3D | null,
+    debug: boolean = false
+  ) {
     super(parent);
     this.topSide = new FaceRectangle(width, height, false, scene, this);
     this.downSide = new FaceRectangle(width, height, true, scene, this);
+    this.downSide.mesh.material = MaterialService.matBackSideDebug;
 
     // a temporary trick to make sure that both sides are pickable
     this.downSide.mesh.position.z = OFFSET_FACE;

@@ -39,7 +39,7 @@ export abstract class MechanismFolding extends Mechanism implements IProjectable
    * the hinges this mechanism creates
    */
   leftHinge: HingeActive;
-  topHinge: HingeActive;
+  centerHinge: HingeActive;
   rightHinge: HingeActive;
 
   /**
@@ -60,11 +60,11 @@ export abstract class MechanismFolding extends Mechanism implements IProjectable
     this.leftHinge = new HingeActive(parent.leftTransform, scene);
     this.rightHinge = new HingeActive(parent.rightTransform, scene);
 
-    /* the top hinge is assigned to the right side of the left hinge */
-    this.topHinge = new HingeActive(this.leftHinge.rightTransform, scene);
+    /* the center hinge is assigned to the right side of the left hinge */
+    this.centerHinge = new HingeActive(this.leftHinge.rightTransform, scene);
 
-    this.leftSide = new PlaneRectangle(DEFAULT_WIDTH, DEFAULT_HEIGHT, scene, this.leftHinge.rightTransform);
-    this.rightSide = new PlaneRectangle(DEFAULT_WIDTH, DEFAULT_HEIGHT, scene, this.rightHinge.leftTransform);
+    this.leftSide = new PlaneRectangle(DEFAULT_WIDTH, DEFAULT_HEIGHT, scene, this.leftHinge.rightTransform, true);
+    this.rightSide = new PlaneRectangle(DEFAULT_WIDTH, DEFAULT_HEIGHT, scene, this.rightHinge.leftTransform, true);
 
     this.offset = new BehaviorSubject<number>(DEFAULT_OFFSET);
     this.foldingForm = new BehaviorSubject<FoldForm>(DEFAULT_FOLDFORM);
@@ -74,7 +74,7 @@ export abstract class MechanismFolding extends Mechanism implements IProjectable
     super.dispose();
     this.parentHinge.dispose();
     this.leftHinge.dispose();
-    this.topHinge.dispose();
+    this.centerHinge.dispose();
     this.rightHinge.dispose();
     this.leftSide.dispose();
     this.rightSide.dispose();
