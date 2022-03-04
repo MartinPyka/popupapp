@@ -10,14 +10,19 @@ export class BehaviorOrientation extends Behavior {
   protected axisLeft: AxisObject;
   protected axisRight: AxisObject;
 
+  protected axisRightLeft: AxisObject;
+  protected axisRightRight: AxisObject;
+
   constructor(mechanism: MechanismFolding) {
     super(mechanism);
     this.mechanism = mechanism as MechanismFolding;
 
     const editorService = AppInjector.get(EditorService);
     const scene = editorService.scene;
-    this.axisLeft = new AxisObject(scene, this.mechanism.centerHinge.leftTransform);
-    this.axisRight = new AxisObject(scene, this.mechanism.centerHinge.rightTransform);
+    this.axisLeft = new AxisObject(scene, this.mechanism.leftHinge.leftTransform);
+    this.axisRight = new AxisObject(scene, this.mechanism.leftHinge.rightTransform);
+    this.axisRightLeft = new AxisObject(scene, this.mechanism.rightHinge.leftTransform);
+    this.axisRightRight = new AxisObject(scene, this.mechanism.rightHinge.rightTransform);
   }
 
   public override dispose(): void {

@@ -4,6 +4,7 @@ import { AppInjector } from 'src/app/app.module';
 import { EditorService } from 'src/app/core/editor-service';
 import { calc_triangle_angle } from 'src/app/utils/math';
 import { Hinge } from '../hinges/hinge';
+import { FoldForm } from '../types/FoldForm';
 import { MechanismFolding } from './mechanism.folding';
 
 const DEFAULT_DISTANCE_LEFT: number = 2;
@@ -116,6 +117,20 @@ export class MechanismParallel extends MechanismFolding {
     this.height.pipe(takeUntil(this.onDispose)).subscribe((value) => {
       this.calcModelVariable();
     });
+
+    this.foldingForm.pipe(takeUntil(this.onDispose)).subscribe((value) => {
+      this.calcAxisOrientation(value);
+    });
+  }
+
+  /**
+   * Updates the orientation of the hinge transforms depending on the current foldform
+   */
+  protected calcAxisOrientation(foldForm: FoldForm) {
+    if (foldForm.LeftSideSwitch == false && foldForm.RightSideSwitch == false && foldForm.TopFoldSwitch == false) {
+      this.leftHinge.setTransformOrientation(true, true, true);
+      this.rightHinge.setTransformOrientation(true, true, false);
+    }
   }
 
   /**
@@ -205,8 +220,8 @@ export class MechanismParallel extends MechanismFolding {
   }
 
   protected calcFoldPosition0to180And360to180() {
-    this.leftHinge.rightAngle = this.fold_angle_alpha;
-    this.rightHinge.leftAngle = this.fold_angle_beta;
+    this.leftHinge.rightAngle = -180 + this.fold_angle_alpha;
+    this.rightHinge.leftAngle = -180 + this.fold_angle_beta;
     /*
     this.LeftSide.transform.localRotation = 
         Quaternion.Euler(

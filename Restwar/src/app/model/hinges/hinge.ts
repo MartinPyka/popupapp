@@ -1,5 +1,5 @@
 import { ActionManager, ExecuteCodeAction, Material, Mesh, MeshBuilder, Scene, Vector3, Action } from '@babylonjs/core';
-import { Subscription } from 'rxjs';
+import { Subscription, throwIfEmpty } from 'rxjs';
 import { MaterialService } from 'src/app/materials/material-service';
 import { TransformObject3D } from '../abstract/transform.object3d';
 import { IModelDisposable } from '../interfaces/interfaces';
@@ -75,6 +75,25 @@ export abstract class Hinge extends TransformObject3D implements IModelDisposabl
     this.actionList.forEach((action) => this.mesh.actionManager?.unregisterAction(action));
     if (this.mesh != undefined) {
       this.mesh.dispose();
+    }
+  }
+
+  /**
+   * Determines, in which direction on the parent orientation the 0-180° degree fold
+   * should be. This method is mostly used for left and right hinges.
+   * @param xPositiv 0-180 folding is on the positive part of the x axis
+   * @param zPositive 0-180 folding is on the positive part of the z axis
+   * @param leftSide true, if this is the left side
+   */
+  public setTransformOrientation(xPositive: boolean, zPositive: boolean, leftSide: boolean) {
+    if (xPositive && zPositive) {
+      if (leftSide) {
+        this.leftTransform.transform.rotation.y = 0;
+        this.rightTransform.transform.rotation.y = Math.PI;
+      } else {
+        this.leftTransform.transform.rotation.y = Math.PI;
+        this.rightTransform.transform.rotation.y = 0;
+      }
     }
   }
 
