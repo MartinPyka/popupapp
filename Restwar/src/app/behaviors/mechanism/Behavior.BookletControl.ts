@@ -166,6 +166,7 @@ export class BehaviorBookletControl extends Behavior implements IDisposable {
     this.mechanism.width.pipe(takeUntil(this.onDispose)).subscribe((value) => {
       this.leftHandle.transform.position.x = value / 2 + HANDLE_WIDTH / 2;
       this.rightHandle.transform.position.x = -value / 2 - HANDLE_WIDTH / 2;
+      this.hitPlane.position.x = value / 2 + HANDLE_WIDTH / 2;
     });
     // change of height
     this.mechanism.height.pipe(takeUntil(this.onDispose)).subscribe((value) => {
