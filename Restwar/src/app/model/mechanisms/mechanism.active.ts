@@ -8,6 +8,7 @@ import { EditorService } from 'src/app/core/editor-service';
 import { IProjectable } from '../interfaces/interfaces';
 import { Path, Group, Point } from 'paper';
 import * as projection from 'src/app/utils/projection';
+import { Vector3 } from '@babylonjs/core';
 
 const DEFAULT_ANGLE_LEFT = 90;
 const DEFAULT_ANGLE_RIGHT = 90;
@@ -58,6 +59,9 @@ export class MechanismActive extends Mechanism implements IProjectable {
     this.centerHinge = new HingeActive(parent, scene);
     this.leftSide = new PlaneRectangle(DEFAULT_WIDTH, DEFAULT_HEIGHT, scene, this.centerHinge.leftTransform);
     this.rightSide = new PlaneRectangle(DEFAULT_WIDTH, DEFAULT_HEIGHT, scene, this.centerHinge.rightTransform);
+
+    this.leftSide.transform.rotation = new Vector3(0, Math.PI, 0);
+    this.rightSide.transform.rotation = new Vector3(0, Math.PI, 0);
 
     this.pathFoldLine = new Path({
       strokeColor: 'black',

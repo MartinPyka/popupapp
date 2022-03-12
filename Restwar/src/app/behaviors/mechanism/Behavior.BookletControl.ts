@@ -45,7 +45,7 @@ export class BehaviorBookletControl extends Behavior implements IDisposable {
   }
 
   private createGeometry(mechanism: MechanismActive, scene: Scene): void {
-    this.leftHandle = new PlaneRectangle(HANDLE_WIDTH, HANDLE_HEIGHT, scene, this.mechanism.leftSide);
+    this.leftHandle = new PlaneRectangle(HANDLE_WIDTH, HANDLE_HEIGHT, scene, this.mechanism.centerHinge.leftTransform);
     this.leftHandle.transform.position = new Vector3(
       this.mechanism.width.getValue() / 2 + HANDLE_WIDTH / 2,
       this.mechanism.height.getValue() - HANDLE_HEIGHT,
@@ -53,7 +53,12 @@ export class BehaviorBookletControl extends Behavior implements IDisposable {
     );
     this.leftHandle.material = MaterialService.matBookletHandle;
 
-    this.rightHandle = new PlaneRectangle(HANDLE_WIDTH, HANDLE_HEIGHT, scene, this.mechanism.rightSide);
+    this.rightHandle = new PlaneRectangle(
+      HANDLE_WIDTH,
+      HANDLE_HEIGHT,
+      scene,
+      this.mechanism.centerHinge.rightTransform
+    );
     this.rightHandle.transform.position = new Vector3(
       -this.mechanism.width.getValue() / 2 - HANDLE_WIDTH / 2,
       this.mechanism.height.getValue() - HANDLE_HEIGHT,
@@ -161,6 +166,7 @@ export class BehaviorBookletControl extends Behavior implements IDisposable {
     this.mechanism.width.pipe(takeUntil(this.onDispose)).subscribe((value) => {
       this.leftHandle.transform.position.x = value / 2 + HANDLE_WIDTH / 2;
       this.rightHandle.transform.position.x = -value / 2 - HANDLE_WIDTH / 2;
+      this.hitPlane.position.x = value / 2 + HANDLE_WIDTH / 2;
     });
     // change of height
     this.mechanism.height.pipe(takeUntil(this.onDispose)).subscribe((value) => {

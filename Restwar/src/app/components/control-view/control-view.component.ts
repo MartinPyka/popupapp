@@ -1,12 +1,12 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { EventState, Nullable, Observer, PointerInfo, Vector3, Scene, SceneLoader } from '@babylonjs/core';
-import { Behavior } from 'src/app/behaviors/behavior';
 import { BehaviorBookletControl } from 'src/app/behaviors/mechanism/Behavior.BookletControl';
-import { Emitter } from 'src/app/core/emitter';
+import { BehaviorOrientation } from 'src/app/behaviors/mechanism/Behavior.Orientation';
 import { CommandInvoker } from 'src/app/core/undo/CommandInvoker';
 import { Cube } from 'src/app/model/cube';
 import { HingeActive } from 'src/app/model/hinges/hinge.active';
 import { MechanismActive } from 'src/app/model/mechanisms/mechanism.active';
+import { MechanismParallel } from 'src/app/model/mechanisms/mechanism.parallel';
 import { PlaneRectangle } from 'src/app/model/planes/plane.rectangle';
 import { Sphere } from 'src/app/model/sphere';
 import { BasicRenderService } from 'src/app/services/BasicRenderService';
@@ -21,6 +21,7 @@ export class ControlViewComponent implements OnInit, OnDestroy, AfterViewInit {
   sphere?: Sphere;
   plane?: PlaneRectangle;
   mecActive: MechanismActive;
+  mecParallel: MechanismParallel;
   picked: string = '';
   sceneEvents: Nullable<Observer<PointerInfo>>;
 
@@ -44,32 +45,6 @@ export class ControlViewComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  /**
-   * adds a cube to the scene
-   */
-  addCube() {
-    if (this.sphere != undefined) {
-      this.sphere.dispose();
-    }
-    this.cube = new Cube(new Vector3(3, 2, 1));
-  }
-
-  /**
-   * adds a cube to the scene
-   */
-  addSphere() {
-    this.sphere = new Sphere(new Vector3(1, 2, 3));
-  }
-
-  addPlane() {
-    this.plane = new PlaneRectangle(4, 10, this.bsr.scene, null);
-    this.plane.onMouseDown.subscribe((evt) => console.log(evt));
-  }
-
-  addHinge() {
-    const hinge = new HingeActive(null, this.bsr.scene);
-  }
-
   addMecActive() {
     this.mecActive = new MechanismActive(null);
     this.mecActive.leftAngle.next(-45);
@@ -77,8 +52,9 @@ export class ControlViewComponent implements OnInit, OnDestroy, AfterViewInit {
     this.mecActive.addBehavior(BehaviorBookletControl);
   }
 
-  AppendModel() {
-    SceneLoader.Append('assets/models/elements/', 'plane.gltf', this.bsr.scene, function (scene: Scene) {});
+  addMecParallel() {
+    this.mecParallel = new MechanismParallel(this.mecActive.centerHinge);
+    //this.mecParallel.addBehavior(BehaviorOrientation);
   }
 
   undo() {

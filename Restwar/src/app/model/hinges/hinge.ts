@@ -1,5 +1,5 @@
 import { ActionManager, ExecuteCodeAction, Material, Mesh, MeshBuilder, Scene, Vector3, Action } from '@babylonjs/core';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription, throwIfEmpty } from 'rxjs';
 import { MaterialService } from 'src/app/materials/material-service';
 import { TransformObject3D } from '../abstract/transform.object3d';
 import { IModelDisposable } from '../interfaces/interfaces';
@@ -14,6 +14,8 @@ const CYLINDER_TESSELATION = 8;
  * hinges
  */
 export abstract class Hinge extends TransformObject3D implements IModelDisposable {
+  public onChange: Subject<void>;
+
   private _width: number;
 
   public get width(): number {
@@ -56,9 +58,10 @@ export abstract class Hinge extends TransformObject3D implements IModelDisposabl
 
   constructor(parent: TransformObject3D | null, scene: Scene) {
     super(parent);
-    this.leftTransform = new TransformObject3D(parent);
-    this.rightTransform = new TransformObject3D(parent);
+    this.leftTransform = new TransformObject3D(this);
+    this.rightTransform = new TransformObject3D(this);
     this.actionList = [];
+    this.onChange = new Subject<void>();
 
     // the right side is flipped by 180° on the y-axis,
     // so that the z-axis of the faces are within the 0-180
@@ -72,9 +75,29 @@ export abstract class Hinge extends TransformObject3D implements IModelDisposabl
 
   override dispose(): void {
     super.dispose();
+    this.onChange.complete();
     this.actionList.forEach((action) => this.mesh.actionManager?.unregisterAction(action));
     if (this.mesh != undefined) {
       this.mesh.dispose();
+    }
+  }
+
+  /**
+   * Determines, in which direction on the parent orientation the 0-180° degree fold
+   * should be. This method is mostly used for left and right hinges.
+   * @param xPositiv 0-180 folding is on the positive part of the x axis
+   * @param zPositive 0-180 folding is on the positive part of the z axis
+   * @param leftSide true, if this is the left side
+   */
+  public setTransformOrientation(xPositive: boolean, zPositive: boolean, leftSide: boolean) {
+    if (xPositive && zPositive) {
+      if (leftSide) {
+        this.leftTransform.transform.rotation.y = 0;
+        this.rightTransform.transform.rotation.y = Math.PI;
+      } else {
+        this.leftTransform.transform.rotation.y = Math.PI;
+        this.rightTransform.transform.rotation.y = 0;
+      }
     }
   }
 

@@ -1,11 +1,13 @@
 <p><button (click)="undo()">Undo</button> <button (click)="redo()">Redo</button></p>
-<p><button (click)="addCube()">Add Cube</button><button (click)="addSphere()">Add Sphere</button></p>
-<p><button (click)="addPlane()">Add Plane</button> <button (click)="addHinge()">Add Hinge</button></p>
-<cube-view [mesh]="sphere" [plane]="plane"></cube-view>
+<p><button (click)="undo()">Select Mechanism</button><button (click)="undo()">Select Side</button></p>
+<p>
+  <button (click)="undo()">Add PFold</button> <button (click)="undo()">Add VFold</button>
+  <button (click)="addMecActive()">Add Bookfold</button>
+</p>
 
 <p>Picked Object: {{ picked }}</p>
 
-<p><button (click)="AppendModel()">Append Model</button></p>
-
-<p><button (click)="addMecActive()">Add Mechanism Active</button></p>
 <booklet-view [mecActive]="mecActive"></booklet-view>
+
+<p><button (click)="addMecParallel()">Add Parallel Fold</button></p>
+<fold-parallel-view [mecParallel]="mecParallel"></fold-parallel-view>

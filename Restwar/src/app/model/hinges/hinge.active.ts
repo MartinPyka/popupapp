@@ -17,7 +17,7 @@ import { Hinge } from './hinge';
  * y-direction of the global space. (if not parented to another
  * transform)
  */
-export class HingeActive extends Hinge implements IModelDisposable {
+export class HingeActive extends Hinge {
   // Model parameters
 
   /** the left angle to which the hinge is opened */
@@ -30,6 +30,7 @@ export class HingeActive extends Hinge implements IModelDisposable {
   public set leftAngle(value: number) {
     this._leftAngle = deg2rad(value);
     this.leftTransform.transform.rotation.x = this._leftAngle;
+    this.onChange.next();
   }
 
   /** the right angle to which the hinge is opened */
@@ -42,6 +43,7 @@ export class HingeActive extends Hinge implements IModelDisposable {
   public set rightAngle(value: number) {
     this._rightAngle = deg2rad(value);
     this.rightTransform.transform.rotation.x = this._rightAngle;
+    this.onChange.next();
   }
 
   constructor(parent: TransformObject3D | null, scene: Scene) {

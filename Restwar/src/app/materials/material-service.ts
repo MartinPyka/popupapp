@@ -1,7 +1,9 @@
 import { Color3, Scene, StandardMaterial } from '@babylonjs/core';
+import { Color } from 'paper/dist/paper-core';
 
 const COLOR_HINGE = new Color3(0, 0.9, 0);
 const COLOR_BOOKLET_HANDLE = new Color3(0.9, 0.0, 0.0);
+const COLOR_BACKSIDE_DEBUG = new Color3(1.0, 0.9, 0.9);
 
 // projection consts
 export const COLOR_STROKE = 'black';
@@ -11,6 +13,8 @@ export class MaterialService {
   static matHingeDefault: StandardMaterial;
 
   static matBookletHandle: StandardMaterial;
+
+  static matBackSideDebug: StandardMaterial;
 
   public static initializeMaterial(scene: Scene) {
     MaterialService.matHingeSelected = new StandardMaterial('hingeSelected', scene);
@@ -22,5 +26,8 @@ export class MaterialService {
 
     MaterialService.matBookletHandle = new StandardMaterial('bookletHandle', scene);
     MaterialService.matBookletHandle.diffuseColor = COLOR_BOOKLET_HANDLE;
+
+    MaterialService.matBackSideDebug = new StandardMaterial('backside_debug', scene);
+    MaterialService.matBackSideDebug.diffuseColor = COLOR_BACKSIDE_DEBUG;
   }
 }

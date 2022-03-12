@@ -14,7 +14,7 @@ export class ProjectionViewComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     const project = new Project('projection');
-
+    /*
     const group = new Group();
     group.position = new Point(0, 100);
     group.applyMatrix = false;
@@ -49,6 +49,7 @@ export class ProjectionViewComponent implements AfterViewInit {
     this.path3.segments[1].point = point;
 
     project.view.onMouseDown = (event: any) => this.onMouseDown(event);
+    */
   }
 
   onMouseDown(event: any) {

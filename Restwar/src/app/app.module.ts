@@ -9,6 +9,7 @@ import { CubeViewComponent } from './components/property-view/cube-view/cube-vie
 import { FormsModule } from '@angular/forms';
 import { BookletViewComponent } from './components/booklet-view/booklet-view.component';
 import { ProjectionViewComponent } from './components/projection-view/projection-view.component';
+import { FoldParallelViewComponent } from './components/property-view/fold-parallel-view/fold-parallel-view.component';
 
 /**
  * app injector is used in the entire app, in order to
@@ -17,7 +18,7 @@ import { ProjectionViewComponent } from './components/projection-view/projection
 export let AppInjector: Injector;
 
 @NgModule({
-  declarations: [AppComponent, SceneViewComponent, ControlViewComponent, CubeViewComponent, BookletViewComponent, ProjectionViewComponent],
+  declarations: [AppComponent, SceneViewComponent, ControlViewComponent, CubeViewComponent, BookletViewComponent, ProjectionViewComponent, FoldParallelViewComponent],
   imports: [BrowserModule, AppRoutingModule, FormsModule],
   providers: [],
   bootstrap: [AppComponent],

@@ -1,0 +1,18 @@
+<p>Parallel fold properties</p>
+
+<input
+  type="number"
+  [ngModel]="mecParallel?.leftDistance | async"
+  (ngModelChange)="changeValue($event, mecParallel?.leftDistance)"
+/>
+<input
+  type="number"
+  [ngModel]="mecParallel?.rightDistance | async"
+  (ngModelChange)="changeValue($event, mecParallel?.rightDistance)"
+/>
+
+<input
+  type="number"
+  [ngModel]="mecParallel?.height | async"
+  (ngModelChange)="changeValue($event, mecParallel?.height)"
+/>

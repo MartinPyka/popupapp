@@ -1,3 +1,5 @@
+import { TransformNode, Vector3 } from '@babylonjs/core';
+
 /**
  * Converts an angle in radians to degree
  *
@@ -34,4 +36,14 @@ export function snapDegree(angle: number, snapAngle: number, snappingSteps: numb
     angle = Math.round(angle / snappingSteps) * snappingSteps;
   }
   return angle;
+}
+
+/**
+ * Calculates the angle alpha for a triangle with given side lengths
+ * a, b, c. Please note that a is opposing angle alpha and b and c are the
+ * two sides that belong to angle alpha
+ */
+export function calc_triangle_angle(a: number, b: number, c: number) {
+  var value = Math.max(-1.0, Math.min(1.0, (a * a - b * b - c * c) / (-2 * b * c)));
+  return rad2deg(Math.acos(value));
 }
