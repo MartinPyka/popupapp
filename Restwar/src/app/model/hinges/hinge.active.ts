@@ -30,6 +30,7 @@ export class HingeActive extends Hinge {
   public set leftAngle(value: number) {
     this._leftAngle = deg2rad(value);
     this.leftTransform.transform.rotation.x = this._leftAngle;
+    this.onChange.next();
   }
 
   /** the right angle to which the hinge is opened */
@@ -42,6 +43,7 @@ export class HingeActive extends Hinge {
   public set rightAngle(value: number) {
     this._rightAngle = deg2rad(value);
     this.rightTransform.transform.rotation.x = this._rightAngle;
+    this.onChange.next();
   }
 
   constructor(parent: TransformObject3D | null, scene: Scene) {

@@ -1,5 +1,5 @@
 import { ActionManager, ExecuteCodeAction, Material, Mesh, MeshBuilder, Scene, Vector3, Action } from '@babylonjs/core';
-import { Subscription, throwIfEmpty } from 'rxjs';
+import { Subject, Subscription, throwIfEmpty } from 'rxjs';
 import { MaterialService } from 'src/app/materials/material-service';
 import { TransformObject3D } from '../abstract/transform.object3d';
 import { IModelDisposable } from '../interfaces/interfaces';
@@ -14,6 +14,8 @@ const CYLINDER_TESSELATION = 8;
  * hinges
  */
 export abstract class Hinge extends TransformObject3D implements IModelDisposable {
+  public onChange: Subject<void>;
+
   private _width: number;
 
   public get width(): number {
@@ -59,6 +61,7 @@ export abstract class Hinge extends TransformObject3D implements IModelDisposabl
     this.leftTransform = new TransformObject3D(this);
     this.rightTransform = new TransformObject3D(this);
     this.actionList = [];
+    this.onChange = new Subject<void>();
 
     // the right side is flipped by 180° on the y-axis,
     // so that the z-axis of the faces are within the 0-180
@@ -72,6 +75,7 @@ export abstract class Hinge extends TransformObject3D implements IModelDisposabl
 
   override dispose(): void {
     super.dispose();
+    this.onChange.complete();
     this.actionList.forEach((action) => this.mesh.actionManager?.unregisterAction(action));
     if (this.mesh != undefined) {
       this.mesh.dispose();
