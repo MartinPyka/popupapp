@@ -45,32 +45,6 @@ export class ControlViewComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  /**
-   * adds a cube to the scene
-   */
-  addCube() {
-    if (this.sphere != undefined) {
-      this.sphere.dispose();
-    }
-    this.cube = new Cube(new Vector3(3, 2, 1));
-  }
-
-  /**
-   * adds a cube to the scene
-   */
-  addSphere() {
-    this.sphere = new Sphere(new Vector3(1, 2, 3));
-  }
-
-  addPlane() {
-    this.plane = new PlaneRectangle(4, 10, this.bsr.scene, null);
-    this.plane.onMouseDown.subscribe((evt) => console.log(evt));
-  }
-
-  addHinge() {
-    const hinge = new HingeActive(null, this.bsr.scene);
-  }
-
   addMecActive() {
     this.mecActive = new MechanismActive(null);
     this.mecActive.leftAngle.next(-45);
@@ -81,10 +55,6 @@ export class ControlViewComponent implements OnInit, OnDestroy, AfterViewInit {
   addMecParallel() {
     this.mecParallel = new MechanismParallel(this.mecActive.centerHinge);
     //this.mecParallel.addBehavior(BehaviorOrientation);
-  }
-
-  AppendModel() {
-    SceneLoader.Append('assets/models/elements/', 'plane.gltf', this.bsr.scene, function (scene: Scene) {});
   }
 
   undo() {
