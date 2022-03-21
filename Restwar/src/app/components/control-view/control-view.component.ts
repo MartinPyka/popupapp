@@ -45,23 +45,8 @@ export class ControlViewComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  addMecActive() {
-    this.mecActive = new MechanismActive(null);
-    this.mecActive.leftAngle.next(-45);
-    this.mecActive.rightAngle.next(-60);
-    this.mecActive.addBehavior(BehaviorBookletControl);
-  }
-
   addMecParallel() {
     this.mecParallel = new MechanismParallel(this.mecActive.centerHinge);
     //this.mecParallel.addBehavior(BehaviorOrientation);
-  }
-
-  undo() {
-    this.commandInvoker.undo();
-  }
-
-  redo() {
-    this.commandInvoker.redo();
   }
 }
