@@ -1,16 +1,15 @@
-import { Component } from '@angular/core';
+import { AfterViewInit, Component } from '@angular/core';
+import { EditorService } from './core/editor-service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
-  title = 'Restwar';
+export class AppComponent implements AfterViewInit {
+  constructor(protected readonly editorService: EditorService) {}
 
-  test = [23, 2, 2];
-
-  foo() {
-    this.title = 'dss';
+  ngAfterViewInit(): void {
+    this.editorService.createEditorService();
   }
 }

@@ -4,11 +4,11 @@ import { HingeActive } from '../hinges/hinge.active';
 import { PlaneRectangle } from '../planes/plane.rectangle';
 import { Mechanism } from './mechanism';
 import { AppInjector } from 'src/app/app.module';
-import { EditorService } from 'src/app/core/editor-service';
 import { IProjectable } from '../interfaces/interfaces';
 import { Path, Group, Point } from 'paper';
 import * as projection from 'src/app/utils/projection';
 import { Vector3 } from '@babylonjs/core';
+import { BasicRenderService } from 'src/app/services/BasicRenderService';
 
 const DEFAULT_ANGLE_LEFT = 90;
 const DEFAULT_ANGLE_RIGHT = 90;
@@ -47,8 +47,8 @@ export class MechanismActive extends Mechanism implements IProjectable {
   constructor(parent: TransformObject3D | null) {
     super();
 
-    const editorService = AppInjector.get(EditorService);
-    const scene = editorService.scene;
+    const basicRenderService = AppInjector.get(BasicRenderService);
+    const scene = basicRenderService.scene;
 
     // create model parameters
     this.width = new BehaviorSubject<number>(DEFAULT_WIDTH);
@@ -63,6 +63,11 @@ export class MechanismActive extends Mechanism implements IProjectable {
     this.leftSide.transform.rotation = new Vector3(0, Math.PI, 0);
     this.rightSide.transform.rotation = new Vector3(0, Math.PI, 0);
 
+    this.createProjection();
+    this.registerEvents();
+  }
+
+  createProjection() {
     this.pathFoldLine = new Path({
       strokeColor: 'black',
     });
@@ -86,8 +91,6 @@ export class MechanismActive extends Mechanism implements IProjectable {
 
     this.configureProjectionSetting(this.projectionDown);
     this.projectionDown.position = new Point(150, 130);
-
-    this.registerEvents();
   }
 
   /**

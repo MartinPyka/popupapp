@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Scene } from '@babylonjs/core';
 import { Mechanism } from '../model/mechanisms/mechanism';
 import { BasicRenderService } from '../services/BasicRenderService';
+import { Construction } from './construction';
 import { Emitter } from './emitter';
 
 /** this is the main class for all communication that takes place between all
@@ -20,23 +21,28 @@ export class EditorService {
    */
   readonly onSelectionMode: Emitter<boolean>;
 
-  /**
-   * list of all mechanisms used in the current editor
-   */
-  private readonly _listMechanisms: Mechanism[];
+  private _construction: Construction;
 
   /**
    * the scene for the editor
    */
-  private readonly _scene: Scene;
+  private _scene: Scene;
 
   public get scene(): Scene {
     return this._scene;
   }
 
-  constructor(basicRenderService: BasicRenderService) {
-    this._scene = basicRenderService.scene;
+  constructor(private basicRenderService: BasicRenderService) {
     this.onSelectionMode = new Emitter<boolean>();
+  }
+
+  /**
+   * is called when the render services has initialized
+   * the scene
+   */
+  createEditorService() {
+    this._scene = this.basicRenderService.scene;
+    this._construction = new Construction();
   }
 
   /**
@@ -44,7 +50,5 @@ export class EditorService {
    *
    * @param mechanism mechanism to be added
    */
-  addMechanism(mechanism: Mechanism) {
-    this._listMechanisms.push(mechanism);
-  }
+  addMechanism(mechanism: Mechanism) {}
 }

@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { EditorService } from 'src/app/core/editor-service';
 import { BasicRenderService } from 'src/app/services/BasicRenderService';
 
 @Component({
@@ -10,24 +11,24 @@ export class SceneViewComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('rCanvas', { static: true })
   canvasRef!: ElementRef<HTMLCanvasElement>;
 
-  constructor(protected readonly BasicRenderService: BasicRenderService) {}
+  constructor(protected readonly basicRenderService: BasicRenderService) {}
 
   ngOnInit(): void {
-    this.initScene();
+    this.initSceneAndEditor();
   }
 
-  initScene() {
-    this.BasicRenderService.createScene(this.canvasRef);
+  initSceneAndEditor() {
+    this.basicRenderService.createScene(this.canvasRef);
   }
 
   ngAfterViewInit(): void {
     // start the engine
     // be aware that we have to setup the scene before
-    this.BasicRenderService.start(true);
+    this.basicRenderService.start(true);
   }
 
   ngOnDestroy(): void {
     // stop the engine and clean up
-    this.BasicRenderService.stop();
+    this.basicRenderService.stop();
   }
 }
