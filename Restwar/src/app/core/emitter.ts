@@ -36,6 +36,19 @@ export class Emitter<T> {
   }
 
   /**
+   * Checks, whether a given string exists or not
+   * @param name name of the string to be checked
+   * @returns true, if string exists, false otherwise
+   */
+  public exist(name: string): boolean {
+    if (this.subjects.hasOwnProperty(name)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
    * Registers a handler for a given event
    *
    * @param name name of the event
@@ -60,5 +73,15 @@ export class Emitter<T> {
       this.subjects[name].complete();
       delete this.subjects[name];
     }
+  }
+
+  /**
+   * Completes all subjects
+   */
+  public complete(): void {
+    Object.keys(this.subjects).forEach((key) => {
+      this.subjects[key].complete();
+      delete this.subjects[key];
+    });
   }
 }
