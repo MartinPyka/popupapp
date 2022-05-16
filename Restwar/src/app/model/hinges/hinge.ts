@@ -1,5 +1,6 @@
 import { ActionManager, ExecuteCodeAction, Material, Mesh, MeshBuilder, Scene, Vector3, Action } from '@babylonjs/core';
 import { Subject, Subscription, throwIfEmpty } from 'rxjs';
+import { Channel } from 'src/app/core/channels';
 import { MaterialService } from 'src/app/materials/material-service';
 import { TransformObject3D } from '../abstract/transform.object3d';
 import { IModelDisposable } from '../interfaces/interfaces';
@@ -44,9 +45,6 @@ export abstract class Hinge extends TransformObject3D implements IModelDisposabl
 
   readonly actionList: Action[];
 
-  protected materialDefault: Material;
-  protected materialSelected: Material;
-
   /**
    * mesh that repesents the hinge
    */
@@ -68,7 +66,6 @@ export abstract class Hinge extends TransformObject3D implements IModelDisposabl
     // degree fold
     this.rightTransform.transform.rotation.y = Math.PI;
 
-    this.configureMaterials();
     this.createGeometry(scene);
     this.registerEvents();
   }
@@ -120,16 +117,7 @@ export abstract class Hinge extends TransformObject3D implements IModelDisposabl
     this.mesh.parent = this.transform;
     // rotate the hinge by 90° into its standard orientation
     this.mesh.rotate(new Vector3(0, 0, 1), Math.PI / 2);
-    this.mesh.material = this.materialDefault;
-  }
-
-  /**
-   * configures the materials for the hinge. They are loaded from
-   * a static class
-   */
-  protected configureMaterials() {
-    this.materialDefault = MaterialService.matHingeDefault;
-    this.materialSelected = MaterialService.matHingeSelected;
+    this.mesh.material = MaterialService.matHingeDefault;
   }
 
   /**
@@ -140,15 +128,23 @@ export abstract class Hinge extends TransformObject3D implements IModelDisposabl
 
     this.actionList.push(
       new ExecuteCodeAction(ActionManager.OnPointerOverTrigger, (evt) => {
-        this.mesh.material = this.materialSelected;
+        this.mesh.material = MaterialService.matHingeMouseOver;
       })
     );
     this.actionList.push(
       new ExecuteCodeAction(ActionManager.OnPointerOutTrigger, (evt) => {
-        this.mesh.material = this.materialDefault;
+        this.mesh.material = MaterialService.matHingeSelectable;
       })
     );
 
-    this.actionList.forEach((action) => this.mesh.actionManager?.registerAction(action));
+    this.editorService.registerSelection(Channel.SELECTION_HINGE, (value: boolean) => {
+      if (value) {
+        this.actionList.forEach((action) => this.mesh.actionManager?.registerAction(action));
+        this.mesh.material = MaterialService.matHingeSelectable;
+      } else {
+        this.actionList.forEach((action) => this.mesh.actionManager?.unregisterAction(action));
+        this.mesh.material = MaterialService.matHingeDefault;
+      }
+    });
   }
 }

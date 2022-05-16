@@ -1,5 +1,6 @@
 import { TransformNode } from '@babylonjs/core';
-import { Subject } from 'rxjs';
+import { AppInjector } from 'src/app/app.module';
+import { EditorService } from 'src/app/core/editor-service';
 import { Object3D } from './object3d';
 
 /**
@@ -9,6 +10,9 @@ import { Object3D } from './object3d';
 export class TransformObject3D extends Object3D {
   // parent can be changed via getter and setter
   private _parent: TransformObject3D | null;
+
+  // editorSerivce via AppInjector
+  protected editorService: EditorService;
 
   public get parent(): TransformObject3D | null {
     return this._parent;
@@ -41,5 +45,6 @@ export class TransformObject3D extends Object3D {
     super();
     this._transform = new TransformNode('transform');
     this.parent = parent;
+    this.editorService = AppInjector.get(EditorService);
   }
 }

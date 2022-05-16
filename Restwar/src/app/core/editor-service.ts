@@ -1,12 +1,12 @@
 import { Injectable, Type } from '@angular/core';
 import { Scene } from '@babylonjs/core';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { Behavior } from '../behaviors/behavior';
 import { IBehaviorCollection, IModelDisposable } from '../model/interfaces/interfaces';
 import { Mechanism } from '../model/mechanisms/mechanism';
 import { BasicRenderService } from '../services/BasicRenderService';
 import { Construction } from './construction';
-import { Emitter } from './emitter';
+import { SwitchPanel } from './switchpanel';
 
 /** this is the main class for all communication that takes place between all
  * UI elements, the model and the UI-elements within the 3D-view. It manages basically
@@ -18,13 +18,19 @@ import { Emitter } from './emitter';
 })
 export class EditorService implements IBehaviorCollection, IModelDisposable {
   /**
-   * Emitter for activating and deactivating all kinds of selection modes.
-   * Custom behaviors can be written that introduce new selection modes,
+   * Emitter for activating and deactivating all kinds of work modes.
+   * Custom behaviors can be written that introduce new work modes,
    * to which Object3D-behaviors can listen to.
    */
-  readonly onSelectionMode: Emitter<boolean>;
+  readonly onWorkMode: SwitchPanel;
 
-  // an event that fires, when the Object3D is diposed
+  /**
+   * Emitter for various selection modes that make parts of the construction
+   * visible / selectable
+   */
+  private readonly _onSelectionMode: SwitchPanel;
+
+  // an event that fires, when the EditorService is diposed
   readonly onDispose: Subject<void>;
 
   private _construction: Construction;
@@ -32,10 +38,10 @@ export class EditorService implements IBehaviorCollection, IModelDisposable {
   private _behaviorList: Behavior[];
 
   /**
-   * stores the string of the current selection mode in order to
+   * stores the string of the current Work mode in order to
    * deactivate it, when the next one is activated
    */
-  private _currentSelectionMode: string;
+  private _currentWorkMode: string;
 
   public get behaviorList(): Behavior[] {
     return this._behaviorList;
@@ -51,8 +57,9 @@ export class EditorService implements IBehaviorCollection, IModelDisposable {
   }
 
   constructor(private basicRenderService: BasicRenderService) {
-    this.onSelectionMode = new Emitter<boolean>();
-    this._currentSelectionMode = '';
+    this.onWorkMode = new SwitchPanel();
+    this._onSelectionMode = new SwitchPanel();
+    this._currentWorkMode = '';
     this.onDispose = new Subject<void>();
   }
 
@@ -60,30 +67,32 @@ export class EditorService implements IBehaviorCollection, IModelDisposable {
     this._construction.dispose();
     this._behaviorList.forEach((behavior) => behavior.dispose());
 
-    this.onSelectionMode.complete();
+    this.onWorkMode.complete();
+    this._onSelectionMode.complete();
+
     this.onDispose.next();
     this.onDispose.complete();
   }
 
   /**
-   * activates the given selection mode
+   * activates the given Work mode
    * @param mode mode to be activated
    */
-  setSelectionMode(mode: string): void {
+  setWorkMode(mode: string): void {
     // if the mode does not exist, abort
-    if (!this.onSelectionMode.exist(mode)) {
+    if (!this.onWorkMode.exist(mode)) {
       return;
     }
 
-    // _currentSelectionMode could be '', therefore this check
-    if (this.onSelectionMode.exist(this._currentSelectionMode)) {
+    // _currentWorkMode could be '', therefore this check
+    if (this.onWorkMode.exist(this._currentWorkMode)) {
       // deactivate the old one
-      this.onSelectionMode.emit(this._currentSelectionMode, false);
+      this.onWorkMode.emit(this._currentWorkMode);
     }
 
     // activate the new one
-    this._currentSelectionMode = mode;
-    this.onSelectionMode.emit(this._currentSelectionMode, true);
+    this._currentWorkMode = mode;
+    this.onWorkMode.emit(this._currentWorkMode);
   }
 
   /**
@@ -137,5 +146,19 @@ export class EditorService implements IBehaviorCollection, IModelDisposable {
       behavior.dispose();
     }
     this._behaviorList = this.behaviorList.filter((behavior) => behavior.constructor.name != type.name);
+  }
+
+  /**
+   * registers an event for a given selection mode
+   * @param name Name of the selection mode
+   * @param handler handler function
+   * @returns subscription
+   */
+  public registerSelection(name: string, handler: (value: boolean) => void): Subscription {
+    return this._onSelectionMode.on(name, handler);
+  }
+
+  public triggerSelection(name: string) {
+    this._onSelectionMode.emit(name);
   }
 }

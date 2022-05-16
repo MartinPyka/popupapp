@@ -9,7 +9,8 @@ const COLOR_BACKSIDE_DEBUG = new Color3(1.0, 0.9, 0.9);
 export const COLOR_STROKE = 'black';
 
 export class MaterialService {
-  static matHingeSelected: StandardMaterial;
+  static matHingeSelectable: StandardMaterial;
+  static matHingeMouseOver: StandardMaterial;
   static matHingeDefault: StandardMaterial;
 
   static matBookletHandle: StandardMaterial;
@@ -17,12 +18,16 @@ export class MaterialService {
   static matBackSideDebug: StandardMaterial;
 
   public static initializeMaterial(scene: Scene) {
-    MaterialService.matHingeSelected = new StandardMaterial('hingeSelected', scene);
-    MaterialService.matHingeSelected.diffuseColor = COLOR_HINGE;
+    MaterialService.matHingeMouseOver = new StandardMaterial('hingeSelected', scene);
+    MaterialService.matHingeMouseOver.diffuseColor = COLOR_HINGE;
+
+    MaterialService.matHingeSelectable = new StandardMaterial('hingeSelected', scene);
+    MaterialService.matHingeSelectable.diffuseColor = COLOR_HINGE;
+    MaterialService.matHingeSelectable.alpha = 0.4;
 
     MaterialService.matHingeDefault = new StandardMaterial('hingeDefault', scene);
     MaterialService.matHingeDefault.diffuseColor = COLOR_HINGE;
-    MaterialService.matHingeDefault.alpha = 0.4;
+    MaterialService.matHingeDefault.alpha = 0.0;
 
     MaterialService.matBookletHandle = new StandardMaterial('bookletHandle', scene);
     MaterialService.matBookletHandle.diffuseColor = COLOR_BOOKLET_HANDLE;

@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorBookletControl } from 'src/app/behaviors/mechanism/Behavior.BookletControl';
+import { Channel } from 'src/app/core/channels';
+import { EditorService } from 'src/app/core/editor-service';
 import { MechanismActive } from 'src/app/model/mechanisms/mechanism.active';
 import { MechanismParallel } from 'src/app/model/mechanisms/mechanism.parallel';
 
@@ -12,7 +14,7 @@ export class FunctionbuttonsComponent implements OnInit {
   mecActive: MechanismActive;
   mecParallel: MechanismParallel;
 
-  constructor() {}
+  constructor(private editorService: EditorService) {}
 
   ngOnInit(): void {}
 
@@ -23,8 +25,16 @@ export class FunctionbuttonsComponent implements OnInit {
     this.mecActive.addBehavior(BehaviorBookletControl);
   }
 
-  addMecParallel() {
+  addPFold() {
     this.mecParallel = new MechanismParallel(this.mecActive.centerHinge);
     //this.mecParallel.addBehavior(BehaviorOrientation);
+  }
+
+  activate() {
+    this.editorService.triggerSelection(Channel.SELECTION_HINGE);
+  }
+
+  deactivate() {
+    this.editorService.triggerSelection(Channel.SELECTION_NOTHING);
   }
 }
