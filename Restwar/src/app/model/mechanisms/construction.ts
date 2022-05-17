@@ -1,7 +1,7 @@
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { IModelDisposable } from '../model/interfaces/interfaces';
-import { Mechanism } from '../model/mechanisms/mechanism';
-import { ConstructionService } from '../services/construction.service';
+import { IModelDisposable } from '../interfaces/interfaces';
+import { Mechanism } from './mechanism';
+import { ConstructionService } from '../../services/construction.service';
 
 /**
  * This class holds and manages an entire paper construction.

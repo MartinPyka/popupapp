@@ -1,5 +1,4 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { EditorService } from 'src/app/core/editor-service';
 import { BasicRenderService } from 'src/app/services/BasicRenderService';
 
 @Component({

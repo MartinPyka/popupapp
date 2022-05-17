@@ -1,7 +1,7 @@
 import { Vector3 } from '@babylonjs/core';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { AppInjector } from 'src/app/app.module';
-import { EditorService } from 'src/app/core/editor-service';
+import { EditorService } from 'src/app/services/editor.service';
 import { calc_triangle_angle } from 'src/app/utils/math';
 import { Hinge } from '../hinges/hinge';
 import { FoldForm } from '../types/FoldForm';

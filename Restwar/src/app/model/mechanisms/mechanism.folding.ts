@@ -1,6 +1,6 @@
 import { BehaviorSubject } from 'rxjs';
 import { AppInjector } from 'src/app/app.module';
-import { EditorService } from 'src/app/core/editor-service';
+import { EditorService } from 'src/app/services/editor.service';
 import { Hinge } from '../hinges/hinge';
 import { HingeActive } from '../hinges/hinge.active';
 import { IProjectable } from '../interfaces/interfaces';

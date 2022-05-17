@@ -1,7 +1,7 @@
 import { MechanismActive } from 'src/app/model/mechanisms/mechanism.active';
 import { Behavior } from '../behavior';
 import { AppInjector } from 'src/app/app.module';
-import { EditorService } from 'src/app/core/editor-service';
+import { EditorService } from 'src/app/services/editor.service';
 import { PlaneRectangle } from 'src/app/model/planes/plane.rectangle';
 import { Angle, DeepImmutableObject, Mesh, MeshBuilder, Scene, Vector2, Vector3 } from '@babylonjs/core';
 import { MaterialService } from 'src/app/materials/material-service';
@@ -18,7 +18,7 @@ const HANDLE_HEIGHT = 2;
 const HITPLANE_WIDTH = 1000;
 const HITPLANE_HEIGHT = 1000;
 
-export class BehaviorBookletControl extends Behavior implements IDisposable {
+export class BehaviorBookletControl extends Behavior<MechanismActive> implements IDisposable {
   // mechanism this behavior is operating on
   protected mechanism: MechanismActive;
 

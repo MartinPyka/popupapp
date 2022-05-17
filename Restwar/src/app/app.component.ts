@@ -1,5 +1,5 @@
 import { AfterViewInit, Component } from '@angular/core';
-import { EditorService } from './core/editor-service';
+import { EditorService } from './services/editor.service';
 
 @Component({
   selector: 'app-root',

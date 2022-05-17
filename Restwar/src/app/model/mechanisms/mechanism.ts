@@ -12,9 +12,9 @@ export abstract class Mechanism extends Object3D implements IBehaviorCollection,
   public readonly onMouseUp: Subject<MechanismClick>;
   public readonly onMouseMove: Subject<MechanismClick>;
 
-  private _behaviorList: Behavior[];
+  private _behaviorList: Behavior<Mechanism>[];
 
-  public get behaviorList(): Behavior[] {
+  public get behaviorList(): Behavior<Mechanism>[] {
     return this._behaviorList;
   }
 
@@ -37,7 +37,7 @@ export abstract class Mechanism extends Object3D implements IBehaviorCollection,
   /**
    * @inheritdoc
    */
-  public addBehavior(type: Type<Behavior>): Behavior {
+  public addBehavior(type: Type<Behavior<Mechanism>>): Behavior<Mechanism> {
     const result = this.getBehavior(type);
     if (result) {
       return result;
@@ -51,7 +51,7 @@ export abstract class Mechanism extends Object3D implements IBehaviorCollection,
   /**
    * @inheritdoc
    */
-  public getBehavior(type: Type<Behavior>): Behavior | null {
+  public getBehavior(type: Type<Behavior<Mechanism>>): Behavior<Mechanism> | null {
     const result = this.behaviorList.filter((behavior) => behavior.constructor.name === type.name);
     if (result.length === 0) {
       return null;
@@ -63,7 +63,7 @@ export abstract class Mechanism extends Object3D implements IBehaviorCollection,
   /**
    * @inheritdoc
    */
-  public removeBehavior(type: Type<Behavior>): void {
+  public removeBehavior(type: Type<Behavior<Mechanism>>): void {
     const behavior = this.getBehavior(type);
     if (behavior) {
       behavior.dispose();

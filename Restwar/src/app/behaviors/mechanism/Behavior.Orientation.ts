@@ -1,10 +1,13 @@
 import { AppInjector } from 'src/app/app.module';
-import { EditorService } from 'src/app/core/editor-service';
+import { EditorService } from 'src/app/services/editor.service';
 import { MechanismFolding } from 'src/app/model/mechanisms/mechanism.folding';
 import { AxisObject } from 'src/app/model/utils/AxisObject';
 import { Behavior } from '../behavior';
 
-export class BehaviorOrientation extends Behavior {
+/**
+ * Adds orientation axis to a given object
+ */
+export class BehaviorOrientation extends Behavior<MechanismFolding> {
   protected mechanism: MechanismFolding;
 
   protected axisLeft: AxisObject;

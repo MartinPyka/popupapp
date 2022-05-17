@@ -4,9 +4,9 @@ import { Subject, Subscription } from 'rxjs';
 import { Behavior } from '../behaviors/behavior';
 import { IBehaviorCollection, IModelDisposable } from '../model/interfaces/interfaces';
 import { Mechanism } from '../model/mechanisms/mechanism';
-import { BasicRenderService } from '../services/BasicRenderService';
-import { Construction } from './construction';
-import { SwitchPanel } from './switchpanel';
+import { BasicRenderService } from './BasicRenderService';
+import { Construction } from '../model/mechanisms/construction';
+import { SwitchPanel } from '../core/switchpanel';
 
 /** this is the main class for all communication that takes place between all
  * UI elements, the model and the UI-elements within the 3D-view. It manages basically
@@ -35,7 +35,7 @@ export class EditorService implements IBehaviorCollection, IModelDisposable {
 
   private _construction: Construction;
 
-  private _behaviorList: Behavior[];
+  private _behaviorList: Behavior<EditorService>[];
 
   /**
    * stores the string of the current Work mode in order to
@@ -43,7 +43,7 @@ export class EditorService implements IBehaviorCollection, IModelDisposable {
    */
   private _currentWorkMode: string;
 
-  public get behaviorList(): Behavior[] {
+  public get behaviorList(): Behavior<EditorService>[] {
     return this._behaviorList;
   }
 
@@ -114,7 +114,7 @@ export class EditorService implements IBehaviorCollection, IModelDisposable {
   /**
    * @inheritdoc
    */
-  public addBehavior(type: Type<Behavior>): Behavior {
+  public addBehavior(type: Type<Behavior<EditorService>>): Behavior<EditorService> {
     const result = this.getBehavior(type);
     if (result) {
       return result;
@@ -128,7 +128,7 @@ export class EditorService implements IBehaviorCollection, IModelDisposable {
   /**
    * @inheritdoc
    */
-  public getBehavior(type: Type<Behavior>): Behavior | null {
+  public getBehavior(type: Type<Behavior<EditorService>>): Behavior<EditorService> | null {
     const result = this.behaviorList.filter((behavior) => behavior.constructor.name === type.name);
     if (result.length === 0) {
       return null;
@@ -140,7 +140,7 @@ export class EditorService implements IBehaviorCollection, IModelDisposable {
   /**
    * @inheritdoc
    */
-  public removeBehavior(type: Type<Behavior>): void {
+  public removeBehavior(type: Type<Behavior<EditorService>>): void {
     const behavior = this.getBehavior(type);
     if (behavior) {
       behavior.dispose();

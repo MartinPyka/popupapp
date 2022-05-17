@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorBookletControl } from 'src/app/behaviors/mechanism/Behavior.BookletControl';
 import { Channel } from 'src/app/core/channels';
-import { EditorService } from 'src/app/core/editor-service';
+import { EditorService } from 'src/app/services/editor.service';
 import { MechanismActive } from 'src/app/model/mechanisms/mechanism.active';
 import { MechanismParallel } from 'src/app/model/mechanisms/mechanism.parallel';
 

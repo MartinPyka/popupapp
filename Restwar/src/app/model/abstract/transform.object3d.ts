@@ -1,6 +1,6 @@
 import { TransformNode } from '@babylonjs/core';
 import { AppInjector } from 'src/app/app.module';
-import { EditorService } from 'src/app/core/editor-service';
+import { EditorService } from 'src/app/services/editor.service';
 import { Object3D } from './object3d';
 
 /**
