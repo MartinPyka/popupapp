@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { Behavior } from 'src/app/behaviors/behavior';
 import { Face } from '../abstract/face';
 import { Plane } from '../abstract/plane';
+import { Hinge } from '../hinges/hinge';
 import { Mechanism } from '../mechanisms/mechanism';
 
 /**
@@ -19,7 +20,7 @@ export interface IModelDisposable extends IDisposable {
  */
 export interface IBehaviorCollection {
   /** list of behaviors */
-  readonly behaviorList: Behavior[];
+  readonly behaviorList: Behavior<any>[];
 
   /**
    * using generics in this manner allows the user to enter a type
@@ -35,20 +36,20 @@ export interface IBehaviorCollection {
    * @param type Type of the behavior to be added
    * @returns instance of the behavior
    */
-  addBehavior(type: Type<Behavior>): Behavior;
+  addBehavior(type: Type<Behavior<any>>): Behavior<any>;
 
   /**
    * Returns the behavior from the list
    * @param type Type of the behavior
    * @returns the instance of the behavior if it exists
    */
-  getBehavior(type: Type<Behavior>): Behavior | null;
+  getBehavior(type: Type<Behavior<any>>): Behavior<any> | null;
 
   /**
    * removes the behavior from the list, if it exists
    * @param type the behavior to be removed
    */
-  removeBehavior(type: Type<Behavior>): void;
+  removeBehavior(type: Type<Behavior<any>>): void;
 }
 
 /**
@@ -89,7 +90,6 @@ export interface Click {
  */
 export interface FaceClick extends Click {
   face: Face;
-  event: ActionEvent;
 }
 
 /**
@@ -131,4 +131,18 @@ export interface PlaneMove extends FaceMove {
 
 export interface PlaneUp extends FaceUp {
   plane: Plane;
+}
+
+export interface HingeClick extends Click {
+  hinge: Hinge;
+}
+
+export interface HingeMove {
+  hinge: Hinge;
+  event: PointerInfo;
+}
+
+export interface HingeUp {
+  hinge: Hinge;
+  event: PointerInfo;
 }
