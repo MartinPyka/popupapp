@@ -179,7 +179,6 @@ export abstract class Hinge extends TransformObject3D implements IModelDisposabl
 
     this.actionList.push(
       new ExecuteCodeAction(ActionManager.OnPickDownTrigger, (evt) => {
-        console.log('Hinge-Click registered');
         // if there is an old instance of moveEvent, remove it
         if (moveEvent) {
           this.mesh.getScene().onPointerObservable.remove(moveEvent);
