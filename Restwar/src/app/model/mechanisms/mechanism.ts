@@ -2,15 +2,25 @@ import { Type } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Behavior } from 'src/app/behaviors/behavior';
 import { Object3D } from '../abstract/object3d';
-import { IBehaviorCollection, IClickable, IModelDisposable, MechanismClick } from '../interfaces/interfaces';
+import {
+  IBehaviorCollection,
+  IClickable,
+  IModelDisposable,
+  MechanismFaceClick,
+  MechanismHingeClick,
+} from '../interfaces/interfaces';
 
 /**
  * Generic class for all kinds of mechanisms
  */
-export abstract class Mechanism extends Object3D implements IBehaviorCollection, IClickable {
-  public readonly onMouseDown: Subject<MechanismClick>;
-  public readonly onMouseUp: Subject<MechanismClick>;
-  public readonly onMouseMove: Subject<MechanismClick>;
+export abstract class Mechanism extends Object3D implements IBehaviorCollection {
+  public readonly onFaceDown: Subject<MechanismFaceClick>;
+  public readonly onFaceUp: Subject<MechanismFaceClick>;
+  public readonly onFaceMove: Subject<MechanismFaceClick>;
+
+  public readonly onHingeDown: Subject<MechanismHingeClick>;
+  public readonly onHingeUp: Subject<MechanismHingeClick>;
+  public readonly onHingeMove: Subject<MechanismHingeClick>;
 
   private _behaviorList: Behavior<Mechanism>[];
 
@@ -20,7 +30,12 @@ export abstract class Mechanism extends Object3D implements IBehaviorCollection,
 
   constructor() {
     super();
-    this.onMouseDown = new Subject<MechanismClick>();
+    this.onFaceDown = new Subject<MechanismFaceClick>();
+    this.onFaceUp = new Subject<MechanismFaceClick>();
+    this.onFaceMove = new Subject<MechanismFaceClick>();
+    this.onHingeDown = new Subject<MechanismHingeClick>();
+    this.onHingeUp = new Subject<MechanismHingeClick>();
+    this.onHingeMove = new Subject<MechanismHingeClick>();
     this._behaviorList = [];
   }
 
@@ -29,9 +44,10 @@ export abstract class Mechanism extends Object3D implements IBehaviorCollection,
 
     this.behaviorList.forEach((behavior) => behavior.dispose());
 
-    this.onMouseDown.complete();
-    this.onMouseUp.complete();
-    this.onMouseMove.complete();
+    this.onFaceDown.complete();
+    this.onHingeDown.complete();
+    //this.onFaceUp.complete();
+    //this.onFaceMove.complete();
   }
 
   /**

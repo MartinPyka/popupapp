@@ -1,4 +1,4 @@
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, takeUntil } from 'rxjs';
 import { AppInjector } from 'src/app/app.module';
 import { EditorService } from 'src/app/services/editor.service';
 import { Hinge } from '../hinges/hinge';
@@ -68,6 +68,8 @@ export abstract class MechanismFolding extends Mechanism implements IProjectable
 
     this.offset = new BehaviorSubject<number>(DEFAULT_OFFSET);
     this.foldingForm = new BehaviorSubject<FoldForm>(DEFAULT_FOLDFORM);
+
+    this.registerBasicEvents();
   }
 
   override dispose(): void {
@@ -89,5 +91,27 @@ export abstract class MechanismFolding extends Mechanism implements IProjectable
 
   public projectDownSide(): paper.Item {
     return new paper.Item();
+  }
+
+  private registerBasicEvents() {
+    this.leftSide.onMouseDown
+      .pipe(takeUntil(this.onDispose))
+      .subscribe((planeClick) => this.onFaceDown.next({ ...planeClick, mechanism: this }));
+
+    this.rightSide.onMouseDown
+      .pipe(takeUntil(this.onDispose))
+      .subscribe((planeClick) => this.onFaceDown.next({ ...planeClick, mechanism: this }));
+
+    this.leftHinge.onMouseDown
+      .pipe(takeUntil(this.onDispose))
+      .subscribe((hingeClick) => this.onHingeDown.next({ ...hingeClick, mechanism: this }));
+
+    this.rightHinge.onMouseDown
+      .pipe(takeUntil(this.onDispose))
+      .subscribe((hingeClick) => this.onHingeDown.next({ ...hingeClick, mechanism: this }));
+
+    this.centerHinge.onMouseDown
+      .pipe(takeUntil(this.onDispose))
+      .subscribe((hingeClick) => this.onHingeDown.next({ ...hingeClick, mechanism: this }));
   }
 }

@@ -1,8 +1,13 @@
 import { Injectable, Type } from '@angular/core';
 import { Scene } from '@babylonjs/core';
-import { Subject, Subscription } from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 import { Behavior } from '../behaviors/behavior';
-import { IBehaviorCollection, IModelDisposable } from '../model/interfaces/interfaces';
+import {
+  IBehaviorCollection,
+  IModelDisposable,
+  MechanismFaceClick,
+  MechanismHingeClick,
+} from '../model/interfaces/interfaces';
 import { Mechanism } from '../model/mechanisms/mechanism';
 import { BasicRenderService } from './BasicRenderService';
 import { Construction } from '../model/mechanisms/construction';
@@ -22,7 +27,7 @@ export class EditorService implements IBehaviorCollection, IModelDisposable {
    * Custom behaviors can be written that introduce new work modes,
    * to which Object3D-behaviors can listen to.
    */
-  readonly onWorkMode: SwitchPanel;
+  private readonly _onWorkMode: SwitchPanel;
 
   /**
    * Emitter for various selection modes that make parts of the construction
@@ -36,12 +41,6 @@ export class EditorService implements IBehaviorCollection, IModelDisposable {
   private _construction: Construction;
 
   private _behaviorList: Behavior<EditorService>[];
-
-  /**
-   * stores the string of the current Work mode in order to
-   * deactivate it, when the next one is activated
-   */
-  private _currentWorkMode: string;
 
   public get behaviorList(): Behavior<EditorService>[] {
     return this._behaviorList;
@@ -57,17 +56,17 @@ export class EditorService implements IBehaviorCollection, IModelDisposable {
   }
 
   constructor(private basicRenderService: BasicRenderService) {
-    this.onWorkMode = new SwitchPanel();
+    this._onWorkMode = new SwitchPanel();
     this._onSelectionMode = new SwitchPanel();
-    this._currentWorkMode = '';
     this.onDispose = new Subject<void>();
+    this._behaviorList = [];
   }
 
   dispose(): void {
     this._construction.dispose();
     this._behaviorList.forEach((behavior) => behavior.dispose());
 
-    this.onWorkMode.complete();
+    this._onWorkMode.complete();
     this._onSelectionMode.complete();
 
     this.onDispose.next();
@@ -79,20 +78,17 @@ export class EditorService implements IBehaviorCollection, IModelDisposable {
    * @param mode mode to be activated
    */
   setWorkMode(mode: string): void {
-    // if the mode does not exist, abort
-    if (!this.onWorkMode.exist(mode)) {
-      return;
-    }
-
-    // _currentWorkMode could be '', therefore this check
-    if (this.onWorkMode.exist(this._currentWorkMode)) {
-      // deactivate the old one
-      this.onWorkMode.emit(this._currentWorkMode);
-    }
-
     // activate the new one
-    this._currentWorkMode = mode;
-    this.onWorkMode.emit(this._currentWorkMode);
+    this._onWorkMode.emit(mode);
+  }
+
+  /**
+   * registers a new working mode
+   * @param mode
+   * @param handler
+   */
+  registerWorkMode(mode: string, handler: (value: boolean) => void) {
+    this._onWorkMode.on(mode, handler);
   }
 
   /**
@@ -109,7 +105,9 @@ export class EditorService implements IBehaviorCollection, IModelDisposable {
    *
    * @param mechanism mechanism to be added
    */
-  addMechanism(mechanism: Mechanism) {}
+  addMechanism(mechanism: Mechanism) {
+    this._construction.add(mechanism);
+  }
 
   /**
    * @inheritdoc
@@ -158,7 +156,21 @@ export class EditorService implements IBehaviorCollection, IModelDisposable {
     return this._onSelectionMode.on(name, handler);
   }
 
+  /**
+   * sends out a signal for a selection mode. All 3d objects listen to this. If there
+   * key word is used, they react. Keywords are stored in Channel.ts. With the key word technique
+   * the selection modes can be easily extended
+   * @param name
+   */
   public triggerSelection(name: string) {
     this._onSelectionMode.emit(name);
+  }
+
+  public onFaceDown(): Observable<MechanismFaceClick> {
+    return this._construction.onFaceDown;
+  }
+
+  public onHingeDown(): Observable<MechanismHingeClick> {
+    return this._construction.onHingeDown;
   }
 }

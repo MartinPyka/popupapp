@@ -102,7 +102,11 @@ export interface PlaneClick extends FaceClick {
 /**
  * Interface for a mechanism click event
  */
-export interface MechanismClick extends PlaneClick {
+export interface MechanismFaceClick extends PlaneClick {
+  mechanism: Mechanism;
+}
+
+export interface MechanismHingeClick extends HingeClick {
   mechanism: Mechanism;
 }
 

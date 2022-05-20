@@ -26,8 +26,9 @@ export class FunctionbuttonsComponent implements OnInit {
   }
 
   addPFold() {
-    this.mecParallel = new MechanismParallel(this.mecActive.centerHinge);
+    //this.mecParallel = new MechanismParallel(this.mecActive.centerHinge);
     //this.mecParallel.addBehavior(BehaviorOrientation);
+    this.editorService.setWorkMode(Channel.WORK_PFold);
   }
 
   activate() {

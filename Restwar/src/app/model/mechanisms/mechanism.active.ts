@@ -182,10 +182,14 @@ export class MechanismActive extends Mechanism implements IProjectable {
 
     this.leftSide.onMouseDown
       .pipe(takeUntil(this.onDispose))
-      .subscribe((planeClick) => this.onMouseDown.next({ ...planeClick, mechanism: this }));
+      .subscribe((planeClick) => this.onFaceDown.next({ ...planeClick, mechanism: this }));
 
     this.rightSide.onMouseDown
       .pipe(takeUntil(this.onDispose))
-      .subscribe((planeClick) => this.onMouseDown.next({ ...planeClick, mechanism: this }));
+      .subscribe((planeClick) => this.onFaceDown.next({ ...planeClick, mechanism: this }));
+
+    this.centerHinge.onMouseDown
+      .pipe(takeUntil(this.onDispose))
+      .subscribe((hingeClick) => this.onHingeDown.next({ ...hingeClick, mechanism: this }));
   }
 }

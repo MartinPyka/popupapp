@@ -1,4 +1,5 @@
 import { AfterViewInit, Component } from '@angular/core';
+import { AddPFoldBehavior } from './services/editor.behaviors/addPFold.behavior';
 import { EditorService } from './services/editor.service';
 
 @Component({
@@ -11,5 +12,6 @@ export class AppComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.editorService.createEditorService();
+    this.editorService.addBehavior(AddPFoldBehavior);
   }
 }
