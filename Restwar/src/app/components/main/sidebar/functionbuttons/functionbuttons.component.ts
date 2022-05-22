@@ -31,6 +31,10 @@ export class FunctionbuttonsComponent implements OnInit {
     this.editorService.setWorkMode(Channel.WORK_PFold);
   }
 
+  addVFold() {
+    this.editorService.setWorkMode(Channel.WORK_NOTHING);
+  }
+
   activate() {
     this.editorService.triggerSelection(Channel.SELECTION_HINGE);
   }

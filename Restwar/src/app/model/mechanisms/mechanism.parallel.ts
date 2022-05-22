@@ -71,6 +71,11 @@ export class MechanismParallel extends MechanismFolding {
    */
   protected beta: number;
 
+  /**
+   * angle of the triangle consisting of the b and d
+   */
+  protected gamma: number;
+
   protected alpha_under: number;
   protected beta_under: number;
 
@@ -149,6 +154,7 @@ export class MechanismParallel extends MechanismFolding {
 
     this.leftSide.height.next(this.d_side);
     this.rightSide.height.next(this.b_side);
+    this.centerHinge.transform.position.y = this.d_side;
   }
 
   /**
@@ -204,6 +210,8 @@ export class MechanismParallel extends MechanismFolding {
     // calculate the angle between distance and the plane on the right side
     this.beta_under = calc_triangle_angle(this.leftDistance.getValue(), this.rightDistance.getValue(), hinge_distance);
 
+    this.gamma = calc_triangle_angle(hinge_distance, this.d_side, this.b_side);
+
     if (this.foldingForm.getValue().TopFoldSwitch) {
       this.fold_angle_alpha = this.alpha - this.alpha_under;
       this.fold_angle_beta = this.beta - this.beta_under;
@@ -222,6 +230,7 @@ export class MechanismParallel extends MechanismFolding {
   protected calcFoldPosition0to180And360to180() {
     this.leftHinge.rightAngle = -180 + this.fold_angle_alpha;
     this.rightHinge.leftAngle = -180 + this.fold_angle_beta;
+    this.centerHinge.rightAngle = -this.gamma;
     /*
     this.LeftSide.transform.localRotation = 
         Quaternion.Euler(

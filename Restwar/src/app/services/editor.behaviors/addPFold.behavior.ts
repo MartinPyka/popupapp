@@ -1,5 +1,6 @@
 import { takeUntil } from 'rxjs';
 import { EditorBehavior } from 'src/app/behaviors/editor.behavior';
+import { BehaviorOrientation } from 'src/app/behaviors/mechanism/Behavior.Orientation';
 import { Channel } from 'src/app/core/channels';
 import { MechanismHingeClick } from 'src/app/model/interfaces/interfaces';
 import { MechanismParallel } from 'src/app/model/mechanisms/mechanism.parallel';
@@ -34,6 +35,8 @@ export class AddPFoldBehavior extends EditorBehavior {
 
   onHingeSelected(mechanismHingeClick: MechanismHingeClick) {
     this.editorService.triggerSelection(Channel.SELECTION_NOTHING);
-    this.editorService.addMechanism(new MechanismParallel(mechanismHingeClick.hinge));
+    const mec = new MechanismParallel(mechanismHingeClick.hinge);
+    mec.addBehavior(BehaviorOrientation);
+    this.editorService.addMechanism(mec);
   }
 }

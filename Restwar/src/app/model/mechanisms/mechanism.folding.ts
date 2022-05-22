@@ -1,6 +1,7 @@
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { AppInjector } from 'src/app/app.module';
 import { EditorService } from 'src/app/services/editor.service';
+import { deg2rad } from 'src/app/utils/math';
 import { Hinge } from '../hinges/hinge';
 import { HingeActive } from '../hinges/hinge.active';
 import { IProjectable } from '../interfaces/interfaces';
@@ -62,6 +63,7 @@ export abstract class MechanismFolding extends Mechanism implements IProjectable
 
     /* the center hinge is assigned to the right side of the left hinge */
     this.centerHinge = new HingeActive(this.leftHinge.rightTransform, scene);
+    this.centerHinge.transform.rotation.x = deg2rad(180.0);
 
     this.leftSide = new PlaneRectangle(DEFAULT_WIDTH, DEFAULT_HEIGHT, scene, this.leftHinge.rightTransform, true);
     this.rightSide = new PlaneRectangle(DEFAULT_WIDTH, DEFAULT_HEIGHT, scene, this.rightHinge.leftTransform, true);
