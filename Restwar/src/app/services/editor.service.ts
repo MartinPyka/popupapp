@@ -109,6 +109,10 @@ export class EditorService implements IBehaviorCollection, IModelDisposable {
     this._construction.add(mechanism);
   }
 
+  removeMechanism(mechanism: Mechanism) {
+    this._construction.remove(mechanism);
+  }
+
   /**
    * @inheritdoc
    */

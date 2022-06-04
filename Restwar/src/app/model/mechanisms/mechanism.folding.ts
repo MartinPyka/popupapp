@@ -87,6 +87,16 @@ export abstract class MechanismFolding extends Mechanism implements IProjectable
     this.foldingForm.complete();
   }
 
+  override visible(value: boolean): void {
+    this.leftSide.visible(value);
+    this.rightSide.visible(value);
+
+    this.leftHinge.visible(value);
+    this.rightHinge.visible(value);
+    this.centerHinge.visible(value);
+    super.visible(false);
+  }
+
   public projectTopSide(): paper.Item {
     return new paper.Item();
   }

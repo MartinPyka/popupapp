@@ -44,4 +44,8 @@ export abstract class Face extends TransformObject3D implements IClickable {
   setParent(parent: TransformNode) {
     this.mesh.parent = parent;
   }
+
+  override visible(value: boolean): void {
+    this.mesh.isVisible = value;
+  }
 }

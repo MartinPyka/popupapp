@@ -2,13 +2,7 @@ import { Type } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Behavior } from 'src/app/behaviors/behavior';
 import { Object3D } from '../abstract/object3d';
-import {
-  IBehaviorCollection,
-  IClickable,
-  IModelDisposable,
-  MechanismFaceClick,
-  MechanismHingeClick,
-} from '../interfaces/interfaces';
+import { IBehaviorCollection, MechanismFaceClick, MechanismHingeClick } from '../interfaces/interfaces';
 
 /**
  * Generic class for all kinds of mechanisms
@@ -21,6 +15,9 @@ export abstract class Mechanism extends Object3D implements IBehaviorCollection 
   public readonly onHingeDown: Subject<MechanismHingeClick>;
   public readonly onHingeUp: Subject<MechanismHingeClick>;
   public readonly onHingeMove: Subject<MechanismHingeClick>;
+
+  // fires, when the mechanism becomes invisible
+  public readonly onInvisible: Subject<void>;
 
   private _behaviorList: Behavior<Mechanism>[];
 
@@ -36,6 +33,7 @@ export abstract class Mechanism extends Object3D implements IBehaviorCollection 
     this.onHingeDown = new Subject<MechanismHingeClick>();
     this.onHingeUp = new Subject<MechanismHingeClick>();
     this.onHingeMove = new Subject<MechanismHingeClick>();
+    this.onInvisible = new Subject<void>();
     this._behaviorList = [];
   }
 
@@ -45,9 +43,21 @@ export abstract class Mechanism extends Object3D implements IBehaviorCollection 
     this.behaviorList.forEach((behavior) => behavior.dispose());
 
     this.onFaceDown.complete();
+    this.onFaceUp.complete();
+    this.onFaceMove.complete();
+
     this.onHingeDown.complete();
-    //this.onFaceUp.complete();
-    //this.onFaceMove.complete();
+    this.onHingeUp.complete();
+    this.onHingeMove.complete();
+
+    this.onInvisible.complete();
+  }
+
+  public override visible(value: boolean): void {
+    super.visible(value);
+    if (!value) {
+      this.onInvisible.next();
+    }
   }
 
   /**

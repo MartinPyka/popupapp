@@ -101,23 +101,39 @@ export class Construction implements IModelDisposable {
    */
   public add(mechanism: Mechanism): void {
     mechanism.onFaceDown
-      .pipe(takeUntil(this.onDispose))
+      .pipe(takeUntil(this.onDispose), takeUntil(mechanism.onInvisible))
       .subscribe((mechanismFaceClick) => this._onFaceDown.next(mechanismFaceClick));
     mechanism.onFaceUp
-      .pipe(takeUntil(this.onDispose))
+      .pipe(takeUntil(this.onDispose), takeUntil(mechanism.onInvisible))
       .subscribe((mechanismFaceClick) => this._onFaceUp.next(mechanismFaceClick));
     mechanism.onFaceMove
-      .pipe(takeUntil(this.onDispose))
+      .pipe(takeUntil(this.onDispose), takeUntil(mechanism.onInvisible))
       .subscribe((mechanismFaceClick) => this._onFaceMove.next(mechanismFaceClick));
     mechanism.onHingeDown
-      .pipe(takeUntil(this.onDispose))
+      .pipe(takeUntil(this.onDispose), takeUntil(mechanism.onInvisible))
       .subscribe((mechanismHingeClick) => this._onHingeDown.next(mechanismHingeClick));
     mechanism.onHingeUp
-      .pipe(takeUntil(this.onDispose))
+      .pipe(takeUntil(this.onDispose), takeUntil(mechanism.onInvisible))
       .subscribe((mechanismHingeClick) => this._onHingeUp.next(mechanismHingeClick));
     mechanism.onHingeMove
-      .pipe(takeUntil(this.onDispose))
+      .pipe(takeUntil(this.onDispose), takeUntil(mechanism.onInvisible))
       .subscribe((mechanismHingeClick) => this._onHingeMove.next(mechanismHingeClick));
     this._listMechanisms.next([...this._listMechanisms.getValue(), mechanism]);
+  }
+
+  /**
+   * Removes a mechanism from the construction list and fires the behavior subject
+   * for the listMechanism
+   * @param mechanism to be remove
+   * @returns
+   */
+  public remove(mechanism: Mechanism): void {
+    const index = this._listMechanisms.value.findIndex((value) => value.id === mechanism.id);
+    if (index === -1) {
+      return;
+    }
+    const newListMechanism = this._listMechanisms.value;
+    newListMechanism.splice(index, 1);
+    this._listMechanisms.next(newListMechanism);
   }
 }

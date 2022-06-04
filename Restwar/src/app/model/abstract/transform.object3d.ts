@@ -4,8 +4,9 @@ import { EditorService } from 'src/app/services/editor.service';
 import { Object3D } from './object3d';
 
 /**
- * Abstract class for all application-related 3d objects that have
- * a transform
+ * Class for all application-related 3d objects that have
+ * a transform. This could also be an empty. As such the transform
+ * object can be used on its own
  */
 export class TransformObject3D extends Object3D {
   // parent can be changed via getter and setter

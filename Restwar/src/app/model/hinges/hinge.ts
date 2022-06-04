@@ -112,6 +112,10 @@ export abstract class Hinge extends TransformObject3D implements IModelDisposabl
     }
   }
 
+  override visible(value: boolean) {
+    this.mesh.isVisible = value;
+  }
+
   /**
    * Determines, in which direction on the parent orientation the 0-180° degree fold
    * should be. This method is mostly used for left and right hinges.
