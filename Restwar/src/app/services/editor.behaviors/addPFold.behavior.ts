@@ -1,12 +1,9 @@
 import { takeUntil } from 'rxjs';
 import { EditorBehavior } from 'src/app/behaviors/editor.behavior';
-import { BehaviorOrientation } from 'src/app/behaviors/mechanism/Behavior.Orientation';
 import { Channel } from 'src/app/core/channels';
 import { ClosureCommands, CommandParts } from 'src/app/core/undo/Command';
-import { CommandInvoker } from 'src/app/core/undo/CommandInvoker';
 import { MechanismHingeClick } from 'src/app/model/interfaces/interfaces';
 import { MechanismParallel } from 'src/app/model/mechanisms/mechanism.parallel';
-import { EditorService } from '../editor.service';
 
 /**
  * Behavior for adding a parallel fold to the construction

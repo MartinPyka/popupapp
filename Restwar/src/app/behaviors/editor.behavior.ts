@@ -1,4 +1,4 @@
-import { Subject, throwIfEmpty } from 'rxjs';
+import { Subject } from 'rxjs';
 import { Channel } from '../core/channels';
 import { EditorService } from '../services/editor.service';
 import { Behavior } from './behavior';
