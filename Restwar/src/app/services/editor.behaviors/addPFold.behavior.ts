@@ -29,7 +29,6 @@ export class AddPFoldBehavior extends EditorBehavior {
    * @param mechanismHingeClick
    */
   onHingeSelected(mechanismHingeClick: MechanismHingeClick) {
-    this.editorService.triggerSelection(Channel.SELECTION_NOTHING);
     const doAction = (): CommandParts => {
       const mec = new MechanismParallel(mechanismHingeClick.hinge);
       this.editorService.addMechanism(mec);
@@ -54,5 +53,6 @@ export class AddPFoldBehavior extends EditorBehavior {
       return new CommandParts(undo, redo, undefined, destroyFromRedo);
     };
     this.commandInvoker.do(new ClosureCommands(doAction));
+    this.endBehavior();
   }
 }

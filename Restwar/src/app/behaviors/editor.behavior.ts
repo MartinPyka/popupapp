@@ -47,6 +47,14 @@ export abstract class EditorBehavior extends Behavior<EditorService> {
    */
   deactivate(): void {}
 
+  /**
+   * tells the editor service, that the behavior has come to an end
+   */
+  endBehavior(): void {
+    this.editorService.triggerSelection(Channel.SELECTION_DEFAULT);
+    this.editorService.setWorkMode(Channel.WORK_DEFAULT);
+  }
+
   override dispose(): void {
     super.dispose();
     this.onActivate.complete();
