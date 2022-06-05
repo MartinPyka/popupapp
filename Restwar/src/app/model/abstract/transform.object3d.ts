@@ -1,14 +1,19 @@
 import { TransformNode } from '@babylonjs/core';
-import { Subject } from 'rxjs';
+import { AppInjector } from 'src/app/app.module';
+import { EditorService } from 'src/app/services/editor.service';
 import { Object3D } from './object3d';
 
 /**
- * Abstract class for all application-related 3d objects that have
- * a transform
+ * Class for all application-related 3d objects that have
+ * a transform. This could also be an empty. As such the transform
+ * object can be used on its own
  */
 export class TransformObject3D extends Object3D {
   // parent can be changed via getter and setter
   private _parent: TransformObject3D | null;
+
+  // editorSerivce via AppInjector
+  protected editorService: EditorService;
 
   public get parent(): TransformObject3D | null {
     return this._parent;
@@ -41,5 +46,6 @@ export class TransformObject3D extends Object3D {
     super();
     this._transform = new TransformNode('transform');
     this.parent = parent;
+    this.editorService = AppInjector.get(EditorService);
   }
 }

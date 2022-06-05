@@ -39,4 +39,9 @@ export abstract class Plane extends TransformObject3D implements IClickable {
     this.topSide.dispose();
     this.downSide.dispose();
   }
+
+  override visible(value: boolean): void {
+    this.topSide.visible(value);
+    this.downSide.visible(value);
+  }
 }

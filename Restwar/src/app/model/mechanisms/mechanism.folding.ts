@@ -1,6 +1,7 @@
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, takeUntil } from 'rxjs';
 import { AppInjector } from 'src/app/app.module';
-import { EditorService } from 'src/app/core/editor-service';
+import { EditorService } from 'src/app/services/editor.service';
+import { deg2rad } from 'src/app/utils/math';
 import { Hinge } from '../hinges/hinge';
 import { HingeActive } from '../hinges/hinge.active';
 import { IProjectable } from '../interfaces/interfaces';
@@ -62,12 +63,15 @@ export abstract class MechanismFolding extends Mechanism implements IProjectable
 
     /* the center hinge is assigned to the right side of the left hinge */
     this.centerHinge = new HingeActive(this.leftHinge.rightTransform, scene);
+    this.centerHinge.transform.rotation.x = deg2rad(180.0);
 
     this.leftSide = new PlaneRectangle(DEFAULT_WIDTH, DEFAULT_HEIGHT, scene, this.leftHinge.rightTransform, true);
     this.rightSide = new PlaneRectangle(DEFAULT_WIDTH, DEFAULT_HEIGHT, scene, this.rightHinge.leftTransform, true);
 
     this.offset = new BehaviorSubject<number>(DEFAULT_OFFSET);
     this.foldingForm = new BehaviorSubject<FoldForm>(DEFAULT_FOLDFORM);
+
+    this.registerBasicEvents();
   }
 
   override dispose(): void {
@@ -83,11 +87,43 @@ export abstract class MechanismFolding extends Mechanism implements IProjectable
     this.foldingForm.complete();
   }
 
+  override visible(value: boolean): void {
+    this.leftSide.visible(value);
+    this.rightSide.visible(value);
+
+    this.leftHinge.visible(value);
+    this.rightHinge.visible(value);
+    this.centerHinge.visible(value);
+    super.visible(false);
+  }
+
   public projectTopSide(): paper.Item {
     return new paper.Item();
   }
 
   public projectDownSide(): paper.Item {
     return new paper.Item();
+  }
+
+  private registerBasicEvents() {
+    this.leftSide.onMouseDown
+      .pipe(takeUntil(this.onDispose))
+      .subscribe((planeClick) => this.onFaceDown.next({ ...planeClick, mechanism: this }));
+
+    this.rightSide.onMouseDown
+      .pipe(takeUntil(this.onDispose))
+      .subscribe((planeClick) => this.onFaceDown.next({ ...planeClick, mechanism: this }));
+
+    this.leftHinge.onMouseDown
+      .pipe(takeUntil(this.onDispose))
+      .subscribe((hingeClick) => this.onHingeDown.next({ ...hingeClick, mechanism: this }));
+
+    this.rightHinge.onMouseDown
+      .pipe(takeUntil(this.onDispose))
+      .subscribe((hingeClick) => this.onHingeDown.next({ ...hingeClick, mechanism: this }));
+
+    this.centerHinge.onMouseDown
+      .pipe(takeUntil(this.onDispose))
+      .subscribe((hingeClick) => this.onHingeDown.next({ ...hingeClick, mechanism: this }));
   }
 }

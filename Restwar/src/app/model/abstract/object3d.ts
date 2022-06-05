@@ -26,4 +26,11 @@ export abstract class Object3D implements IModelDisposable {
     this.onDispose.next();
     this.onDispose.complete();
   }
+
+  /**
+   * Makes an object visible or invisible. This method is
+   * overwritten by classes, which actually use 3d objects
+   * @param value true, if the 3d object should be visible
+   */
+  visible(value: boolean): void {}
 }

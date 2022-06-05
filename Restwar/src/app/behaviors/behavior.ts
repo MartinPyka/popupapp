@@ -6,12 +6,12 @@ import { CommandInvoker } from '../core/undo/CommandInvoker';
 import { AppInjector } from '../app.module';
 
 /** abstract and generic class for all kinds of behaviors */
-export abstract class Behavior implements IModelDisposable {
+export abstract class Behavior<T> implements IModelDisposable {
   protected readonly commandInvoker: CommandInvoker;
 
   readonly onDispose: Subject<void>;
 
-  constructor(mechanism: Mechanism) {
+  constructor(reference: T) {
     this.onDispose = new Subject<void>();
     this.commandInvoker = AppInjector.get(CommandInvoker);
   }

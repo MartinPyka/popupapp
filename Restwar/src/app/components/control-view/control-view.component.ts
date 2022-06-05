@@ -2,6 +2,7 @@ import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { EventState, Nullable, Observer, PointerInfo, Vector3, Scene, SceneLoader } from '@babylonjs/core';
 import { BehaviorBookletControl } from 'src/app/behaviors/mechanism/Behavior.BookletControl';
 import { BehaviorOrientation } from 'src/app/behaviors/mechanism/Behavior.Orientation';
+import { EditorService } from 'src/app/services/editor.service';
 import { CommandInvoker } from 'src/app/core/undo/CommandInvoker';
 import { Cube } from 'src/app/model/cube';
 import { HingeActive } from 'src/app/model/hinges/hinge.active';
@@ -25,7 +26,11 @@ export class ControlViewComponent implements OnInit, OnDestroy, AfterViewInit {
   picked: string = '';
   sceneEvents: Nullable<Observer<PointerInfo>>;
 
-  constructor(private commandInvoker: CommandInvoker, private bsr: BasicRenderService) {}
+  constructor(
+    private commandInvoker: CommandInvoker,
+    private bsr: BasicRenderService,
+    private editorService: EditorService
+  ) {}
 
   ngOnInit(): void {}
 

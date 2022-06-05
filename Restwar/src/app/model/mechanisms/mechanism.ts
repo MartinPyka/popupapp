@@ -2,25 +2,38 @@ import { Type } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Behavior } from 'src/app/behaviors/behavior';
 import { Object3D } from '../abstract/object3d';
-import { IBehaviorCollection, IClickable, IModelDisposable, MechanismClick } from '../interfaces/interfaces';
+import { IBehaviorCollection, MechanismFaceClick, MechanismHingeClick } from '../interfaces/interfaces';
 
 /**
  * Generic class for all kinds of mechanisms
  */
-export abstract class Mechanism extends Object3D implements IBehaviorCollection, IClickable {
-  public readonly onMouseDown: Subject<MechanismClick>;
-  public readonly onMouseUp: Subject<MechanismClick>;
-  public readonly onMouseMove: Subject<MechanismClick>;
+export abstract class Mechanism extends Object3D implements IBehaviorCollection {
+  public readonly onFaceDown: Subject<MechanismFaceClick>;
+  public readonly onFaceUp: Subject<MechanismFaceClick>;
+  public readonly onFaceMove: Subject<MechanismFaceClick>;
 
-  private _behaviorList: Behavior[];
+  public readonly onHingeDown: Subject<MechanismHingeClick>;
+  public readonly onHingeUp: Subject<MechanismHingeClick>;
+  public readonly onHingeMove: Subject<MechanismHingeClick>;
 
-  public get behaviorList(): Behavior[] {
+  // fires, when the mechanism becomes invisible
+  public readonly onInvisible: Subject<void>;
+
+  private _behaviorList: Behavior<Mechanism>[];
+
+  public get behaviorList(): Behavior<Mechanism>[] {
     return this._behaviorList;
   }
 
   constructor() {
     super();
-    this.onMouseDown = new Subject<MechanismClick>();
+    this.onFaceDown = new Subject<MechanismFaceClick>();
+    this.onFaceUp = new Subject<MechanismFaceClick>();
+    this.onFaceMove = new Subject<MechanismFaceClick>();
+    this.onHingeDown = new Subject<MechanismHingeClick>();
+    this.onHingeUp = new Subject<MechanismHingeClick>();
+    this.onHingeMove = new Subject<MechanismHingeClick>();
+    this.onInvisible = new Subject<void>();
     this._behaviorList = [];
   }
 
@@ -29,15 +42,28 @@ export abstract class Mechanism extends Object3D implements IBehaviorCollection,
 
     this.behaviorList.forEach((behavior) => behavior.dispose());
 
-    this.onMouseDown.complete();
-    this.onMouseUp.complete();
-    this.onMouseMove.complete();
+    this.onFaceDown.complete();
+    this.onFaceUp.complete();
+    this.onFaceMove.complete();
+
+    this.onHingeDown.complete();
+    this.onHingeUp.complete();
+    this.onHingeMove.complete();
+
+    this.onInvisible.complete();
+  }
+
+  public override visible(value: boolean): void {
+    super.visible(value);
+    if (!value) {
+      this.onInvisible.next();
+    }
   }
 
   /**
    * @inheritdoc
    */
-  public addBehavior(type: Type<Behavior>): Behavior {
+  public addBehavior(type: Type<Behavior<Mechanism>>): Behavior<Mechanism> {
     const result = this.getBehavior(type);
     if (result) {
       return result;
@@ -51,7 +77,7 @@ export abstract class Mechanism extends Object3D implements IBehaviorCollection,
   /**
    * @inheritdoc
    */
-  public getBehavior(type: Type<Behavior>): Behavior | null {
+  public getBehavior(type: Type<Behavior<Mechanism>>): Behavior<Mechanism> | null {
     const result = this.behaviorList.filter((behavior) => behavior.constructor.name === type.name);
     if (result.length === 0) {
       return null;
@@ -63,7 +89,7 @@ export abstract class Mechanism extends Object3D implements IBehaviorCollection,
   /**
    * @inheritdoc
    */
-  public removeBehavior(type: Type<Behavior>): void {
+  public removeBehavior(type: Type<Behavior<Mechanism>>): void {
     const behavior = this.getBehavior(type);
     if (behavior) {
       behavior.dispose();
