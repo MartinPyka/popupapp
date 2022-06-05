@@ -12,27 +12,19 @@ import { EditorService } from '../editor.service';
  * Behavior for adding a parallel fold to the construction
  */
 export class AddPFoldBehavior extends EditorBehavior {
-  constructor(editorService: EditorService) {
-    super(editorService);
-    this.editorService.registerWorkMode(Channel.WORK_PFold, (value) => this.trigger(value));
-  }
+  override channelName = Channel.WORK_PFold;
 
   /**
-   * this function gets triggered, when ever someone sends something
-   * on the behavior channel
+   * this function gets triggered, when ever someone activates
+   *
    * @param value
    */
-  trigger(value: boolean) {
-    if (value) {
-      this.editorService.triggerSelection(Channel.SELECTION_HINGE);
-      this.editorService
-        .onHingeDown()
-        .pipe(takeUntil(this.onDeactivate))
-        .subscribe((mechanismHingeClick) => this.onHingeSelected(mechanismHingeClick));
-    } else {
-      this.onDeactivate.next();
-      this.editorService.triggerSelection(Channel.SELECTION_NOTHING);
-    }
+  override activate(): void {
+    this.editorService.triggerSelection(Channel.SELECTION_HINGE);
+    this.editorService
+      .onHingeDown()
+      .pipe(takeUntil(this.onDeactivate))
+      .subscribe((mechanismHingeClick) => this.onHingeSelected(mechanismHingeClick));
   }
 
   /**
