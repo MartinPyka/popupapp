@@ -1,6 +1,4 @@
-import { Mechanism } from '../model/mechanisms/mechanism';
-import { IDisposable } from '@babylonjs/core';
-import { Subject, Subscription } from 'rxjs';
+import { Subject } from 'rxjs';
 import { IModelDisposable } from '../model/interfaces/interfaces';
 import { CommandInvoker } from '../core/undo/CommandInvoker';
 import { AppInjector } from '../app.module';

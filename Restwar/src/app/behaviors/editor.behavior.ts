@@ -5,6 +5,10 @@ import { Behavior } from './behavior';
 
 /**
  * Abstract class for all behaviors that operatore on the editor service
+ *
+ * Any behavior that derives from the editor behavior 'just' needs to
+ * implement an activate() and deactivate() method and call this.endBehavior()
+ * when the behavior comes to an end. For an example, see AddPFoldBehavior
  */
 export abstract class EditorBehavior extends Behavior<EditorService> {
   // fires, when the behavior is activated
