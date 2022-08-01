@@ -24,6 +24,10 @@ export class SelectMechanismBehavior extends EditorBehavior {
       .subscribe((mechanismFaceClick) => this.onMechanismFaceClick(mechanismFaceClick));
   }
 
+  override deactivate(): void {
+    this.detachFromSelectedMechanism();
+  }
+
   /**
    * is called, whenever the user selects a face
    * @param mechanismFaceClick the structure, that defines the entire mechanism

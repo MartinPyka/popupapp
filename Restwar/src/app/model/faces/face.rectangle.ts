@@ -1,5 +1,4 @@
 import { FloatArray, MeshBuilder, Scene, Vector3, VertexBuffer } from 'babylonjs';
-import { Nullable } from 'babylonjs';
 import { BehaviorSubject, Observable, takeUntil } from 'rxjs';
 import { Face } from '../abstract/face';
 import { TransformObject3D } from '../abstract/transform.object3d';
@@ -103,7 +102,7 @@ export class FaceRectangle extends Face implements IProjectionPoints {
     this.positions = positions;
 
     this.realignMesh();
-    this.mesh.parent = this.transform;
+    this.setParent(this.transform);
   }
 
   /**

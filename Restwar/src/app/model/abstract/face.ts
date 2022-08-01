@@ -15,7 +15,7 @@ import { Subject } from 'rxjs';
 import { TransformObject3D } from './transform.object3d';
 
 /**
- * Abstract class for all objects, that represent a face mesh
+ * Abstract class for all objects, that have a mesh with onMouseDown, onMouseMove and on MouseUp-Events
  * for 3d and 2d.
  */
 export abstract class Face extends TransformObject3D implements IClickable {
@@ -52,8 +52,10 @@ export abstract class Face extends TransformObject3D implements IClickable {
     this.onMouseMove.complete();
   }
 
-  setParent(parent: TransformNode) {
-    this.mesh.parent = parent;
+  setParent(parent: TransformNode | null) {
+    if (parent) {
+      this.mesh.parent = parent;
+    }
   }
 
   override visible(value: boolean): void {
