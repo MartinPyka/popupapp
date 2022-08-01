@@ -1,4 +1,4 @@
-import { Vector3 } from '@babylonjs/core';
+import { Vector3 } from 'babylonjs';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { AppInjector } from 'src/app/app.module';
 import { EditorService } from 'src/app/services/editor.service';

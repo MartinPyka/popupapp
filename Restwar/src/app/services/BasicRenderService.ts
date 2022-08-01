@@ -16,7 +16,7 @@ import {
   SceneLoader,
   StandardMaterial,
   Vector3,
-} from '@babylonjs/core';
+} from 'babylonjs';
 import { DOCUMENT } from '@angular/common';
 import { MaterialService } from '../materials/material-service';
 

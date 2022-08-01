@@ -1,4 +1,4 @@
-import { Scene, Vector3 } from '@babylonjs/core';
+import { Scene, Vector3 } from 'babylonjs';
 import { BehaviorSubject, Subscription } from 'rxjs';
 import { deg2rad, rad2deg } from 'src/app/utils/math';
 import { Plane } from '../abstract/plane';

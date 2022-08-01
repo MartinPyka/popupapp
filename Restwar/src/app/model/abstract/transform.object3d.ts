@@ -1,4 +1,4 @@
-import { TransformNode } from '@babylonjs/core';
+import { TransformNode } from 'babylonjs';
 import { AppInjector } from 'src/app/app.module';
 import { EditorService } from 'src/app/services/editor.service';
 import { Object3D } from './object3d';

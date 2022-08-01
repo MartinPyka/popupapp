@@ -7,7 +7,7 @@ import { AppInjector } from 'src/app/app.module';
 import { IProjectable } from '../interfaces/interfaces';
 import { Path, Group, Point } from 'paper';
 import * as projection from 'src/app/utils/projection';
-import { Vector3 } from '@babylonjs/core';
+import { Vector3 } from 'babylonjs';
 import { BasicRenderService } from 'src/app/services/BasicRenderService';
 
 const DEFAULT_ANGLE_LEFT = 90;

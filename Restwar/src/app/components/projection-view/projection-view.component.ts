@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
-import { PointerEventTypes } from '@babylonjs/core';
+import { PointerEventTypes } from 'babylonjs';
 import { Project, Path, Color, Point, Group, MouseEvent } from 'paper';
 
 @Component({

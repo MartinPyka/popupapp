@@ -1,4 +1,4 @@
-import { Material } from '@babylonjs/core';
+import { Material } from 'babylonjs';
 import { Subject } from 'rxjs';
 import { IClickable, PlaneClick, PlaneMove, PlaneUp } from '../interfaces/interfaces';
 import { Face } from './face';

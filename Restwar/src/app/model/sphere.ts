@@ -1,4 +1,4 @@
-import { Vector3 } from '@babylonjs/core';
+import { Vector3 } from 'babylonjs';
 import { BasicRenderService } from '../services/BasicRenderService';
 import { Volume3D } from './abstract/volume3d';
 import { AppInjector } from 'src/app/app.module';

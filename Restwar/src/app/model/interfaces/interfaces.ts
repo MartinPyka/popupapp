@@ -1,5 +1,5 @@
 import { Type } from '@angular/core';
-import { ActionEvent, IDisposable, PointerInfo } from '@babylonjs/core';
+import { ActionEvent, IDisposable, PointerInfo } from 'babylonjs';
 import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { Behavior } from 'src/app/behaviors/behavior';
 import { Face } from '../abstract/face';

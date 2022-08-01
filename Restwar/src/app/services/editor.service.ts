@@ -1,5 +1,5 @@
 import { Injectable, Type } from '@angular/core';
-import { Scene } from '@babylonjs/core';
+import { Scene } from 'babylonjs';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { Behavior } from '../behaviors/behavior';
 import {

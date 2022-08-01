@@ -1,13 +1,4 @@
-import {
-  Color3,
-  DynamicTexture,
-  LinesMesh,
-  Mesh,
-  Scene,
-  StandardMaterial,
-  TransformNode,
-  Vector3,
-} from '@babylonjs/core';
+import { Color3, DynamicTexture, LinesMesh, Mesh, Scene, StandardMaterial, TransformNode, Vector3 } from 'babylonjs';
 import { TransformObject3D } from '../abstract/transform.object3d';
 
 export class AxisObject extends TransformObject3D {
