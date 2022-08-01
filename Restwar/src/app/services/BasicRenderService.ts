@@ -18,7 +18,6 @@ import {
   Vector3,
 } from '@babylonjs/core';
 import { DOCUMENT } from '@angular/common';
-import '@babylonjs/inspector';
 import { MaterialService } from '../materials/material-service';
 
 @Injectable({
