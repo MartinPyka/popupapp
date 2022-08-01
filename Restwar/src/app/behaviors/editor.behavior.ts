@@ -21,14 +21,20 @@ export abstract class EditorBehavior extends Behavior<EditorService> {
    * Name that determines for which key word the behavior gets activated.
    * Every sub class needs to assign a unique name to this variable,
    * which is used to register the behavior in the editor service.
+   *
+   * The usage of a getter-property allows to alter this variable
+   * in dervided classes and access this value in the constructor
+   * of this method
    */
-  readonly channelName: string;
+  get channelName(): string {
+    return '';
+  }
 
   constructor(protected editorService: EditorService) {
     super(editorService);
     this.onActivate = new Subject<void>();
     this.onDeactivate = new Subject<void>();
-    this.editorService.registerWorkMode(Channel.WORK_PFold, (value) => this.trigger(value));
+    this.editorService.registerWorkMode(this.channelName, (value) => this.trigger(value));
   }
 
   trigger(value: boolean) {

@@ -26,12 +26,6 @@ export class FunctionbuttonsComponent implements OnInit {
     this.mecActive.addBehavior(BehaviorBookletControl);
   }
 
-  addPFold() {
-    //this.mecParallel = new MechanismParallel(this.mecActive.centerHinge);
-    //this.mecParallel.addBehavior(BehaviorOrientation);
-    this.editorService.setWorkMode(Channel.WORK_PFold);
-  }
-
   addVFold() {
     this.editorService.setWorkMode(Channel.WORK_NOTHING);
   }

@@ -9,10 +9,12 @@ import { MechanismParallel } from 'src/app/model/mechanisms/mechanism.parallel';
  * Behavior for adding a parallel fold to the construction
  */
 export class AddPFoldBehavior extends EditorBehavior {
-  override channelName = Channel.WORK_PFold;
+  override get channelName(): string {
+    return Channel.WORK_ADD_PFold;
+  }
 
   /**
-   * this function gets triggered, when ever someone activates
+   * this function gets triggered, whenever someone activates
    *
    * @param value
    */
@@ -22,6 +24,10 @@ export class AddPFoldBehavior extends EditorBehavior {
       .onHingeDown()
       .pipe(takeUntil(this.onDeactivate))
       .subscribe((mechanismHingeClick) => this.onHingeSelected(mechanismHingeClick));
+  }
+
+  override deactivate(): void {
+    this.editorService.triggerSelection(Channel.SELECTION_DEFAULT);
   }
 
   /**
