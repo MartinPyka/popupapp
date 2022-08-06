@@ -12,6 +12,7 @@ import { Mechanism } from '../model/mechanisms/mechanism';
 import { BasicRenderService } from './BasicRenderService';
 import { Construction } from '../model/mechanisms/construction';
 import { SwitchPanel } from '../core/switchpanel';
+import { Object3D } from '../model/abstract/object3d';
 
 /** this is the main class for all communication that takes place between all
  * UI elements, the model and the UI-elements within the 3D-view. It manages basically
@@ -34,6 +35,15 @@ export class EditorService implements IBehaviorCollection, IModelDisposable {
    * visible / selectable
    */
   private readonly _onSelectionMode: SwitchPanel;
+
+  /**
+   * Emitter for transform objects that are in selected state
+   */
+  private readonly _selectedObject3D: Subject<Object3D>;
+
+  public get selectedObject3D(): Observable<Object3D> {
+    return this._selectedObject3D.asObservable();
+  }
 
   // an event that fires, when the EditorService is diposed
   readonly onDispose: Subject<void>;
@@ -58,6 +68,7 @@ export class EditorService implements IBehaviorCollection, IModelDisposable {
   constructor(private basicRenderService: BasicRenderService) {
     this._onWorkMode = new SwitchPanel();
     this._onSelectionMode = new SwitchPanel();
+    this._selectedObject3D = new Subject<Object3D>();
     this.onDispose = new Subject<void>();
     this._behaviorList = [];
   }
@@ -111,6 +122,10 @@ export class EditorService implements IBehaviorCollection, IModelDisposable {
 
   removeMechanism(mechanism: Mechanism) {
     this._construction.remove(mechanism);
+  }
+
+  public setSelectedObject3D(object: Object3D) {
+    this._selectedObject3D.next(object);
   }
 
   /**

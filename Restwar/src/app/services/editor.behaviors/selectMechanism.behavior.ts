@@ -38,6 +38,7 @@ export class SelectMechanismBehavior extends EditorBehavior {
     }
     this.selectedMechanism = mechanismFaceClick.mechanism;
     this.attachToSelectedMechanism();
+    this.editorService.setSelectedObject3D(this.selectedMechanism);
   }
 
   /**

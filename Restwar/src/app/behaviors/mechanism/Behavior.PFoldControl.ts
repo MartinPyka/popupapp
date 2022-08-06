@@ -5,6 +5,7 @@ import { EditorService } from 'src/app/services/editor.service';
 import { Behavior } from '../behavior';
 import 'babylonjs-loaders';
 import { BehaviorSubject } from 'rxjs';
+import { changeNumberCommand } from 'src/app/core/undo/Command';
 
 export class BehaviorPFoldControl extends Behavior<MechanismParallel> implements IDisposable {
   protected mechanism: MechanismParallel;
@@ -33,7 +34,6 @@ export class BehaviorPFoldControl extends Behavior<MechanismParallel> implements
 
   createModifyBehavior(arrow: Mesh, value: BehaviorSubject<number>) {
     let currentValue: number;
-    let startValue: number;
     let movedDistance: number;
 
     var pointerDragBehavior = new PointerDragBehavior({ dragAxis: new Vector3(0, 1, 0) });
@@ -41,25 +41,16 @@ export class BehaviorPFoldControl extends Behavior<MechanismParallel> implements
     pointerDragBehavior.onDragStartObservable.add((event) => {
       movedDistance = 0;
       currentValue = value.getValue();
-      console.log('StartPosition: ' + arrow.position);
-      startValue = arrow.position.y;
-
-      console.log(currentValue);
-      console.log(startValue);
     });
 
     pointerDragBehavior.onDragObservable.add((event) => {
-      console.log('Position: ' + arrow.position);
-      //movedDistance = arrow.position.y - startValue;
       movedDistance += event.dragDistance;
-      console.log('Moved Distance: ' + movedDistance);
-      console.log('New Value: ' + (currentValue + movedDistance));
       value.next(currentValue + movedDistance);
-      console.log('Delta: ' + event.dragDistance);
     });
 
     pointerDragBehavior.onDragEndObservable.add((event) => {
-      console.log('dragEnd');
+      let closureCommand = changeNumberCommand(value.getValue(), value, currentValue);
+      this.commandInvoker.do(closureCommand);
     });
 
     arrow.addBehavior(pointerDragBehavior);
