@@ -80,6 +80,7 @@ export class BehaviorBookletControl extends Behavior<MechanismActive> implements
     // Left handle, down event
     this.leftHandle.onMouseDown.pipe(takeUntil(this.onDispose)).subscribe((planeClick) => {
       this.leftAngle = this.mechanism.leftAngle.getValue();
+      editorService.setCameraState(false);
     });
 
     // Left handle, move event
@@ -98,6 +99,7 @@ export class BehaviorBookletControl extends Behavior<MechanismActive> implements
         this.mechanism.leftAngle.next(mecDegree);
       }
     });
+
     // Left handle, up event
     this.leftHandle.onMouseUp.pipe(takeUntil(this.onDispose)).subscribe((planeUp) => {
       const doAction = (): CommandParts => {
@@ -116,11 +118,14 @@ export class BehaviorBookletControl extends Behavior<MechanismActive> implements
 
         return new CommandParts(undo, redo, undefined, undefined);
       };
+      editorService.setCameraState(true);
       this.commandInvoker.do(new ClosureCommands(doAction));
     });
+
     // Right handle, down event
     this.rightHandle.onMouseDown.pipe(takeUntil(this.onDispose)).subscribe((planeClick) => {
       this.rightAngle = this.mechanism.rightAngle.getValue();
+      editorService.setCameraState(false);
     }),
       // Right handle, move event
       this.rightHandle.onMouseMove.pipe(takeUntil(this.onDispose)).subscribe((planeMove) => {
@@ -138,6 +143,7 @@ export class BehaviorBookletControl extends Behavior<MechanismActive> implements
           this.mechanism.rightAngle.next(mecDegree);
         }
       });
+
     // Right handle, up event
     this.rightHandle.onMouseUp.pipe(takeUntil(this.onDispose)).subscribe((planeUp) => {
       const doAction = (): CommandParts => {
@@ -156,8 +162,10 @@ export class BehaviorBookletControl extends Behavior<MechanismActive> implements
 
         return new CommandParts(undo, redo, undefined, undefined);
       };
+      editorService.setCameraState(true);
       this.commandInvoker.do(new ClosureCommands(doAction));
     });
+
     // change of width
     this.mechanism.width.pipe(takeUntil(this.onDispose)).subscribe((value) => {
       this.leftHandle.transform.position.x = value / 2 + HANDLE_WIDTH / 2;

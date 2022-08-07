@@ -85,6 +85,14 @@ export class EditorService implements IBehaviorCollection, IModelDisposable {
   }
 
   /**
+   * Activates the interaction abilities of the camera
+   * @param active if true, camera movement is active
+   */
+  setCameraState(active: boolean) {
+    this.basicRenderService.setCameraState(active);
+  }
+
+  /**
    * activates the given Work mode
    * @param mode mode to be activated
    */
