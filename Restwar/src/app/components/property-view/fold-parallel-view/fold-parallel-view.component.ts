@@ -3,13 +3,14 @@ import { BehaviorSubject } from 'rxjs';
 import { changeNumberCommand } from 'src/app/core/undo/Command';
 import { CommandInvoker } from 'src/app/core/undo/CommandInvoker';
 import { MechanismParallel } from 'src/app/model/mechanisms/mechanism.parallel';
+import { PropertiesInterface } from '../../main/sidebar/properties/properties.interface';
 
 @Component({
   selector: 'fold-parallel-view',
   templateUrl: './fold-parallel-view.component.html',
   styleUrls: ['./fold-parallel-view.component.scss'],
 })
-export class FoldParallelViewComponent implements OnInit {
+export class FoldParallelViewComponent implements OnInit, PropertiesInterface {
   @Input() mecParallel: MechanismParallel;
 
   constructor(private commandInvoker: CommandInvoker) {}

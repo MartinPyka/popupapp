@@ -17,6 +17,7 @@ import { SidebarComponent } from './components/main/sidebar/sidebar.component';
 import { FunctionbuttonsComponent } from './components/main/sidebar/functionbuttons/functionbuttons.component';
 import { TreeviewComponent } from './components/main/sidebar/treeview/treeview.component';
 import { PropertiesComponent } from './components/main/sidebar/properties/properties.component';
+import { PropertyDirective } from './directives/property-directive.directive';
 
 /**
  * app injector is used in the entire app, in order to
@@ -40,6 +41,7 @@ export let AppInjector: Injector;
     FunctionbuttonsComponent,
     TreeviewComponent,
     PropertiesComponent,
+    PropertyDirective,
   ],
   imports: [BrowserModule, AppRoutingModule, FormsModule],
   providers: [],
