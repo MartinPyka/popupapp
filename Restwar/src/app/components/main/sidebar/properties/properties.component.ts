@@ -1,6 +1,4 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
-import { FoldParallelViewComponent } from 'src/app/components/property-view/fold-parallel-view/fold-parallel-view.component';
-import { PropertyView } from 'src/app/components/property-view/property-view';
 import { PropertyDirective } from 'src/app/directives/property-directive.directive';
 import { Object3D } from 'src/app/model/abstract/object3d';
 import { PropertiesService } from 'src/app/services/properties.service';
@@ -17,18 +15,25 @@ export class PropertiesComponent implements OnInit, OnChanges {
 
   className = '';
 
-  constructor() {}
+  constructor(private propertiesService: PropertiesService) {}
 
   ngOnInit(): void {}
 
+  /**
+   * updates the properties view when the user makes a selection of a
+   * UI element that has properties
+   * @param changes
+   */
   ngOnChanges(changes: SimpleChanges): void {
     this.className = changes['selection'].currentValue.constructor.name;
-    const viewContainerRef = this.propertyDirective.viewContainerRef;
 
+    // get the container reference and clear it
+    const viewContainerRef = this.propertyDirective.viewContainerRef;
     viewContainerRef.clear();
-    const componentRef = viewContainerRef.createComponent<PropertiesInterface>(
-      new PropertyView(FoldParallelViewComponent).component
-    );
-    componentRef.instance.mecParallel = changes['selection'].currentValue;
+
+    // look up the corresponding component view and create it
+    let component = this.propertiesService.propertyComponents[this.className];
+    const componentRef = viewContainerRef.createComponent<PropertiesInterface>(component);
+    componentRef.instance.data = changes['selection'].currentValue;
   }
 }

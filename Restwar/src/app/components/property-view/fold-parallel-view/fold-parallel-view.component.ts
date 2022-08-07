@@ -11,7 +11,7 @@ import { PropertiesInterface } from '../../main/sidebar/properties/properties.in
   styleUrls: ['./fold-parallel-view.component.scss'],
 })
 export class FoldParallelViewComponent implements OnInit, PropertiesInterface {
-  @Input() mecParallel: MechanismParallel;
+  @Input() data: any;
 
   constructor(private commandInvoker: CommandInvoker) {}
 
