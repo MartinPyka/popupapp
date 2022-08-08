@@ -6,11 +6,13 @@ import { Behavior } from '../behavior';
 import 'babylonjs-loaders';
 import { BehaviorSubject } from 'rxjs';
 import { changeNumberCommand } from 'src/app/core/undo/Command';
+import { HeightPFoldControl } from './elements/Height.PFoldControl';
 
 export class BehaviorPFoldControl extends Behavior<MechanismParallel> implements IDisposable {
   protected mechanism: MechanismParallel;
   protected leftArrow: Mesh;
   protected rightArrow: Mesh;
+  protected heightControl: HeightPFoldControl;
 
   constructor(mechanism: MechanismParallel) {
     super(mechanism);
@@ -27,6 +29,8 @@ export class BehaviorPFoldControl extends Behavior<MechanismParallel> implements
 
       this.createModifyBehavior(this.leftArrow, mechanism.leftDistance);
       this.createModifyBehavior(this.rightArrow, mechanism.rightDistance);
+
+      this.heightControl = new HeightPFoldControl(mechanism);
 
       mesh.dispose();
     });
@@ -59,6 +63,7 @@ export class BehaviorPFoldControl extends Behavior<MechanismParallel> implements
   override dispose(): void {
     this.leftArrow.dispose();
     this.rightArrow.dispose();
+    this.heightControl.dispose();
     super.dispose();
   }
 }
