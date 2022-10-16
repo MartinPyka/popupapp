@@ -69,9 +69,32 @@ export class HeightPFoldControl extends Face {
   }
 
   registerEvents() {
+    let moveDirection: Vector3;
+
     this.onMouseDown.pipe(takeUntil(this.onDispose)).subscribe((faceClick) => {
       this.height = this.mechanism.height.getValue();
-      console.log(faceClick.event.pointerX, faceClick.event.pointerY);
+      this.editorService.setCameraState(false);
+
+      // determine the moveDirection in space of the center hinge
+      const absMoveDirection = this.mechanism.centerHinge.transform.absolutePosition.subtract(
+        this.mechanism.parentHinge.transform.absolutePosition
+      );
+      const matrix = this.mechanism.centerHinge.transform.getWorldMatrix();
+      moveDirection = Vector3.TransformCoordinates(
+        absMoveDirection.add(this.mechanism.centerHinge.transform.absolutePosition),
+        matrix.invert()
+      );
+      console.log(moveDirection);
+    });
+
+    this.onMouseMove.pipe(takeUntil(this.onDispose)).subscribe((faceMove) => {
+      if (faceMove.event.pickInfo?.ray) {
+        console.log(this.hitPlane.getHitLocation(faceMove.event.pickInfo.ray));
+      }
+    });
+
+    this.onMouseUp.pipe(takeUntil(this.onDispose)).subscribe((FaceUp) => {
+      this.editorService.setCameraState(true);
     });
   }
 }
