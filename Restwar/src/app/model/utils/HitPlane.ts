@@ -39,15 +39,15 @@ export class HitPlane {
    * @param ray to be used in order to detect the hit location
    * @returns 2d-coordinates in case of a hit
    */
-  getHitLocation(ray: Nullable<Ray>): Nullable<Vector2> {
+  getHitLocation(ray: Nullable<Ray>): Vector2 {
     if (ray) {
       const pickingInfo = ray.intersectsMesh(<DeepImmutableObject<Mesh>>(<unknown>this.mesh));
 
       if (pickingInfo.pickedPoint) return new Vector2(pickingInfo.pickedPoint.y, pickingInfo.pickedPoint.z);
       else {
-        return null;
+        return new Vector2(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY);
       }
     }
-    return null;
+    return new Vector2(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY);
   }
 }

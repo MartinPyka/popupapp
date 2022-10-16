@@ -1,6 +1,6 @@
 import { Face } from 'src/app/model/abstract/face';
-import { Mesh, Scene, SceneLoader, Vector3 } from 'babylonjs';
-import { BehaviorSubject, takeUntil } from 'rxjs';
+import { Mesh, SceneLoader, Vector2, Vector3 } from 'babylonjs';
+import { takeUntil } from 'rxjs';
 import { MechanismParallel } from 'src/app/model/mechanisms/mechanism.parallel';
 import { AppInjector } from 'src/app/app.module';
 import { EditorService } from 'src/app/services/editor.service';
@@ -69,8 +69,12 @@ export class HeightPFoldControl extends Face {
   }
 
   registerEvents() {
-    let moveDirection: Vector3;
+    let moveDirection: Vector2;
+    let startPosition: Vector2;
 
+    /**
+     * onMouseDown-event ===============================================================
+     */
     this.onMouseDown.pipe(takeUntil(this.onDispose)).subscribe((faceClick) => {
       this.height = this.mechanism.height.getValue();
       this.editorService.setCameraState(false);
@@ -80,19 +84,38 @@ export class HeightPFoldControl extends Face {
         this.mechanism.parentHinge.transform.absolutePosition
       );
       const matrix = this.mechanism.centerHinge.transform.getWorldMatrix();
-      moveDirection = Vector3.TransformCoordinates(
+      const tempMoveDirection = Vector3.TransformCoordinates(
         absMoveDirection.add(this.mechanism.centerHinge.transform.absolutePosition),
         matrix.invert()
       );
-      console.log(moveDirection);
+      moveDirection = new Vector2(tempMoveDirection.y, tempMoveDirection.z);
+      console.log('MoveDirection: ', moveDirection);
+      const ray = this.editorService.scene.createPickingRay(
+        faceClick.event.pointerX,
+        faceClick.event.pointerY,
+        null,
+        null
+      );
+      startPosition = this.hitPlane.getHitLocation(ray);
+      console.log(startPosition);
     });
 
+    /**
+     * onMouseMove-event ===============================================================
+     */
     this.onMouseMove.pipe(takeUntil(this.onDispose)).subscribe((faceMove) => {
       if (faceMove.event.pickInfo?.ray) {
-        console.log(this.hitPlane.getHitLocation(faceMove.event.pickInfo.ray));
+        const currentPosition = this.hitPlane.getHitLocation(faceMove.event.pickInfo.ray);
+        console.log(currentPosition);
+        const dotProduct = Vector2.Dot(moveDirection, currentPosition.subtract(startPosition));
+        console.log('Dot Product: ', dotProduct);
+        this.mechanism.height.next(this.height - dotProduct / 10);
       }
     });
 
+    /**
+     * onMouseUp-event =================================================================
+     */
     this.onMouseUp.pipe(takeUntil(this.onDispose)).subscribe((FaceUp) => {
       this.editorService.setCameraState(true);
     });
