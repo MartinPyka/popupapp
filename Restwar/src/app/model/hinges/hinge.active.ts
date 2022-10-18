@@ -1,9 +1,6 @@
-import { Scene, Vector3 } from 'babylonjs';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { Scene } from 'babylonjs';
 import { deg2rad, rad2deg } from 'src/app/utils/math';
-import { Plane } from '../abstract/plane';
 import { TransformObject3D } from '../abstract/transform.object3d';
-import { IModelDisposable } from '../interfaces/interfaces';
 import { Hinge } from './hinge';
 
 /**

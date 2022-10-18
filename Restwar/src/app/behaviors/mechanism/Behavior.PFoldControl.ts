@@ -8,6 +8,9 @@ import { BehaviorSubject } from 'rxjs';
 import { changeNumberCommand } from 'src/app/core/undo/Command';
 import { HeightPFoldControl } from './elements/Height.PFoldControl';
 
+/**
+ * UI-Elements in order to control the parameters of the mechanism
+ */
 export class BehaviorPFoldControl extends Behavior<MechanismParallel> implements IDisposable {
   protected mechanism: MechanismParallel;
   protected leftArrow: Mesh;

@@ -72,7 +72,18 @@ export abstract class MechanismFolding extends Mechanism implements IProjectable
     this.foldingForm = new BehaviorSubject<FoldForm>(DEFAULT_FOLDFORM);
 
     this.registerBasicEvents();
+
+    scene.onBeforeRenderObservable.add(() => {
+      this.computeWorldMatrix();
+      this.calcFoldPosition();
+    });
   }
+
+  /**
+   * this is the method that needs to be defined by any inheriting class
+   * to define the position of the mechanism elements
+   */
+  protected abstract calcFoldPosition(): void;
 
   override dispose(): void {
     super.dispose();
@@ -125,5 +136,19 @@ export abstract class MechanismFolding extends Mechanism implements IProjectable
     this.centerHinge.onMouseDown
       .pipe(takeUntil(this.onDispose))
       .subscribe((hingeClick) => this.onHingeDown.next({ ...hingeClick, mechanism: this }));
+  }
+
+  /**
+   * it is important to manually force the recomputation of the
+   * world matrix as it gets otherwise updated only after a frame
+   * has been rendered. This causes rendering issues when a property
+   * of the mechanism changes and its rendering depends on new
+   * absolute positions
+   */
+  protected computeWorldMatrix() {
+    // forces to recompute the absolute position
+    this.rightHinge.transform.computeWorldMatrix(true);
+    this.leftHinge.transform.computeWorldMatrix(true);
+    this.centerHinge.transform.computeWorldMatrix(true);
   }
 }

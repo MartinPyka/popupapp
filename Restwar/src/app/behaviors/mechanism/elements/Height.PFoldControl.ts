@@ -6,6 +6,8 @@ import { AppInjector } from 'src/app/app.module';
 import { EditorService } from 'src/app/services/editor.service';
 import { deg2rad } from 'src/app/utils/math';
 import { HitPlane } from 'src/app/model/utils/HitPlane';
+import { changeNumberCommand } from 'src/app/core/undo/Command';
+import { CommandInvoker } from 'src/app/core/undo/CommandInvoker';
 
 /**
  * UI Element for enabling the user to configure the height
@@ -17,10 +19,13 @@ export class HeightPFoldControl extends Face {
   private height: number;
   private hitPlane: HitPlane;
 
+  protected readonly commandInvoker: CommandInvoker;
+
   constructor(mechanism: MechanismParallel) {
     super(null);
     this.mechanism = mechanism;
     const editorService = AppInjector.get(EditorService);
+    this.commandInvoker = AppInjector.get(CommandInvoker);
     SceneLoader.ImportMesh('Arrow', 'assets/models/elements/', 'move-arrow.glb', editorService.scene, (meshes) => {
       this.mesh = meshes[1] as Mesh;
       this.configureMesh();
@@ -89,7 +94,6 @@ export class HeightPFoldControl extends Face {
         matrix.invert()
       );
       moveDirection = new Vector2(tempMoveDirection.y, tempMoveDirection.z);
-      console.log('MoveDirection: ', moveDirection);
       const ray = this.editorService.scene.createPickingRay(
         faceClick.event.pointerX,
         faceClick.event.pointerY,
@@ -97,7 +101,6 @@ export class HeightPFoldControl extends Face {
         null
       );
       startPosition = this.hitPlane.getHitLocation(ray);
-      console.log(startPosition);
     });
 
     /**
@@ -106,10 +109,9 @@ export class HeightPFoldControl extends Face {
     this.onMouseMove.pipe(takeUntil(this.onDispose)).subscribe((faceMove) => {
       if (faceMove.event.pickInfo?.ray) {
         const currentPosition = this.hitPlane.getHitLocation(faceMove.event.pickInfo.ray);
-        console.log(currentPosition);
         const dotProduct = Vector2.Dot(moveDirection, currentPosition.subtract(startPosition));
-        console.log('Dot Product: ', dotProduct);
         this.mechanism.height.next(this.height - dotProduct / 10);
+        this.calculateArrowOrientation();
       }
     });
 
@@ -118,6 +120,8 @@ export class HeightPFoldControl extends Face {
      */
     this.onMouseUp.pipe(takeUntil(this.onDispose)).subscribe((FaceUp) => {
       this.editorService.setCameraState(true);
+      let closureCommand = changeNumberCommand(this.mechanism.height.getValue(), this.mechanism.height, this.height);
+      this.commandInvoker.do(closureCommand);
     });
   }
 }
