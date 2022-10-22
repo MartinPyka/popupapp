@@ -1,6 +1,7 @@
 import { Type } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Behavior } from 'src/app/behaviors/behavior';
+import { Projection } from 'src/app/projection/projection';
 import { Object3D } from '../abstract/object3d';
 import { IBehaviorCollection, MechanismFaceClick, MechanismHingeClick } from '../interfaces/interfaces';
 
@@ -20,6 +21,8 @@ export abstract class Mechanism extends Object3D implements IBehaviorCollection 
   public readonly onInvisible: Subject<void>;
 
   private _behaviorList: Behavior<Mechanism>[];
+
+  public projection: Projection;
 
   public get behaviorList(): Behavior<Mechanism>[] {
     return this._behaviorList;
@@ -41,6 +44,7 @@ export abstract class Mechanism extends Object3D implements IBehaviorCollection 
     super.dispose();
 
     this.behaviorList.forEach((behavior) => behavior.dispose());
+    this.projection.dispose();
 
     this.onFaceDown.complete();
     this.onFaceUp.complete();

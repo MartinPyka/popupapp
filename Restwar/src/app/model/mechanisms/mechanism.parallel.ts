@@ -1,6 +1,7 @@
 import { Vector3 } from 'babylonjs';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { AppInjector } from 'src/app/app.module';
+import { ProjectionParallel } from 'src/app/projection/projection.parallel';
 import { EditorService } from 'src/app/services/editor.service';
 import { calc_triangle_angle } from 'src/app/utils/math';
 import { Hinge } from '../hinges/hinge';
@@ -96,6 +97,7 @@ export class MechanismParallel extends MechanismFolding {
     this.rightDistance = new BehaviorSubject<number>(DEFAULT_DISTANCE_RIGHT);
     this.height = new BehaviorSubject<number>(DEFAULT_HEIGHT);
 
+    this.projection = new ProjectionParallel(this);
     this.registerEvents();
   }
 

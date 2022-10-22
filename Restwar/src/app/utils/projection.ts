@@ -27,8 +27,17 @@ export function createPathRectangleOpen(points: paper.Point[]): paper.Path {
  * @param points that should be used for updating the path
  * @returns the new version of the path
  */
-export function updatePathRecangleOpen(path: paper.Path, points: paper.Point[]): paper.Path {
 export function updatePathRectangleOpen(path: paper.Path, points: paper.Point[]): paper.Path {
   path.segments.forEach((segment, index) => (segment.point = points[index]));
   return path;
+}
+
+/**
+ * Make sub items true children of the parent group by deactivating
+ * direct application of the transform matrix
+ * @param group
+ */
+export function makeMatrixInheritable(group: paper.Group) {
+  group.applyMatrix = false;
+  group.children.forEach((item) => (item.applyMatrix = false));
 }
