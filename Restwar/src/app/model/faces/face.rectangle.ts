@@ -1,17 +1,4 @@
-import {
-  ActionEvent,
-  ActionManager,
-  ExecuteCodeAction,
-  FloatArray,
-  MeshBuilder,
-  Observer,
-  PointerEventTypes,
-  PointerInfo,
-  Scene,
-  Vector3,
-  VertexBuffer,
-} from '@babylonjs/core';
-import { Nullable } from '@babylonjs/core';
+import { FloatArray, MeshBuilder, Scene, Vector3, VertexBuffer } from 'babylonjs';
 import { BehaviorSubject, Observable, takeUntil } from 'rxjs';
 import { Face } from '../abstract/face';
 import { TransformObject3D } from '../abstract/transform.object3d';
@@ -52,7 +39,8 @@ export class FaceRectangle extends Face implements IProjectionPoints {
 
     this.createGeometry(scene);
     this.createProjection();
-    this.registerEvents();
+    this.registerPropertyEvents();
+    this.registerClickEvents();
   }
 
   override dispose(): void {
@@ -114,7 +102,7 @@ export class FaceRectangle extends Face implements IProjectionPoints {
     this.positions = positions;
 
     this.realignMesh();
-    this.mesh.parent = this.transform;
+    this.setParent(this.transform);
   }
 
   /**
@@ -161,7 +149,7 @@ export class FaceRectangle extends Face implements IProjectionPoints {
     this.mesh.updateVerticesData(VertexBuffer.PositionKind, this.positions);
   }
 
-  protected registerEvents() {
+  protected registerPropertyEvents() {
     // subscription to flipped value
     this.flipped.pipe(takeUntil(this.onDispose)).subscribe((value) => {
       if (value) {
@@ -184,59 +172,6 @@ export class FaceRectangle extends Face implements IProjectionPoints {
       this.updateMeshHeight(height);
       this.updateProjectionHeight(height);
     });
-
-    this.mesh.actionManager = new ActionManager(this.mesh.getScene());
-
-    let moveEvent: Nullable<Observer<PointerInfo>>;
-    function getMoveEvent(): Nullable<Observer<PointerInfo>> {
-      return moveEvent;
-    }
-
-    let outPointerInfo: PointerInfo;
-
-    const triggerOnMouseDown = new ExecuteCodeAction(ActionManager.OnPickDownTrigger, (evt) => {
-      if (!this.isRayFromFront(evt)) {
-        return;
-      }
-
-      // if there is an old instance of moveEvent, remove it
-      if (moveEvent) {
-        this.mesh.getScene().onPointerObservable.remove(moveEvent);
-      }
-
-      // when mouse down is pressed create a new moveEvent
-      moveEvent = this.mesh.getScene().onPointerObservable.add((pointerInfo) => {
-        // check for pointer move events
-        if (pointerInfo.type === PointerEventTypes.POINTERMOVE && pointerInfo.event.buttons === 1) {
-          /** somehow, this is necessary, as the pointermove event gets
-           * fired twice, but we only want to propagate it one time
-           */
-          if (
-            outPointerInfo &&
-            outPointerInfo.event.offsetX === pointerInfo.event.offsetX &&
-            outPointerInfo.event.offsetY === pointerInfo.event.offsetY
-          ) {
-            return;
-          }
-          outPointerInfo = pointerInfo;
-          this.onMouseMove.next({ face: this, event: pointerInfo });
-        }
-
-        // check for pointer up events and delete this event
-        if (pointerInfo.type === PointerEventTypes.POINTERUP) {
-          const _moveEvent = getMoveEvent();
-          if (_moveEvent) {
-            _moveEvent.unregisterOnNextCall = true;
-          }
-          this.onMouseUp.next({ face: this, event: pointerInfo });
-        }
-      });
-
-      this.mesh.getScene().onPointerUp;
-      this.onMouseDown.next({ face: this, event: evt });
-    });
-    this.executeActionList.push(triggerOnMouseDown);
-    this.mesh.actionManager.registerAction(triggerOnMouseDown);
   }
 
   private updateMeshHeight(height: number) {
@@ -278,25 +213,5 @@ export class FaceRectangle extends Face implements IProjectionPoints {
     points[1].y = height;
     points[2].y = height;
     this.projection.next(points);
-  }
-
-  /**
-   * checks, whether the ray came from the front side
-   * or the back side of the plane
-   *
-   * @param evt action event with mouse coordinates
-   * @returns true, if ray came from front, else false
-   */
-  protected isRayFromFront(evt: ActionEvent): boolean {
-    const pickInfo = this.mesh.getScene().pick(evt.pointerX, evt.pointerY);
-    if (!pickInfo) return false;
-    const rayDirection = pickInfo.ray?.direction;
-    const normalDirection = pickInfo.getNormal(true);
-    if (rayDirection != null && normalDirection != null) {
-      if (Vector3.Dot(rayDirection, normalDirection) > 0) {
-        return false;
-      }
-    }
-    return true;
   }
 }

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Vector3 } from '@babylonjs/core';
+import { Vector3 } from 'babylonjs';
 import { ClosureCommands, CommandParts } from 'src/app/core/undo/Command';
 import { CommandInvoker } from 'src/app/core/undo/CommandInvoker';
 import { Volume3D } from 'src/app/model/abstract/volume3d';

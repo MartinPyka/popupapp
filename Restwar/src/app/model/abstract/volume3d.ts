@@ -1,4 +1,4 @@
-import { ActionManager, ExecuteCodeAction, Mesh, PointerDragBehavior, Vector3 } from '@babylonjs/core';
+import { ActionManager, ExecuteCodeAction, Mesh, PointerDragBehavior, Vector3 } from 'babylonjs';
 import { BehaviorSubject, Subscription, takeUntil } from 'rxjs';
 import { AppInjector } from 'src/app/app.module';
 import { ClosureCommands, CommandParts } from 'src/app/core/undo/Command';

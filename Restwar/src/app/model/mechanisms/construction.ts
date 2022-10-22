@@ -2,7 +2,7 @@ import { BehaviorSubject, Observable, Subject, takeUntil } from 'rxjs';
 import { IModelDisposable, MechanismFaceClick, MechanismHingeClick } from '../interfaces/interfaces';
 import { Mechanism } from './mechanism';
 import { ConstructionService } from '../../services/construction.service';
-import { ThinSprite } from '@babylonjs/core/Sprites/thinSprite';
+import { ThinSprite } from 'babylonjs/Sprites/thinSprite';
 
 /**
  * This class holds and manages an entire paper construction.

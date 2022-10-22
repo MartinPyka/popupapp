@@ -134,11 +134,12 @@ export class ClosureCommands implements Command {
  * Creates a closure command for changing a numeric value
  * @param value value that should be used
  * @param parameter BehaviorSubject<number> on which the new value should be applied
+ * @param undoValue optional undoValue parameter, in case the parameter does not contain the old value any more (e.g. in dynamic drag and drop cases
  * @returns ClosureCommand for applying this value in an undo/redo-context (e.g. for CommandInvoker)
  */
-export function changeNumberCommand(value: number, parameter: BehaviorSubject<number>): ClosureCommands {
+export function changeNumberCommand(value: number, parameter: BehaviorSubject<number>, undoValue: number | undefined = undefined): ClosureCommands {
   let doAction = (): CommandParts => {
-    let oldValue = parameter.getValue() ?? 1;
+    let oldValue = undoValue ?? parameter.getValue();
     let newValue = value;
     parameter.next(newValue);
 

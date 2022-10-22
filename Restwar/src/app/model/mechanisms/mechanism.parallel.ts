@@ -1,4 +1,4 @@
-import { Vector3 } from '@babylonjs/core';
+import { Vector3 } from 'babylonjs';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { AppInjector } from 'src/app/app.module';
 import { EditorService } from 'src/app/services/editor.service';
@@ -97,11 +97,6 @@ export class MechanismParallel extends MechanismFolding {
     this.height = new BehaviorSubject<number>(DEFAULT_HEIGHT);
 
     this.registerEvents();
-    const editorSerivce = AppInjector.get(EditorService);
-    const scene = editorSerivce.scene;
-    scene.onBeforeRenderObservable.add(() => {
-      this.calcFoldPosition();
-    });
   }
 
   /**
@@ -197,9 +192,11 @@ export class MechanismParallel extends MechanismFolding {
 
   protected calcFoldPosition() {
     // calc distance between both hinges in world coordinates
-    const hinge_distance = this.leftHinge.transform.absolutePosition
-      .subtract(this.rightHinge.transform.absolutePosition)
+    const hinge_distance = this.leftHinge.transform
+      .getAbsolutePosition()
+      .subtract(this.rightHinge.transform.getAbsolutePosition())
       .length();
+
     // calculate angle alpha (left corner) which opposes the b-side
     this.alpha = calc_triangle_angle(this.b_side, this.d_side, hinge_distance);
     // calculate the angle between distance and the plane on the left side

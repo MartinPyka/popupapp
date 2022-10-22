@@ -1,4 +1,4 @@
-import { TransformNode, Vector3 } from '@babylonjs/core';
+import { TransformNode, Vector3 } from 'babylonjs';
 
 /**
  * Converts an angle in radians to degree

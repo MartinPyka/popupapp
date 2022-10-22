@@ -1,11 +1,8 @@
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
-import { EventState, Nullable, Observer, PointerInfo, Vector3, Scene, SceneLoader } from '@babylonjs/core';
-import { BehaviorBookletControl } from 'src/app/behaviors/mechanism/Behavior.BookletControl';
-import { BehaviorOrientation } from 'src/app/behaviors/mechanism/Behavior.Orientation';
+import { EventState, Nullable, Observer, PointerInfo, Vector3, Scene, SceneLoader } from 'babylonjs';
 import { EditorService } from 'src/app/services/editor.service';
 import { CommandInvoker } from 'src/app/core/undo/CommandInvoker';
 import { Cube } from 'src/app/model/cube';
-import { HingeActive } from 'src/app/model/hinges/hinge.active';
 import { MechanismActive } from 'src/app/model/mechanisms/mechanism.active';
 import { MechanismParallel } from 'src/app/model/mechanisms/mechanism.parallel';
 import { PlaneRectangle } from 'src/app/model/planes/plane.rectangle';

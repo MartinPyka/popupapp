@@ -1,4 +1,4 @@
-import { Color3, Scene, StandardMaterial } from '@babylonjs/core';
+import { Color3, Scene, StandardMaterial } from 'babylonjs';
 import { Color } from 'paper/dist/paper-core';
 
 const COLOR_HINGE = new Color3(0, 0.9, 0);

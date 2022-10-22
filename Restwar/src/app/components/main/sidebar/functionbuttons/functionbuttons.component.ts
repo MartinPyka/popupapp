@@ -13,6 +13,7 @@ import { MechanismParallel } from 'src/app/model/mechanisms/mechanism.parallel';
 export class FunctionbuttonsComponent implements OnInit {
   mecActive: MechanismActive;
   mecParallel: MechanismParallel;
+  Channel = Channel;
 
   constructor(private editorService: EditorService) {}
 
@@ -25,14 +26,17 @@ export class FunctionbuttonsComponent implements OnInit {
     this.mecActive.addBehavior(BehaviorBookletControl);
   }
 
-  addPFold() {
-    //this.mecParallel = new MechanismParallel(this.mecActive.centerHinge);
-    //this.mecParallel.addBehavior(BehaviorOrientation);
-    this.editorService.setWorkMode(Channel.WORK_PFold);
-  }
-
   addVFold() {
     this.editorService.setWorkMode(Channel.WORK_NOTHING);
+  }
+
+  /**
+   * generic function in order to activate a work mode
+   * triggered
+   * @param workMode
+   */
+  functionButton(workMode: string) {
+    this.editorService.setWorkMode(workMode);
   }
 
   activate() {

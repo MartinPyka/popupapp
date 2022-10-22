@@ -2,6 +2,7 @@ import { ElementRef, Inject, Injectable, NgZone } from '@angular/core';
 import {
   ActionManager,
   ArcRotateCamera,
+  Camera,
   Color3,
   Color4,
   DirectionalLight,
@@ -15,10 +16,10 @@ import {
   Scene,
   SceneLoader,
   StandardMaterial,
+  TargetCamera,
   Vector3,
-} from '@babylonjs/core';
+} from 'babylonjs';
 import { DOCUMENT } from '@angular/common';
-import '@babylonjs/inspector';
 import { MaterialService } from '../materials/material-service';
 
 @Injectable({
@@ -27,7 +28,12 @@ import { MaterialService } from '../materials/material-service';
 export class BasicRenderService {
   engine!: Engine;
   protected canvas!: HTMLCanvasElement;
-  protected camera!: FreeCamera | ArcRotateCamera;
+
+  protected _camera!: TargetCamera;
+  public get camera(): TargetCamera {
+    return this._camera;
+  }
+
   protected light!: Light;
 
   scene!: Scene;
@@ -70,10 +76,10 @@ export class BasicRenderService {
       }
     };
 
-    this.camera = new ArcRotateCamera('Camera', 0, 0.8, 35, Vector3.Zero(), this.scene);
-    this.camera.setTarget(new Vector3(0, 0, 0));
-    this.camera.attachControl(false);
-    this.camera.inputs.clear();
+    this._camera = new ArcRotateCamera('Camera', 0.0, 0.8, 35, Vector3.Zero(), this.scene);
+    this._camera.setTarget(new Vector3(0, 0, 0));
+    this._camera.attachControl(false);
+    //this.camera.inputs.clear();
 
     canvas.nativeElement.addEventListener('pointerdown', (evt) => {
       clicked = true;
@@ -95,6 +101,18 @@ export class BasicRenderService {
     MaterialService.initializeMaterial(this.scene);
   }
 
+  /**
+   * Activates the interaction abilities of the camera
+   * @param active if true, camera movement is active
+   */
+  setCameraState(active: boolean) {
+    if (active) {
+      this._camera.inputs.attachInput(this.camera.inputs.attached['pointers']);
+    } else {
+      this.camera.inputs.attached['pointers'].detachControl();
+    }
+  }
+
   start(inZone = true): void {
     if (inZone) {
       this.ngZone.runOutsideAngular(() => {
@@ -109,7 +127,7 @@ export class BasicRenderService {
     this.scene.dispose();
     this.engine.stopRenderLoop();
     this.engine.dispose();
-    this.camera.dispose();
+    this._camera.dispose();
     window.removeEventListener('resize', () => {});
   }
 

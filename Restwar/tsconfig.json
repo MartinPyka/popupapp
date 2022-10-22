@@ -27,5 +27,5 @@
     "strictInputAccessModifiers": true,
     "strictTemplates": true
   },
-  "types": ["babylonjs", "anotherAwesomeDependency"]
+  "types": ["babylonjs", "babylonjs-loaders", "anotherAwesomeDependency"]
 }

@@ -1,4 +1,4 @@
-import { ExecuteCodeAction } from '@babylonjs/core';
+import { ExecuteCodeAction } from 'babylonjs';
 import { Subject, Subscription } from 'rxjs';
 import { v4 } from 'uuid';
 import { IModelDisposable } from '../interfaces/interfaces';

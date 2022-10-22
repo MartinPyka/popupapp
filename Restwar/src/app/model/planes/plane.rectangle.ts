@@ -1,4 +1,4 @@
-import { Scene, TransformNode } from '@babylonjs/core';
+import { Scene, TransformNode } from 'babylonjs';
 import { BehaviorSubject, Observable, takeUntil } from 'rxjs';
 import { MaterialService } from 'src/app/materials/material-service';
 import { Plane } from '../abstract/plane';

@@ -11,7 +11,7 @@ import {
   PointerInfo,
   Observer,
   Nullable,
-} from '@babylonjs/core';
+} from 'babylonjs';
 import { Subject, Subscription, throwIfEmpty } from 'rxjs';
 import { Channel } from 'src/app/core/channels';
 import { MaterialService } from 'src/app/materials/material-service';

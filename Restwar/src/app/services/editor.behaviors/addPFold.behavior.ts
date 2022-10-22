@@ -9,10 +9,12 @@ import { MechanismParallel } from 'src/app/model/mechanisms/mechanism.parallel';
  * Behavior for adding a parallel fold to the construction
  */
 export class AddPFoldBehavior extends EditorBehavior {
-  override channelName = Channel.WORK_PFold;
+  override get channelName(): string {
+    return Channel.WORK_ADD_PFold;
+  }
 
   /**
-   * this function gets triggered, when ever someone activates
+   * this function gets triggered, whenever someone activates
    *
    * @param value
    */
@@ -24,12 +26,15 @@ export class AddPFoldBehavior extends EditorBehavior {
       .subscribe((mechanismHingeClick) => this.onHingeSelected(mechanismHingeClick));
   }
 
+  override deactivate(): void {
+    this.editorService.triggerSelection(Channel.SELECTION_DEFAULT);
+  }
+
   /**
    * gets called, when the user clicks on a hinge
    * @param mechanismHingeClick
    */
   onHingeSelected(mechanismHingeClick: MechanismHingeClick) {
-    this.editorService.triggerSelection(Channel.SELECTION_NOTHING);
     const doAction = (): CommandParts => {
       const mec = new MechanismParallel(mechanismHingeClick.hinge);
       this.editorService.addMechanism(mec);
@@ -54,5 +59,6 @@ export class AddPFoldBehavior extends EditorBehavior {
       return new CommandParts(undo, redo, undefined, destroyFromRedo);
     };
     this.commandInvoker.do(new ClosureCommands(doAction));
+    this.endBehavior();
   }
 }
