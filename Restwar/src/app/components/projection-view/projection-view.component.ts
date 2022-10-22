@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { PointerEventTypes } from 'babylonjs';
 import { Project, Path, Color, Point, Group, MouseEvent } from 'paper';
+import { Projection } from 'src/app/projection/projection';
 
 @Component({
   selector: 'projection-view',
@@ -10,10 +11,16 @@ import { Project, Path, Color, Point, Group, MouseEvent } from 'paper';
 export class ProjectionViewComponent implements AfterViewInit {
   point: paper.Point;
   path3: paper.Path;
+  startPoint: paper.Point;
+  lastCenter: paper.Point;
+  project: paper.Project;
+
   constructor() {}
 
   ngAfterViewInit(): void {
-    const project = new Project('projection');
+    this.project = new Project('projection');
+    this.project.view.zoom = 2.5;
+    this.project.view.center = new Point(150, 80);
     /*
     const group = new Group();
     group.position = new Point(0, 100);
@@ -47,19 +54,30 @@ export class ProjectionViewComponent implements AfterViewInit {
     this.point = new Point(30, 20);
     this.path3.add(this.point);
     this.path3.segments[1].point = point;
-
-    project.view.onMouseDown = (event: any) => this.onMouseDown(event);
     */
+    this.project.view.onMouseDown = (event: any) => this.onMouseDown(event);
+    this.project.view.onMouseDrag = (event: any) => this.onMouseDrag(event);
+    this.project.view.onMouseUp = (event: any) => this.onMouseUp(event);
   }
 
   onMouseDown(event: any) {
-    console.log(this.point);
-    if (this.point) {
-      console.log('if clause triggered');
-      //this.point.x = 50;
-      this.path3.segments[2].point.x = 50;
-    }
+    this.startPoint = event.point;
+    this.lastCenter = this.project.view.center;
     console.log('You pressed the mouse!');
+    console.log(event);
+  }
+
+  onMouseDrag(event: any) {
+    const dragDelta = this.project.view.center.subtract(this.lastCenter);
+    const delta = event.point.subtract(this.startPoint).subtract(dragDelta);
+    console.log('You dragged the mouse!');
+    console.log(event);
+    console.log('Delta: ', delta);
+    this.project.view.center = this.lastCenter.subtract(delta);
+  }
+
+  onMouseUp(event: any) {
+    console.log('You released the mouse!');
     console.log(event);
   }
 }
