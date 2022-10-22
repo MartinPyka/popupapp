@@ -156,28 +156,28 @@ export class MechanismActive extends Mechanism implements IProjectable {
       .projectionPointsTopSide()
       .pipe(takeUntil(this.onDispose))
       .subscribe((points) =>
-        projection.updatePathRecangleOpen(this.projectionTop.children[0].children[0] as paper.Path, points)
+        projection.updatePathRectangleOpen(this.projectionTop.children[0].children[0] as paper.Path, points)
       );
 
     this.leftSide
       .projectionPointsDownSide()
       .pipe(takeUntil(this.onDispose))
       .subscribe((points) =>
-        projection.updatePathRecangleOpen(this.projectionDown.children[0].children[0] as paper.Path, points)
+        projection.updatePathRectangleOpen(this.projectionDown.children[0].children[0] as paper.Path, points)
       );
 
     this.rightSide
       .projectionPointsTopSide()
       .pipe(takeUntil(this.onDispose))
       .subscribe((points) =>
-        projection.updatePathRecangleOpen(this.projectionTop.children[1].children[0] as paper.Path, points)
+        projection.updatePathRectangleOpen(this.projectionTop.children[1].children[0] as paper.Path, points)
       );
 
     this.rightSide
       .projectionPointsDownSide()
       .pipe(takeUntil(this.onDispose))
       .subscribe((points) =>
-        projection.updatePathRecangleOpen(this.projectionDown.children[1].children[0] as paper.Path, points)
+        projection.updatePathRectangleOpen(this.projectionDown.children[1].children[0] as paper.Path, points)
       );
 
     this.leftSide.onMouseDown

@@ -28,6 +28,7 @@ export function createPathRectangleOpen(points: paper.Point[]): paper.Path {
  * @returns the new version of the path
  */
 export function updatePathRecangleOpen(path: paper.Path, points: paper.Point[]): paper.Path {
+export function updatePathRectangleOpen(path: paper.Path, points: paper.Point[]): paper.Path {
   path.segments.forEach((segment, index) => (segment.point = points[index]));
   return path;
 }
