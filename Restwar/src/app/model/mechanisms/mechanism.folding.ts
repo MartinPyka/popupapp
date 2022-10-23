@@ -2,6 +2,7 @@ import { BehaviorSubject, takeUntil } from 'rxjs';
 import { AppInjector } from 'src/app/app.module';
 import { EditorService } from 'src/app/services/editor.service';
 import { deg2rad } from 'src/app/utils/math';
+import { TransformObject3D } from '../abstract/transform.object3d';
 import { Hinge } from '../hinges/hinge';
 import { HingeActive } from '../hinges/hinge.active';
 import { IProjectable } from '../interfaces/interfaces';
@@ -9,13 +10,11 @@ import { PlaneRectangle } from '../planes/plane.rectangle';
 import { FoldForm } from '../types/FoldForm';
 import { Mechanism } from './mechanism';
 
-const DEFAULT_WIDTH = 2;
-const DEFAULT_HEIGHT = 5;
 const DEFAULT_OFFSET = 0;
 const DEFAULT_FOLDFORM: FoldForm = { LeftSideSwitch: false, RightSideSwitch: false, TopFoldSwitch: false };
 
 /**
- * generic class for all kinds of folding mechanisms
+ * generic class for all kinds of two-side folding mechanisms
  */
 export abstract class MechanismFolding extends Mechanism implements IProjectable {
   // generic model parameters
@@ -34,14 +33,12 @@ export abstract class MechanismFolding extends Mechanism implements IProjectable
   /**
    * hinge to which this mechanism is attached to
    */
-  parentHinge: Hinge;
+  parentHinge: Hinge | TransformObject3D;
 
   /**
    * the hinges this mechanism creates
    */
-  leftHinge: HingeActive;
   centerHinge: HingeActive;
-  rightHinge: HingeActive;
 
   /**
    * left and right side that represents the geometry of the fold.
@@ -50,47 +47,24 @@ export abstract class MechanismFolding extends Mechanism implements IProjectable
   leftSide: PlaneRectangle;
   rightSide: PlaneRectangle;
 
-  constructor(parent: Hinge) {
+  constructor(parent: Hinge | TransformObject3D | null) {
     super();
 
     const editorService = AppInjector.get(EditorService);
     const scene = editorService.scene;
 
-    this.parentHinge = parent;
-
-    this.leftHinge = new HingeActive(parent.leftTransform, scene);
-    this.rightHinge = new HingeActive(parent.rightTransform, scene);
-
-    /* the center hinge is assigned to the right side of the left hinge */
-    this.centerHinge = new HingeActive(this.leftHinge.rightTransform, scene);
-    this.centerHinge.transform.rotation.x = deg2rad(180.0);
-
-    this.leftSide = new PlaneRectangle(DEFAULT_WIDTH, DEFAULT_HEIGHT, scene, this.leftHinge.rightTransform, true);
-    this.rightSide = new PlaneRectangle(DEFAULT_WIDTH, DEFAULT_HEIGHT, scene, this.rightHinge.leftTransform, true);
+    if (parent) {
+      this.parentHinge = parent;
+    }
 
     this.offset = new BehaviorSubject<number>(DEFAULT_OFFSET);
     this.foldingForm = new BehaviorSubject<FoldForm>(DEFAULT_FOLDFORM);
-
-    this.registerBasicEvents();
-
-    scene.onBeforeRenderObservable.add(() => {
-      this.computeWorldMatrix();
-      this.calcFoldPosition();
-    });
   }
-
-  /**
-   * this is the method that needs to be defined by any inheriting class
-   * to define the position of the mechanism elements
-   */
-  protected abstract calcFoldPosition(): void;
 
   override dispose(): void {
     super.dispose();
     this.parentHinge.dispose();
-    this.leftHinge.dispose();
     this.centerHinge.dispose();
-    this.rightHinge.dispose();
     this.leftSide.dispose();
     this.rightSide.dispose();
 
@@ -102,10 +76,8 @@ export abstract class MechanismFolding extends Mechanism implements IProjectable
     this.leftSide.visible(value);
     this.rightSide.visible(value);
 
-    this.leftHinge.visible(value);
-    this.rightHinge.visible(value);
     this.centerHinge.visible(value);
-    super.visible(false);
+    super.visible(value);
   }
 
   public projectTopSide(): paper.Item {
@@ -116,7 +88,7 @@ export abstract class MechanismFolding extends Mechanism implements IProjectable
     return new paper.Item();
   }
 
-  private registerBasicEvents() {
+  protected registerBasicEvents(): void {
     this.leftSide.onMouseDown
       .pipe(takeUntil(this.onDispose))
       .subscribe((planeClick) => this.onFaceDown.next({ ...planeClick, mechanism: this }));
@@ -124,14 +96,6 @@ export abstract class MechanismFolding extends Mechanism implements IProjectable
     this.rightSide.onMouseDown
       .pipe(takeUntil(this.onDispose))
       .subscribe((planeClick) => this.onFaceDown.next({ ...planeClick, mechanism: this }));
-
-    this.leftHinge.onMouseDown
-      .pipe(takeUntil(this.onDispose))
-      .subscribe((hingeClick) => this.onHingeDown.next({ ...hingeClick, mechanism: this }));
-
-    this.rightHinge.onMouseDown
-      .pipe(takeUntil(this.onDispose))
-      .subscribe((hingeClick) => this.onHingeDown.next({ ...hingeClick, mechanism: this }));
 
     this.centerHinge.onMouseDown
       .pipe(takeUntil(this.onDispose))
@@ -145,10 +109,8 @@ export abstract class MechanismFolding extends Mechanism implements IProjectable
    * of the mechanism changes and its rendering depends on new
    * absolute positions
    */
-  protected computeWorldMatrix() {
+  protected computeWorldMatrix(): void {
     // forces to recompute the absolute position
-    this.rightHinge.transform.computeWorldMatrix(true);
-    this.leftHinge.transform.computeWorldMatrix(true);
     this.centerHinge.transform.computeWorldMatrix(true);
   }
 }

@@ -1,12 +1,9 @@
-import { Vector3 } from 'babylonjs';
 import { BehaviorSubject, takeUntil } from 'rxjs';
-import { AppInjector } from 'src/app/app.module';
 import { ProjectionParallel } from 'src/app/projection/projection.parallel';
-import { EditorService } from 'src/app/services/editor.service';
 import { calc_triangle_angle } from 'src/app/utils/math';
 import { Hinge } from '../hinges/hinge';
 import { FoldForm } from '../types/FoldForm';
-import { MechanismFolding } from './mechanism.folding';
+import { MechanismThreeHinge } from './mechanism.threehinge';
 
 const DEFAULT_DISTANCE_LEFT: number = 2;
 const DEFAULT_DISTANCE_RIGHT: number = 2;
@@ -36,7 +33,7 @@ const DEFAULT_HEIGHT: number = 4;
  *   b = c + v
  *   d = a + v
  */
-export class MechanismParallel extends MechanismFolding {
+export class MechanismParallel extends MechanismThreeHinge {
   // model parameters
 
   /**

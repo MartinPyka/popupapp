@@ -8,6 +8,7 @@ import { IProjectable } from '../interfaces/interfaces';
 import { Vector3 } from 'babylonjs';
 import { BasicRenderService } from 'src/app/services/BasicRenderService';
 import { ProjectionActive } from 'src/app/projection/projection.active';
+import { MechanismFolding } from './mechanism.folding';
 
 const DEFAULT_ANGLE_LEFT = 90;
 const DEFAULT_ANGLE_RIGHT = 90;
@@ -18,7 +19,7 @@ const DEFAULT_HEIGHT = 10;
  * The active mechanism can be modified by the user directly. The user
  * applies the force directly to the mechanism. E.g. book-site
  */
-export class MechanismActive extends Mechanism implements IProjectable {
+export class MechanismActive extends MechanismFolding implements IProjectable {
   // Model parameters
 
   /** the left angle to which the hinge is opened */
@@ -33,18 +34,13 @@ export class MechanismActive extends Mechanism implements IProjectable {
   /** height of the planes */
   public readonly height: BehaviorSubject<number>;
 
-  // internal settings
-  centerHinge: HingeActive;
-  leftSide: PlaneRectangle;
-  rightSide: PlaneRectangle;
-
   // projection assets
   protected projectionTop: paper.Group;
   protected projectionDown: paper.Group;
   protected pathFoldLine: paper.Path;
 
   constructor(parent: TransformObject3D | null) {
-    super();
+    super(parent);
 
     const basicRenderService = AppInjector.get(BasicRenderService);
     const scene = basicRenderService.scene;
@@ -79,11 +75,11 @@ export class MechanismActive extends Mechanism implements IProjectable {
     this.rightSide.dispose();
   }
 
-  public projectTopSide(): paper.Item {
+  public override projectTopSide(): paper.Item {
     return this.projectionTop;
   }
 
-  public projectDownSide(): paper.Item {
+  public override projectDownSide(): paper.Item {
     return this.projectionDown;
   }
 

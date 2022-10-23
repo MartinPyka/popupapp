@@ -19,7 +19,7 @@ export class ProjectionActive extends Projection {
     this.createProjection();
     this.registerEvents();
 
-    //this.projectionService.add(this);
+    this.projectionService.add(this);
   }
 
   /**
