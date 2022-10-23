@@ -1,37 +1,38 @@
-import { MechanismParallel } from '../model/mechanisms/mechanism.parallel';
-import { Projection } from './projection';
+import { MechanismActive } from '../model/mechanisms/mechanism.active';
 import { Path, Group, Point } from 'paper';
+import { Projection } from './projection';
 import * as projection from 'src/app/utils/projection';
 import { takeUntil } from 'rxjs';
 
-const DEFAULT_DISTANCE = 10;
+const DEFAULT_DISTANCE = 20;
 
 /**
- * projection class for a parallel fold
+ * projection class for active mechanism
  */
-export class ProjectionParallel extends Projection {
-  protected mechanism: MechanismParallel;
+export class ProjectionActive extends Projection {
+  protected mechanism: MechanismActive;
+  protected pathFoldLine: paper.Path;
 
-  constructor(mechanism: MechanismParallel) {
+  constructor(mechanism: MechanismActive) {
     super();
     this.mechanism = mechanism;
     this.createProjection();
     this.registerEvents();
 
-    this.projectionService.add(this);
+    //this.projectionService.add(this);
   }
 
   /**
-   * creates the path geometry for the parallel fold
+   * creates the path geometry for the active fold
    */
   protected createProjection() {
-    let pathFoldLine = new Path({
-      strokeColor: 'red',
+    this.pathFoldLine = new Path({
+      strokeColor: 'black',
     });
-    pathFoldLine.add(new Point(-this.mechanism.leftSide.width.getValue() / 2, 0));
-    pathFoldLine.add(new Point(this.mechanism.leftSide.width.getValue() / 2, 0));
-    pathFoldLine.style.dashArray = [2, 2];
-    this.foldLines.addChild(pathFoldLine);
+    this.pathFoldLine.add(new Point(-this.mechanism.width.getValue() / 2, 0));
+    this.pathFoldLine.add(new Point(this.mechanism.width.getValue() / 2, 0));
+    this.pathFoldLine.style.dashArray = [2, 2];
+    this.foldLines.addChild(this.pathFoldLine);
 
     const leftTop = new Group(
       projection.createPathRectangleOpen(this.mechanism.leftSide.projectionPointsTopSideValue())
@@ -39,7 +40,7 @@ export class ProjectionParallel extends Projection {
     const rightTop = new Group(
       projection.createPathRectangleOpen(this.mechanism.rightSide.projectionPointsTopSideValue())
     );
-    this.projectionTop.addChildren([leftTop, rightTop, this.foldLines]);
+    this.projectionTop = new Group([leftTop, rightTop, this.foldLines]);
     projection.makeMatrixInheritable(this.projectionTop);
 
     const leftDown = new Group(
@@ -48,16 +49,15 @@ export class ProjectionParallel extends Projection {
     const rightDown = new Group(
       projection.createPathRectangleOpen(this.mechanism.rightSide.projectionPointsDownSideValue())
     );
-    this.projectionDown.addChildren([leftDown, rightDown]);
+    this.projectionDown = new Group([leftDown, rightDown]);
     projection.makeMatrixInheritable(this.projectionDown);
 
-    // some manual adjustments
     rightTop.rotate(180, new Point(0, 0));
     rightDown.rotate(180, new Point(0, 0));
     this.projectionDown.position = new Point(DEFAULT_DISTANCE, 0);
 
     this.group.addChildren([this.projectionTop, this.projectionDown]);
-    this.group.position = new Point(150, 40);
+    this.group.position = new Point(150, 80);
     this.group.rotate(90);
   }
 
@@ -92,5 +92,10 @@ export class ProjectionParallel extends Projection {
       .subscribe((points) =>
         projection.updatePathRectangleOpen(this.projectionDown.children[1].children[0] as paper.Path, points)
       );
+
+    this.mechanism.width.pipe(takeUntil(this.mechanism.onDispose)).subscribe((value) => {
+      this.pathFoldLine.segments[0].point.x = -value / 2;
+      this.pathFoldLine.segments[1].point.x = value / 2;
+    });
   }
 }

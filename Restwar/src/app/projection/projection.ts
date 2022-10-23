@@ -13,6 +13,12 @@ export class Projection {
   // main group for the projection item
   protected group: paper.Group;
 
+  // groups for both sides of the mechanism
+  protected projectionTop: paper.Group;
+  protected projectionDown: paper.Group;
+
+  protected foldLines: paper.Group;
+
   protected readonly projectionService: ProjectionService;
 
   constructor() {
@@ -20,6 +26,11 @@ export class Projection {
     this.seam = new BehaviorSubject<boolean>(true);
     this.group = new Group();
     this.group.applyMatrix = false;
+
+    this.projectionTop = new Group();
+    this.projectionDown = new Group();
+
+    this.foldLines = new Group();
   }
 
   public dispose() {

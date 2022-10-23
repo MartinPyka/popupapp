@@ -4,7 +4,7 @@ import { IModelDisposable } from '../model/interfaces/interfaces';
 import { Projection } from '../projection/projection';
 
 const DEFAULT_STROKE_WIDTH = 0.1;
-const DEFAULT_STROKE_COLOR = 'red';
+const DEFAULT_STROKE_COLOR = 'black';
 
 /**
  * This service takes care of all properties and functions

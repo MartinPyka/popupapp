@@ -5,10 +5,9 @@ import { PlaneRectangle } from '../planes/plane.rectangle';
 import { Mechanism } from './mechanism';
 import { AppInjector } from 'src/app/app.module';
 import { IProjectable } from '../interfaces/interfaces';
-import { Path, Group, Point } from 'paper';
-import * as projection from 'src/app/utils/projection';
 import { Vector3 } from 'babylonjs';
 import { BasicRenderService } from 'src/app/services/BasicRenderService';
+import { ProjectionActive } from 'src/app/projection/projection.active';
 
 const DEFAULT_ANGLE_LEFT = 90;
 const DEFAULT_ANGLE_RIGHT = 90;
@@ -63,49 +62,8 @@ export class MechanismActive extends Mechanism implements IProjectable {
     this.leftSide.transform.rotation = new Vector3(0, Math.PI, 0);
     this.rightSide.transform.rotation = new Vector3(0, Math.PI, 0);
 
-    this.createProjection();
+    this.projection = new ProjectionActive(this);
     this.registerEvents();
-  }
-
-  createProjection() {
-    this.pathFoldLine = new Path({
-      strokeColor: 'black',
-    });
-    this.pathFoldLine.add(new Point(0, -this.width.getValue() / 2));
-    this.pathFoldLine.add(new Point(0, this.width.getValue() / 2));
-    this.pathFoldLine.style.dashArray = [2, 2];
-
-    this.projectionTop = new Group([
-      new Group(projection.createPathRectangleOpen(this.leftSide.projectionPointsTopSideValue())),
-      new Group(projection.createPathRectangleOpen(this.rightSide.projectionPointsTopSideValue())),
-      this.pathFoldLine,
-    ]);
-
-    this.projectionDown = new Group([
-      new Group(projection.createPathRectangleOpen(this.leftSide.projectionPointsDownSideValue())),
-      new Group(projection.createPathRectangleOpen(this.rightSide.projectionPointsDownSideValue())),
-    ]);
-
-    this.configureProjectionSetting(this.projectionTop);
-    this.projectionTop.position = new Point(150, 100);
-
-    this.configureProjectionSetting(this.projectionDown);
-    this.projectionDown.position = new Point(150, 130);
-  }
-
-  /**
-   * configures the layout of a paperjs group for an active mechanism
-   */
-  private configureProjectionSetting(group: paper.Group) {
-    group.applyMatrix = false;
-
-    group.children[0].applyMatrix = false;
-    group.children[0].rotate(90);
-    group.children[0].position = new Point(-5, 0);
-
-    group.children[1].applyMatrix = false;
-    group.children[1].rotate(-90);
-    group.children[1].position = new Point(5, 0);
   }
 
   override dispose(): void {
@@ -142,43 +100,12 @@ export class MechanismActive extends Mechanism implements IProjectable {
       this.leftSide.width.next(value);
       this.rightSide.width.next(value);
       this.centerHinge.width = value;
-
-      this.pathFoldLine.segments[0].point.y = -value / 2;
-      this.pathFoldLine.segments[1].point.y = value / 2;
     });
 
     this.height.pipe(takeUntil(this.onDispose)).subscribe((value) => {
       this.leftSide.height.next(value);
       this.rightSide.height.next(value);
     });
-
-    this.leftSide
-      .projectionPointsTopSide()
-      .pipe(takeUntil(this.onDispose))
-      .subscribe((points) =>
-        projection.updatePathRectangleOpen(this.projectionTop.children[0].children[0] as paper.Path, points)
-      );
-
-    this.leftSide
-      .projectionPointsDownSide()
-      .pipe(takeUntil(this.onDispose))
-      .subscribe((points) =>
-        projection.updatePathRectangleOpen(this.projectionDown.children[0].children[0] as paper.Path, points)
-      );
-
-    this.rightSide
-      .projectionPointsTopSide()
-      .pipe(takeUntil(this.onDispose))
-      .subscribe((points) =>
-        projection.updatePathRectangleOpen(this.projectionTop.children[1].children[0] as paper.Path, points)
-      );
-
-    this.rightSide
-      .projectionPointsDownSide()
-      .pipe(takeUntil(this.onDispose))
-      .subscribe((points) =>
-        projection.updatePathRectangleOpen(this.projectionDown.children[1].children[0] as paper.Path, points)
-      );
 
     this.leftSide.onMouseDown
       .pipe(takeUntil(this.onDispose))
