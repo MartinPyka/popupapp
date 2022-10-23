@@ -7,7 +7,7 @@ import { ProjectionService } from '../services/projection.service';
  * this is a basic projection class with some basic functionality for
  * updating and rendering 2d-projections of mechanisms
  */
-export class Projection {
+export abstract class Projection {
   public readonly seam: BehaviorSubject<boolean>;
 
   // main group for the projection item
