@@ -1,7 +1,6 @@
 import {
   ActionManager,
   ExecuteCodeAction,
-  Material,
   Mesh,
   MeshBuilder,
   Scene,
@@ -12,20 +11,11 @@ import {
   Observer,
   Nullable,
 } from 'babylonjs';
-import { Subject, Subscription, throwIfEmpty } from 'rxjs';
+import { Subject } from 'rxjs';
 import { Channel } from 'src/app/core/channels';
 import { MaterialService } from 'src/app/materials/material-service';
 import { TransformObject3D } from '../abstract/transform.object3d';
-import {
-  FaceClick,
-  FaceMove,
-  FaceUp,
-  HingeClick,
-  HingeMove,
-  HingeUp,
-  IClickable,
-  IModelDisposable,
-} from '../interfaces/interfaces';
+import { HingeClick, HingeMove, HingeUp, IClickable, IModelDisposable } from '../interfaces/interfaces';
 
 // constants
 const CYLINDER_HEIGHT = 1;
