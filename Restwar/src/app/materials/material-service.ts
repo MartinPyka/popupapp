@@ -1,12 +1,8 @@
 import { Color3, Scene, StandardMaterial } from 'babylonjs';
-import { Color } from 'paper/dist/paper-core';
 
 const COLOR_HINGE = new Color3(0, 0.9, 0);
 const COLOR_BOOKLET_HANDLE = new Color3(0.9, 0.0, 0.0);
 const COLOR_BACKSIDE_DEBUG = new Color3(1.0, 0.9, 0.9);
-
-// projection consts
-export const COLOR_STROKE = 'black';
 
 export class MaterialService {
   static matHingeSelectable: StandardMaterial;

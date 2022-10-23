@@ -1,7 +1,6 @@
 /*
   List of helper functions in order to manage projections
 */
-import { COLOR_STROKE } from 'src/app/materials/material-service';
 import { Path } from 'paper';
 
 /**
@@ -12,7 +11,7 @@ import { Path } from 'paper';
  */
 export function createPathRectangleOpen(points: paper.Point[]): paper.Path {
   const result = new Path({
-    strokeColor: COLOR_STROKE,
+    strokeColor: 'black',
     fillColor: null,
   });
   points.forEach((point) => result.add(point));

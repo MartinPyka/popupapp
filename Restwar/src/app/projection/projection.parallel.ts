@@ -21,6 +21,8 @@ export class ProjectionParallel extends Projection {
     this.mechanism = mechanism;
     this.createProjection();
     this.registerEvents();
+
+    this.projectionService.add(this);
   }
 
   /**
