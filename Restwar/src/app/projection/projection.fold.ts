@@ -3,7 +3,6 @@ import { Projection } from './projection';
 import * as ptools from 'src/app/utils/projectiontools';
 import { Path, Group, Point } from 'paper';
 import { takeUntil } from 'rxjs';
-import { MechanismParallel } from '../model/mechanisms/mechanism.parallel';
 
 const DEFAULT_DISTANCE = 20;
 

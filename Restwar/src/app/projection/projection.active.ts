@@ -1,7 +1,4 @@
 import { MechanismActive } from '../model/mechanisms/mechanism.active';
-import { Path, Group, Point } from 'paper';
-import { Projection } from './projection';
-import * as projection from 'src/app/utils/projectiontools';
 import { takeUntil } from 'rxjs';
 import { ProjectionFold } from './projection.fold';
 
