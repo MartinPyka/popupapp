@@ -2,6 +2,7 @@ import { Path, Group, Color } from 'paper';
 import { BehaviorSubject } from 'rxjs';
 import { AppInjector } from '../app.module';
 import { ProjectionService } from '../services/projection.service';
+import * as ptools from 'src/app/utils/projectiontools';
 
 /**
  * this is a basic projection class with some basic functionality for
@@ -24,13 +25,12 @@ export abstract class Projection {
   constructor() {
     this.projectionService = AppInjector.get(ProjectionService);
     this.seam = new BehaviorSubject<boolean>(true);
-    this.group = new Group();
-    this.group.applyMatrix = false;
+    this.group = ptools.getDefaultGroup();
 
-    this.projectionTop = new Group();
-    this.projectionDown = new Group();
+    this.projectionTop = ptools.getDefaultGroup();
+    this.projectionDown = ptools.getDefaultGroup();
 
-    this.foldLines = new Group();
+    this.foldLines = ptools.getDefaultGroup();
   }
 
   public dispose() {

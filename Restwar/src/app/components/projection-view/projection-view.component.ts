@@ -22,8 +22,16 @@ export class ProjectionViewComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.project = new Project('projection');
-    this.project.view.zoom = 2.5;
-    this.project.view.center = new Point(150, 80);
+
+    /*
+    const axis = new Path({ strokeColor: 'black', fillColor: null });
+    axis.add(new Point(5, 0));
+    axis.add(new Point(0, 0));
+    axis.add(new Point(0, 10));
+    */
+
+    this.project.view.zoom = 4.5;
+    this.project.view.center = new Point(0, 0);
 
     this.project.view.onMouseDown = (event: any) => this.onMouseDown(event);
     this.project.view.onMouseDrag = (event: any) => this.onMouseDrag(event);

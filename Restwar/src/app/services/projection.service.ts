@@ -5,6 +5,8 @@ import { Projection } from '../projection/projection';
 
 const DEFAULT_STROKE_WIDTH = 0.1;
 const DEFAULT_STROKE_COLOR = 'black';
+const DEFAULT_GLUESTRIP_WIDTH = 0.5;
+const DEFAULT_GLUESTRIP_OFFSET = 0.5;
 
 /**
  * This service takes care of all properties and functions
@@ -18,17 +20,13 @@ const DEFAULT_STROKE_COLOR = 'black';
 export class ProjectionService implements IModelDisposable {
   readonly onDispose: Subject<void>;
 
-  private _strokeWidth: BehaviorSubject<number>;
+  public strokeWidth: BehaviorSubject<number>;
 
-  public get strokeWidth(): Observable<number> {
-    return this._strokeWidth.asObservable();
-  }
+  public strokeColor: BehaviorSubject<string>;
 
-  private _strokeColor: BehaviorSubject<string>;
+  public glueStripWidth: BehaviorSubject<number>;
 
-  public get strokeColor(): Observable<string> {
-    return this._strokeColor;
-  }
+  public glueStripOffset: BehaviorSubject<number>;
 
   /**
    * list of all mechanisms used in the current editor
@@ -40,17 +38,23 @@ export class ProjectionService implements IModelDisposable {
   }
 
   constructor() {
-    this._strokeWidth = new BehaviorSubject<number>(DEFAULT_STROKE_WIDTH);
-    this._strokeColor = new BehaviorSubject<string>(DEFAULT_STROKE_COLOR);
+    this.strokeWidth = new BehaviorSubject<number>(DEFAULT_STROKE_WIDTH);
+    this.strokeColor = new BehaviorSubject<string>(DEFAULT_STROKE_COLOR);
+    this.glueStripWidth = new BehaviorSubject<number>(DEFAULT_GLUESTRIP_WIDTH);
+    this.glueStripOffset = new BehaviorSubject<number>(DEFAULT_GLUESTRIP_OFFSET);
     this._listProjection = new BehaviorSubject<Projection[]>([]);
 
     this.onDispose = new Subject<void>();
 
-    this._strokeColor.pipe(takeUntil(this.onDispose)).subscribe((value) => this.updateStrokeColor(value));
-    this._strokeWidth.pipe(takeUntil(this.onDispose)).subscribe((value) => this.updateStrokeWidth(value));
+    this.strokeColor.pipe(takeUntil(this.onDispose)).subscribe((value) => this.updateStrokeColor(value));
+    this.strokeWidth.pipe(takeUntil(this.onDispose)).subscribe((value) => this.updateStrokeWidth(value));
   }
 
   dispose(): void {
+    this.strokeWidth.complete();
+    this.strokeColor.complete();
+    this.glueStripWidth.complete();
+    this.glueStripOffset.complete();
     this._listProjection.complete();
 
     this.onDispose.next();
@@ -72,8 +76,8 @@ export class ProjectionService implements IModelDisposable {
    * @param projection to be updated
    */
   private formatProjection(projection: Projection) {
-    projection.updateStrokeWidth(this._strokeWidth.getValue());
-    projection.updateStrokeColor(this._strokeColor.getValue());
+    projection.updateStrokeWidth(this.strokeWidth.getValue());
+    projection.updateStrokeColor(this.strokeColor.getValue());
   }
 
   /**

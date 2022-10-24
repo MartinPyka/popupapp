@@ -1,7 +1,4 @@
 import { BehaviorSubject, takeUntil } from 'rxjs';
-import { AppInjector } from 'src/app/app.module';
-import { EditorService } from 'src/app/services/editor.service';
-import { deg2rad } from 'src/app/utils/math';
 import { TransformObject3D } from '../abstract/transform.object3d';
 import { Hinge } from '../hinges/hinge';
 import { HingeActive } from '../hinges/hinge.active';
@@ -31,6 +28,12 @@ export abstract class MechanismFolding extends Mechanism implements IProjectable
   public readonly foldingForm: BehaviorSubject<FoldForm>;
 
   /**
+   * width of the planes, needs to be instantiated by the
+   * class
+   */
+  public width: BehaviorSubject<number>;
+
+  /**
    * hinge to which this mechanism is attached to
    */
   parentHinge: Hinge | TransformObject3D;
@@ -49,9 +52,6 @@ export abstract class MechanismFolding extends Mechanism implements IProjectable
 
   constructor(parent: Hinge | TransformObject3D | null) {
     super();
-
-    const editorService = AppInjector.get(EditorService);
-    const scene = editorService.scene;
 
     if (parent) {
       this.parentHinge = parent;

@@ -2,7 +2,6 @@ import { BehaviorSubject, pipe, takeUntil } from 'rxjs';
 import { TransformObject3D } from '../abstract/transform.object3d';
 import { HingeActive } from '../hinges/hinge.active';
 import { PlaneRectangle } from '../planes/plane.rectangle';
-import { Mechanism } from './mechanism';
 import { AppInjector } from 'src/app/app.module';
 import { IProjectable } from '../interfaces/interfaces';
 import { Vector3 } from 'babylonjs';
@@ -28,10 +27,8 @@ export class MechanismActive extends MechanismFolding implements IProjectable {
   /** the right angle to which the hinge is opened */
   public readonly rightAngle: BehaviorSubject<number>;
 
-  /** width of the planes */
-  public readonly width: BehaviorSubject<number>;
-
-  /** height of the planes */
+  /** height of the planes
+   */
   public readonly height: BehaviorSubject<number>;
 
   // projection assets

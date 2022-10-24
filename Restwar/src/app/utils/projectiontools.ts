@@ -1,7 +1,7 @@
 /*
   List of helper functions in order to manage projections
 */
-import { Path } from 'paper';
+import { Point, Path, Group } from 'paper';
 
 /**
  * Creates and returns a path for a rectangle with
@@ -39,4 +39,15 @@ export function updatePathRectangleOpen(path: paper.Path, points: paper.Point[])
 export function makeMatrixInheritable(group: paper.Group) {
   group.applyMatrix = false;
   group.children.forEach((item) => (item.applyMatrix = false));
+}
+
+/**
+ * creates a default group that behaves according to
+ * the classical matrix-parenting rules
+ */
+export function getDefaultGroup(): paper.Group {
+  let result = new Group();
+  result.applyMatrix = false;
+  result.pivot = new Point(0, 0);
+  return result;
 }

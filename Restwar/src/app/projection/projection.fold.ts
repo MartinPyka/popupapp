@@ -15,8 +15,11 @@ export class ProjectionFold extends Projection {
   protected mechanism: MechanismFolding;
   protected pathFoldLine: paper.Path;
 
+  protected glueStripes: paper.Group;
+
   constructor(mechanism: MechanismFolding) {
     super();
+    this.glueStripes = new Group();
     this.mechanism = mechanism;
     this.createProjection();
     this.registerEvents();
@@ -52,8 +55,8 @@ export class ProjectionFold extends Projection {
     rightDown.rotate(180, new Point(0, 0));
     this.projectionDown.position = new Point(DEFAULT_DISTANCE, 0);
 
-    this.group.addChildren([this.projectionTop, this.projectionDown]);
-    this.group.position = new Point(150, 80);
+    this.group.addChildren([this.projectionTop, this.projectionDown, this.glueStripes]);
+    //this.group.position = new Point(150, 80);
     this.group.rotate(90);
   }
 
