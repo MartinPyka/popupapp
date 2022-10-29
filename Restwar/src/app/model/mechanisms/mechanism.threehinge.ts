@@ -35,8 +35,8 @@ export abstract class MechanismThreeHinge extends MechanismFolding {
     this.centerHinge.transform.rotation.x = deg2rad(180.0);
 
     this.width = new BehaviorSubject<number>(DEFAULT_WIDTH);
-    this.leftSide = new PlaneRectangle(this.width.value, DEFAULT_HEIGHT, scene, this.leftHinge.rightTransform, true);
-    this.rightSide = new PlaneRectangle(this.width.value, DEFAULT_HEIGHT, scene, this.rightHinge.leftTransform, true);
+    this.leftSide = new PlaneRectangle(this.width.value, DEFAULT_HEIGHT, scene, this.leftHinge.rightTransform);
+    this.rightSide = new PlaneRectangle(this.width.value, DEFAULT_HEIGHT, scene, this.rightHinge.leftTransform);
 
     this.registerBasicEvents();
     scene.onBeforeRenderObservable.add(() => {

@@ -3,6 +3,7 @@ import { Projection } from './projection';
 import * as ptools from 'src/app/utils/projectiontools';
 import { Path, Group, Point } from 'paper';
 import { takeUntil } from 'rxjs';
+import { GlueStrip } from './gluestrip';
 
 const DEFAULT_DISTANCE = 20;
 
@@ -15,12 +16,23 @@ export class ProjectionFold extends Projection {
   protected mechanism: MechanismFolding;
   protected pathFoldLine: paper.Path;
 
-  protected glueStripes: paper.Group;
+  protected glueStripes: GlueStrip[];
+
+  protected leftTop: paper.Group;
+  protected rightTop: paper.Group;
+  protected leftDown: paper.Group;
+  protected rightDown: paper.Group;
 
   constructor(mechanism: MechanismFolding) {
     super();
-    this.glueStripes = new Group();
     this.mechanism = mechanism;
+
+    this.leftTop = ptools.getDefaultGroup();
+    this.rightTop = ptools.getDefaultGroup();
+    this.leftDown = ptools.getDefaultGroup();
+    this.rightDown = ptools.getDefaultGroup();
+    this.glueStripes = [];
+
     this.createProjection();
     this.registerEvents();
 
@@ -39,23 +51,21 @@ export class ProjectionFold extends Projection {
    * creates the projections of the left and right side
    */
   protected createProjectionOfSides() {
-    const leftTop = new Group(ptools.createPathRectangleOpen(this.mechanism.leftSide.projectionPointsTopSideValue()));
-    const rightTop = new Group(ptools.createPathRectangleOpen(this.mechanism.rightSide.projectionPointsTopSideValue()));
-    this.projectionTop = new Group([leftTop, rightTop, this.foldLines]);
+    this.leftTop.addChild(ptools.createPathRectangleOpen(this.mechanism.leftSide.projectionPointsTopSideValue()));
+    this.rightTop.addChild(ptools.createPathRectangleOpen(this.mechanism.rightSide.projectionPointsTopSideValue()));
+    this.projectionTop = new Group([this.leftTop, this.rightTop]);
     ptools.makeMatrixInheritable(this.projectionTop);
 
-    const leftDown = new Group(ptools.createPathRectangleOpen(this.mechanism.leftSide.projectionPointsDownSideValue()));
-    const rightDown = new Group(
-      ptools.createPathRectangleOpen(this.mechanism.rightSide.projectionPointsDownSideValue())
-    );
-    this.projectionDown = new Group([leftDown, rightDown]);
+    this.leftDown.addChild(ptools.createPathRectangleOpen(this.mechanism.leftSide.projectionPointsDownSideValue()));
+    this.rightDown.addChild(ptools.createPathRectangleOpen(this.mechanism.rightSide.projectionPointsDownSideValue()));
+    this.projectionDown = new Group([this.leftDown, this.rightDown]);
     ptools.makeMatrixInheritable(this.projectionDown);
 
-    rightTop.rotate(180, new Point(0, 0));
-    rightDown.rotate(180, new Point(0, 0));
+    this.rightTop.rotate(180, new Point(0, 0));
+    this.rightDown.rotate(180, new Point(0, 0));
     this.projectionDown.position = new Point(DEFAULT_DISTANCE, 0);
 
-    this.group.addChildren([this.projectionTop, this.projectionDown, this.glueStripes]);
+    this.group.addChildren([this.projectionTop, this.projectionDown]);
     //this.group.position = new Point(150, 80);
     this.group.rotate(90);
   }
@@ -72,6 +82,7 @@ export class ProjectionFold extends Projection {
     this.pathFoldLine.add(new Point(width / 2, 0));
     this.pathFoldLine.style.dashArray = [2, 2];
     this.foldLines.addChild(this.pathFoldLine);
+    this.group.addChild(this.foldLines);
   }
 
   /**

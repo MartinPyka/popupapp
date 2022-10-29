@@ -32,7 +32,7 @@ export function updatePathRectangleOpen(path: paper.Path, points: paper.Point[])
 }
 
 /**
- * Make sub items true children of the parent group by deactivating
+ * Make sub items are true children of the parent group by deactivating
  * direct application of the transform matrix
  * @param group
  */

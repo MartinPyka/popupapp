@@ -3,18 +3,18 @@ import { Path, Group, Point } from 'paper';
 import { Observable } from 'babylonjs';
 import { ProjectionService } from '../services/projection.service';
 import { AppInjector } from '../app.module';
-import { PlaneRectangle } from '../model/planes/plane.rectangle';
+import { FaceRectangle } from '../model/faces/face.rectangle';
 
 /**
  * glue strip path for projections
  */
 export class GlueStrip {
-  protected side: PlaneRectangle;
+  protected side: FaceRectangle;
   protected projectionService: ProjectionService;
 
   public path: paper.Path;
 
-  constructor(side: PlaneRectangle) {
+  constructor(side: FaceRectangle) {
     this.side = side;
     this.projectionService = AppInjector.get(ProjectionService);
     this.createPath();

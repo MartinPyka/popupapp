@@ -22,8 +22,8 @@ export class PlaneRectangle extends Plane implements IProjectionPoints {
   public readonly width: BehaviorSubject<number>;
 
   // internal settings
-  protected override topSide: FaceRectangle;
-  protected override downSide: FaceRectangle;
+  public override topSide: FaceRectangle;
+  public override downSide: FaceRectangle;
 
   /**
    * Creates a plane with rectangles
@@ -33,13 +33,7 @@ export class PlaneRectangle extends Plane implements IProjectionPoints {
    * @param parent parent of the rectangle
    * @param debug if true, the backside gets a different color
    */
-  constructor(
-    width: number = 1,
-    height: number = 1,
-    scene: Scene,
-    parent: TransformObject3D | null,
-    debug: boolean = false
-  ) {
+  constructor(width: number = 1, height: number = 1, scene: Scene, parent: TransformObject3D | null) {
     super(parent);
     this.topSide = new FaceRectangle(width, height, false, scene, this);
     this.downSide = new FaceRectangle(width, height, true, scene, this);
