@@ -3,12 +3,13 @@ import { EditorService } from 'src/app/services/editor.service';
 import { MechanismFolding } from 'src/app/model/mechanisms/mechanism.folding';
 import { AxisObject } from 'src/app/model/utils/AxisObject';
 import { Behavior } from '../behavior';
+import { MechanismThreeHinge } from 'src/app/model/mechanisms/mechanism.threehinge';
 
 /**
  * Adds orientation axis to a given object
  */
-export class BehaviorOrientation extends Behavior<MechanismFolding> {
-  protected mechanism: MechanismFolding;
+export class BehaviorOrientation extends Behavior<MechanismThreeHinge> {
+  protected mechanism: MechanismThreeHinge;
 
   protected axisLeft: AxisObject;
   protected axisRight: AxisObject;
@@ -16,9 +17,9 @@ export class BehaviorOrientation extends Behavior<MechanismFolding> {
   protected axisRightLeft: AxisObject;
   protected axisRightRight: AxisObject;
 
-  constructor(mechanism: MechanismFolding) {
+  constructor(mechanism: MechanismThreeHinge) {
     super(mechanism);
-    this.mechanism = mechanism as MechanismFolding;
+    this.mechanism = mechanism as MechanismThreeHinge;
 
     const editorService = AppInjector.get(EditorService);
     const scene = editorService.scene;
