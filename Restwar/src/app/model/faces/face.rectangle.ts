@@ -52,6 +52,15 @@ export class FaceRectangle extends Face implements IProjectionPoints {
   }
 
   /**
+   * a face rectangle does not contain any glue hints, therefore
+   * an empty behavior subject is returned
+   * @returns empty behavior subject list of paper.Point
+   */
+  public projectionGlueHints(): BehaviorSubject<paper.Point[]> {
+    return new BehaviorSubject<paper.Point[]>([]);
+  }
+
+  /**
    * Returns the topside projection of this mesh
    *
    * @returns the path of this mesh

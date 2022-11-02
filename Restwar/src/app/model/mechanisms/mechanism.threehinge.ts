@@ -27,11 +27,11 @@ export abstract class MechanismThreeHinge extends MechanismFolding {
     const editorService = AppInjector.get(EditorService);
     const scene = editorService.scene;
 
-    this.leftHinge = new HingeActive(parent.leftTransform, scene);
-    this.rightHinge = new HingeActive(parent.rightTransform, scene);
+    this.leftHinge = new HingeActive(parent.leftTransform, this, scene);
+    this.rightHinge = new HingeActive(parent.rightTransform, this, scene);
 
     /* the center hinge is assigned to the right side of the left hinge */
-    this.centerHinge = new HingeActive(this.leftHinge.rightTransform, scene);
+    this.centerHinge = new HingeActive(this.leftHinge.rightTransform, this, scene);
     this.centerHinge.transform.rotation.x = deg2rad(180.0);
 
     this.width = new BehaviorSubject<number>(DEFAULT_WIDTH);

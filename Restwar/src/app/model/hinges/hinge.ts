@@ -16,6 +16,7 @@ import { Channel } from 'src/app/core/channels';
 import { MaterialService } from 'src/app/materials/material-service';
 import { TransformObject3D } from '../abstract/transform.object3d';
 import { HingeClick, HingeMove, HingeUp, IClickable, IModelDisposable } from '../interfaces/interfaces';
+import { Mechanism } from '../mechanisms/mechanism';
 
 // constants
 const CYLINDER_HEIGHT = 1;
@@ -47,6 +48,8 @@ export abstract class Hinge extends TransformObject3D implements IModelDisposabl
     this.mesh.scaling.y = value;
   }
 
+  public parentMechanism: Mechanism | null;
+
   /**
    * Left side of the hinge. Every object is attached to this
    * transform
@@ -70,8 +73,9 @@ export abstract class Hinge extends TransformObject3D implements IModelDisposabl
     return this._mesh;
   }
 
-  constructor(parent: TransformObject3D | null, scene: Scene) {
+  constructor(parent: TransformObject3D | null, parentMechanism: Mechanism | null, scene: Scene) {
     super(parent);
+    this.parentMechanism = parentMechanism;
     this.leftTransform = new TransformObject3D(this);
     this.rightTransform = new TransformObject3D(this);
     this.actionList = [];

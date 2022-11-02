@@ -1,6 +1,7 @@
 import { Scene } from 'babylonjs';
 import { deg2rad, rad2deg } from 'src/app/utils/math';
 import { TransformObject3D } from '../abstract/transform.object3d';
+import { Mechanism } from '../mechanisms/mechanism';
 import { Hinge } from './hinge';
 
 /**
@@ -43,8 +44,8 @@ export class HingeActive extends Hinge {
     this.onChange.next();
   }
 
-  constructor(parent: TransformObject3D | null, scene: Scene) {
-    super(parent, scene);
+  constructor(parent: TransformObject3D | null, parentMechanism: Mechanism | null, scene: Scene) {
+    super(parent, parentMechanism, scene);
     this.leftAngle = 0;
     this.rightAngle = 0;
   }

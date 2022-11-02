@@ -48,7 +48,7 @@ export class MechanismActive extends MechanismFolding implements IProjectable {
     this.leftAngle = new BehaviorSubject<number>(DEFAULT_ANGLE_LEFT);
     this.rightAngle = new BehaviorSubject<number>(DEFAULT_ANGLE_RIGHT);
 
-    this.centerHinge = new HingeActive(parent, scene);
+    this.centerHinge = new HingeActive(parent, this, scene);
     this.leftSide = new PlaneRectangle(DEFAULT_WIDTH, DEFAULT_HEIGHT, scene, this.centerHinge.leftTransform);
     this.rightSide = new PlaneRectangle(DEFAULT_WIDTH, DEFAULT_HEIGHT, scene, this.centerHinge.rightTransform);
 

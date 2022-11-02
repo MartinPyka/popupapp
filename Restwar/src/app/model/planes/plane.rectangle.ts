@@ -1,10 +1,11 @@
-import { Scene, TransformNode } from 'babylonjs';
+import { Scene } from 'babylonjs';
+import { Point } from 'paper/dist/paper-core';
 import { BehaviorSubject, Observable, takeUntil } from 'rxjs';
 import { MaterialService } from 'src/app/materials/material-service';
 import { Plane } from '../abstract/plane';
 import { TransformObject3D } from '../abstract/transform.object3d';
 import { FaceRectangle } from '../faces/face.rectangle';
-import { IProjectable, IProjectionPoints } from '../interfaces/interfaces';
+import { IProjectionGlueHints, IProjectionPoints } from '../interfaces/interfaces';
 
 // this constant is used in order to facilitate face picking based
 // on the scene picking method which relies on bounding boxes. If
@@ -16,7 +17,7 @@ const OFFSET_FACE = 0.001;
  * Rectangle plane, that can be used e.g. for book shelfs or
  * parallelograms
  */
-export class PlaneRectangle extends Plane implements IProjectionPoints {
+export class PlaneRectangle extends Plane implements IProjectionPoints, IProjectionGlueHints {
   // Model parameters
   public readonly height: BehaviorSubject<number>;
   public readonly width: BehaviorSubject<number>;
@@ -24,6 +25,8 @@ export class PlaneRectangle extends Plane implements IProjectionPoints {
   // internal settings
   public override topSide: FaceRectangle;
   public override downSide: FaceRectangle;
+
+  protected glueHints: BehaviorSubject<paper.Point[]>;
 
   /**
    * Creates a plane with rectangles
@@ -45,8 +48,32 @@ export class PlaneRectangle extends Plane implements IProjectionPoints {
     this.width = new BehaviorSubject<number>(width);
     this.height = new BehaviorSubject<number>(height);
 
+    this.createGlueHints();
     this.registerPropertyEvents();
     this.registerInputEvents();
+  }
+
+  /**
+   * creates the glue hints for this plane
+   */
+  protected createGlueHints() {
+    let points = [];
+    points.push(new Point(-this.width.value / 2, 0), new Point(this.width.value / 2, 0));
+    this.glueHints = new BehaviorSubject<paper.Point[]>(points);
+  }
+
+  /**
+   * update glue hints with new coordinates
+   */
+  protected updateGlueHints() {
+    let points = this.glueHints.value;
+    points[0].x = -this.width.value / 2;
+    points[1].x = this.width.value / 2;
+    this.glueHints.next(points);
+  }
+
+  public projectionGlueHints(): BehaviorSubject<paper.Point[]> {
+    return this.glueHints;
   }
 
   /**
@@ -93,6 +120,7 @@ export class PlaneRectangle extends Plane implements IProjectionPoints {
     this.width.pipe(takeUntil(this.onDispose)).subscribe((width) => {
       this.topSide.width.next(width);
       this.downSide.width.next(width);
+      this.updateGlueHints();
     });
 
     // handle vents for height changes
@@ -131,5 +159,6 @@ export class PlaneRectangle extends Plane implements IProjectionPoints {
     super.dispose();
     this.height.complete();
     this.width.complete();
+    this.glueHints.complete();
   }
 }

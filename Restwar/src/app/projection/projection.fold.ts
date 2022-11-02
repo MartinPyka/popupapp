@@ -93,29 +93,21 @@ export class ProjectionFold extends Projection {
     this.mechanism.leftSide
       .projectionPointsTopSide()
       .pipe(takeUntil(this.mechanism.onDispose))
-      .subscribe((points) =>
-        ptools.updatePathRectangleOpen(this.projectionTop.children[0].children[0] as paper.Path, points)
-      );
+      .subscribe((points) => ptools.updatePathRectangleOpen(this.leftTop.children[0] as paper.Path, points));
 
     this.mechanism.leftSide
       .projectionPointsDownSide()
       .pipe(takeUntil(this.mechanism.onDispose))
-      .subscribe((points) =>
-        ptools.updatePathRectangleOpen(this.projectionDown.children[0].children[0] as paper.Path, points)
-      );
+      .subscribe((points) => ptools.updatePathRectangleOpen(this.leftDown.children[0] as paper.Path, points));
 
     this.mechanism.rightSide
       .projectionPointsTopSide()
       .pipe(takeUntil(this.mechanism.onDispose))
-      .subscribe((points) =>
-        ptools.updatePathRectangleOpen(this.projectionTop.children[1].children[0] as paper.Path, points)
-      );
+      .subscribe((points) => ptools.updatePathRectangleOpen(this.rightTop.children[0] as paper.Path, points));
 
     this.mechanism.rightSide
       .projectionPointsDownSide()
       .pipe(takeUntil(this.mechanism.onDispose))
-      .subscribe((points) =>
-        ptools.updatePathRectangleOpen(this.projectionDown.children[1].children[0] as paper.Path, points)
-      );
+      .subscribe((points) => ptools.updatePathRectangleOpen(this.rightDown.children[0] as paper.Path, points));
   }
 }

@@ -64,6 +64,13 @@ export interface IProjectionPoints {
 }
 
 /**
+ * interface for accessing gluehints
+ */
+export interface IProjectionGlueHints {
+  projectionGlueHints(): BehaviorSubject<paper.Point[]>;
+}
+
+/**
  * Interface for all classes which can be projected into
  * 2d paper space
  */
