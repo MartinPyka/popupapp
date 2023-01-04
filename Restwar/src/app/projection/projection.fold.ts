@@ -4,6 +4,7 @@ import * as ptools from 'src/app/utils/projectiontools';
 import { Path, Group, Point } from 'paper';
 import { takeUntil } from 'rxjs';
 import { GlueStrip } from './gluestrip';
+import { Color } from 'paper/dist/paper-core';
 
 const DEFAULT_DISTANCE = 20;
 
@@ -15,6 +16,8 @@ const DEFAULT_DISTANCE = 20;
 export class ProjectionFold extends Projection {
   protected mechanism: MechanismFolding;
   protected pathFoldLine: paper.Path;
+  protected leftGlueHintPath: paper.Path;
+  protected rightGlueHintPath: paper.Path;
 
   protected glueStripes: GlueStrip[];
 
@@ -23,17 +26,25 @@ export class ProjectionFold extends Projection {
   protected leftDown: paper.Group;
   protected rightDown: paper.Group;
 
+  protected leftGlueHints: paper.Group;
+  protected rightGlueHints: paper.Group;
+
   constructor(mechanism: MechanismFolding) {
     super();
     this.mechanism = mechanism;
+
+    this.glueStripes = [];
 
     this.leftTop = ptools.getDefaultGroup();
     this.rightTop = ptools.getDefaultGroup();
     this.leftDown = ptools.getDefaultGroup();
     this.rightDown = ptools.getDefaultGroup();
-    this.glueStripes = [];
+
+    this.leftGlueHints = ptools.getDefaultGroup();
+    this.rightGlueHints = ptools.getDefaultGroup();
 
     this.createProjection();
+    this.createGlueHints();
     this.registerEvents();
 
     this.projectionService.add(this);
@@ -83,6 +94,17 @@ export class ProjectionFold extends Projection {
     this.pathFoldLine.style.dashArray = [2, 2];
     this.foldLines.addChild(this.pathFoldLine);
     this.group.addChild(this.foldLines);
+  }
+
+  /**
+   * embeds the glue hints into a group that applys the transform
+   * of the leftTransform to the glue hint
+   */
+  protected createGlueHints() {
+    this.leftGlueHintPath = new Path();
+    this.leftGlueHintPath.strokeColor = new Color(1.0, 0, 0.0);
+    //this.leftGlueHintPath.style.dashArray = [2, 2];
+    this.leftGlueHints.addChild(this.leftGlueHintPath);
   }
 
   /**

@@ -1,4 +1,5 @@
-import { BehaviorSubject, takeUntil } from 'rxjs';
+import { SimplexPerlin3DBlock } from 'babylonjs';
+import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 import { ProjectionParallel } from 'src/app/projection/projection.parallel';
 import { calc_triangle_angle } from 'src/app/utils/math';
 import { Hinge } from '../hinges/hinge';
@@ -41,10 +42,20 @@ export class MechanismParallel extends MechanismThreeHinge {
    */
   public readonly leftDistance: BehaviorSubject<number>;
 
+  /** is triggered, when left distance has been applied to the
+   * hinge matrix. this is e.g. used to update glue hints
+   */
+  public readonly leftDistanceChanged: Subject<void>;
+
   /**
    * distance of the right plane to the parent hinge
    */
   public readonly rightDistance: BehaviorSubject<number>;
+
+  /** is triggered, when left distance has been applied to the
+   * hinge matrix. this is e.g. used to update glue hints
+   */
+  public readonly rightDistanceChanged: Subject<void>;
 
   /**
    * height of the overall mechanism
@@ -91,11 +102,24 @@ export class MechanismParallel extends MechanismThreeHinge {
     super(parent);
 
     this.leftDistance = new BehaviorSubject<number>(DEFAULT_DISTANCE_LEFT);
+    this.leftDistanceChanged = new Subject<void>();
+
     this.rightDistance = new BehaviorSubject<number>(DEFAULT_DISTANCE_RIGHT);
+    this.rightDistanceChanged = new Subject<void>();
+
     this.height = new BehaviorSubject<number>(DEFAULT_HEIGHT);
 
     this.projection = new ProjectionParallel(this);
     this.registerEvents();
+  }
+
+  override dispose(): void {
+    super.dispose();
+    this.leftDistance.complete();
+    this.leftDistanceChanged.complete();
+    this.rightDistance.complete();
+    this.rightDistanceChanged.complete();
+    this.height.complete(), this.projection.dispose();
   }
 
   /**
@@ -105,11 +129,13 @@ export class MechanismParallel extends MechanismThreeHinge {
   private registerEvents() {
     this.leftDistance.pipe(takeUntil(this.onDispose)).subscribe((value) => {
       this.leftHinge.transform.position.y = value;
+      this.leftDistanceChanged.next();
       this.calcModelVariable();
     });
 
     this.rightDistance.pipe(takeUntil(this.onDispose)).subscribe((value) => {
       this.rightHinge.transform.position.y = value;
+      this.rightDistanceChanged.next();
       this.calcModelVariable();
     });
 

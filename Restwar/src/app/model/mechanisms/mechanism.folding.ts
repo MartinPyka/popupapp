@@ -66,7 +66,9 @@ export abstract class MechanismFolding extends Mechanism implements IProjectable
 
   override dispose(): void {
     super.dispose();
-    this.parentHinge.dispose();
+    if (this.parentHinge instanceof Hinge) {
+      this.parentHinge.removeMechanism(this);
+    }
     this.centerHinge.dispose();
     this.leftSide.dispose();
     this.rightSide.dispose();
