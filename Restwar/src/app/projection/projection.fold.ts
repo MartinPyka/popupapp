@@ -128,14 +128,23 @@ export class ProjectionFold extends Projection {
    */
   protected createGlueHints() {
     /** this part is for the glue hints that gets used by parent mechanisms */
-    this.leftGlueHintPath = new Path();
-    this.leftGlueHintPath.strokeColor = new Color(0.6, 0.6, 0.6);
-    this.leftGlueHintPath.strokeWidth = 0.1;
-    this.leftGlueHintPath.style.dashArray = [2, 2];
-    this.leftGlueHints.addChild(this.leftGlueHintPath);
+    this.leftGlueHintPath = this.createGlueHintsPath(this.leftGlueHints);
+    this.rightGlueHintPath = this.createGlueHintsPath(this.rightGlueHints);
 
     /** this part is relevant for all child mechanisms */
     this.group.addChildren([this.leftChildGlueHints, this.rightChildGlueHints]);
+  }
+
+  /**
+   * creates a path and adds it to the given group.
+   */
+  protected createGlueHintsPath(group: paper.Group): paper.Path {
+    const result = new Path({
+      strokeColor: this.projectionService.strokeColor.getValue(),
+    });
+    result.strokeWidth = this.projectionService.strokeWidth.getValue();
+    group.addChild(result);
+    return result;
   }
 
   /**
@@ -165,10 +174,11 @@ export class ProjectionFold extends Projection {
 
     this.mechanism.centerHinge.childMechanisms.pipe(takeUntil(this.mechanism.onDispose)).subscribe((mechanisms) => {
       this.leftChildGlueHints.removeChildren();
+      this.rightChildGlueHints.removeChildren();
       mechanisms.forEach((mechanism) => {
         this.leftChildGlueHints.addChild(mechanism.projectionGlueHintsLeft());
+        this.rightChildGlueHints.addChild(mechanism.projectionGlueHintsRight());
       });
-      console.log(this.leftGlueHints);
     });
   }
 

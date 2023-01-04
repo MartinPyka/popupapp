@@ -32,9 +32,14 @@ export class ProjectionParallel extends ProjectionFold {
       .projectionGlueHints()
       .getValue()
       .forEach((point) => this.leftGlueHintPath.add(point));
+    this.mechanism.rightSide
+      .projectionGlueHints()
+      .getValue()
+      .forEach((point) => this.rightGlueHintPath.add(point));
 
     this.leftGlueHints.position.y = this.mechanism.leftHinge.transform.position.y;
-    this.leftGlueHints.position.x = 2;
+    this.rightGlueHints.rotate(180, new Point(0, 0));
+    this.rightGlueHints.position.y = -this.mechanism.rightHinge.transform.position.y;
   }
 
   /**
@@ -68,6 +73,9 @@ export class ProjectionParallel extends ProjectionFold {
     super.registerEvents();
     this.mechanism.leftDistanceChanged.pipe(takeUntil(this.mechanism.onDispose)).subscribe(() => {
       this.leftGlueHints.position.y = this.mechanism.leftHinge.transform.position.y;
+    });
+    this.mechanism.rightDistanceChanged.pipe(takeUntil(this.mechanism.onDispose)).subscribe(() => {
+      this.rightGlueHints.position.y = -this.mechanism.rightHinge.transform.position.y;
     });
   }
 }
