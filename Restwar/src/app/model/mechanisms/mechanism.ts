@@ -101,7 +101,7 @@ export abstract class Mechanism extends Object3D implements IBehaviorCollection 
     this._behaviorList = this.behaviorList.filter((behavior) => behavior.constructor.name != type.name);
   }
 
-  abstract projectionGlueHintsLeft(): BehaviorSubject<paper.Point[]>;
+  abstract projectionGlueHintsLeft(): paper.Group;
 
-  abstract projectionGlueHintsRight(): BehaviorSubject<paper.Point[]>;
+  abstract projectionGlueHintsRight(): paper.Group;
 }

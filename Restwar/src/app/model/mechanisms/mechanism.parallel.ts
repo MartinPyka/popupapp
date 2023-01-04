@@ -40,27 +40,27 @@ export class MechanismParallel extends MechanismThreeHinge {
   /**
    * distance of the left plane to the parent hinge
    */
-  public readonly leftDistance: BehaviorSubject<number>;
+  public leftDistance: BehaviorSubject<number>;
 
   /** is triggered, when left distance has been applied to the
    * hinge matrix. this is e.g. used to update glue hints
    */
-  public readonly leftDistanceChanged: Subject<void>;
+  public leftDistanceChanged: Subject<void>;
 
   /**
    * distance of the right plane to the parent hinge
    */
-  public readonly rightDistance: BehaviorSubject<number>;
+  public rightDistance: BehaviorSubject<number>;
 
   /** is triggered, when left distance has been applied to the
    * hinge matrix. this is e.g. used to update glue hints
    */
-  public readonly rightDistanceChanged: Subject<void>;
+  public rightDistanceChanged: Subject<void>;
 
   /**
    * height of the overall mechanism
    */
-  public readonly height: BehaviorSubject<number>;
+  public height: BehaviorSubject<number>;
 
   // internal model parameters
 
@@ -100,7 +100,13 @@ export class MechanismParallel extends MechanismThreeHinge {
 
   constructor(parent: Hinge) {
     super(parent);
+    /* we need to execute this command explicitely because only after the
+       super-call this model has a parent and needs to recalculate its orientation */
+    this.calcModelVariable();
+  }
 
+  protected override initializationSteps(parent: Hinge) {
+    super.initializationSteps(parent);
     this.leftDistance = new BehaviorSubject<number>(DEFAULT_DISTANCE_LEFT);
     this.leftDistanceChanged = new Subject<void>();
 

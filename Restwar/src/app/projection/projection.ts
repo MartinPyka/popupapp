@@ -53,4 +53,16 @@ export abstract class Projection {
   public updateStrokeColor(value: string) {
     this.group.strokeColor = new Color(value);
   }
+
+  /**
+   * Returns all paths for glue hints of this projection and
+   * subsequent children of the left side
+   */
+  public abstract projectionGlueHintsLeft(): paper.Group;
+
+  /**
+   * Returns all paths for glue hints of this projection and
+   * subsequent children of the right side
+   */
+  public abstract projectionGlueHintsRight(): paper.Group;
 }

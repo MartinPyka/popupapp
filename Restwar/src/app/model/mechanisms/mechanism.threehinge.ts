@@ -2,6 +2,7 @@ import { BehaviorSubject, takeUntil } from 'rxjs';
 import { AppInjector } from 'src/app/app.module';
 import { EditorService } from 'src/app/services/editor.service';
 import { deg2rad } from 'src/app/utils/math';
+import { TransformObject3D } from '../abstract/transform.object3d';
 import { Hinge } from '../hinges/hinge';
 import { HingeActive } from '../hinges/hinge.active';
 import { PlaneRectangle } from '../planes/plane.rectangle';
@@ -23,7 +24,10 @@ export abstract class MechanismThreeHinge extends MechanismFolding {
 
   constructor(parent: Hinge) {
     super(parent);
+  }
 
+  protected override initializationSteps(parent: Hinge) {
+    super.initializationSteps(parent);
     const editorService = AppInjector.get(EditorService);
     const scene = editorService.scene;
 

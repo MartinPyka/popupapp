@@ -26,8 +26,17 @@ export class ProjectionFold extends Projection {
   protected leftDown: paper.Group;
   protected rightDown: paper.Group;
 
+  /** glue hints for the underlying mechanism  */
   protected leftGlueHints: paper.Group;
+  /** glue hints for the underlying mechanism  */
   protected rightGlueHints: paper.Group;
+
+  /** glue hints for the child mechanisms that need to be displayed
+   * on this mechanism */
+  protected leftChildGlueHints: paper.Group;
+  /** glue hints for the child mechanisms that need to be displayed
+   * on this mechanism */
+  protected rightChildGlueHints: paper.Group;
 
   constructor(mechanism: MechanismFolding) {
     super();
@@ -43,11 +52,28 @@ export class ProjectionFold extends Projection {
     this.leftGlueHints = ptools.getDefaultGroup();
     this.rightGlueHints = ptools.getDefaultGroup();
 
+    this.leftChildGlueHints = ptools.getDefaultGroup();
+    this.rightChildGlueHints = ptools.getDefaultGroup();
+
     this.createProjection();
     this.createGlueHints();
     this.registerEvents();
 
     this.projectionService.add(this);
+  }
+
+  public override dispose(): void {
+    super.dispose();
+    this.leftTop.remove();
+    this.rightTop.remove();
+    this.leftDown.remove();
+    this.rightDown.remove();
+
+    this.leftGlueHints.remove();
+    this.rightGlueHints.remove();
+
+    this.leftChildGlueHints.remove();
+    this.rightChildGlueHints.remove();
   }
 
   protected createProjection() {
@@ -101,10 +127,15 @@ export class ProjectionFold extends Projection {
    * of the leftTransform to the glue hint
    */
   protected createGlueHints() {
+    /** this part is for the glue hints that gets used by parent mechanisms */
     this.leftGlueHintPath = new Path();
-    this.leftGlueHintPath.strokeColor = new Color(1.0, 0, 0.0);
-    //this.leftGlueHintPath.style.dashArray = [2, 2];
+    this.leftGlueHintPath.strokeColor = new Color(0.6, 0.6, 0.6);
+    this.leftGlueHintPath.strokeWidth = 0.1;
+    this.leftGlueHintPath.style.dashArray = [2, 2];
     this.leftGlueHints.addChild(this.leftGlueHintPath);
+
+    /** this part is relevant for all child mechanisms */
+    this.group.addChildren([this.leftChildGlueHints, this.rightChildGlueHints]);
   }
 
   /**
@@ -131,5 +162,29 @@ export class ProjectionFold extends Projection {
       .projectionPointsDownSide()
       .pipe(takeUntil(this.mechanism.onDispose))
       .subscribe((points) => ptools.updatePathRectangleOpen(this.rightDown.children[0] as paper.Path, points));
+
+    this.mechanism.centerHinge.childMechanisms.pipe(takeUntil(this.mechanism.onDispose)).subscribe((mechanisms) => {
+      this.leftChildGlueHints.removeChildren();
+      mechanisms.forEach((mechanism) => {
+        this.leftChildGlueHints.addChild(mechanism.projectionGlueHintsLeft());
+      });
+      console.log(this.leftGlueHints);
+    });
+  }
+
+  /**
+   * Returns all paths for glue hints of this projection and
+   * subsequent children of the left side
+   */
+  public projectionGlueHintsLeft(): paper.Group {
+    return this.leftGlueHints;
+  }
+
+  /**
+   * Returns all paths for glue hints of this projection and
+   * subsequent children of the right side
+   */
+  public projectionGlueHintsRight(): paper.Group {
+    return this.rightGlueHints;
   }
 }

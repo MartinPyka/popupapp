@@ -22,14 +22,14 @@ export class MechanismActive extends MechanismFolding implements IProjectable {
   // Model parameters
 
   /** the left angle to which the hinge is opened */
-  public readonly leftAngle: BehaviorSubject<number>;
+  public leftAngle: BehaviorSubject<number>;
 
   /** the right angle to which the hinge is opened */
-  public readonly rightAngle: BehaviorSubject<number>;
+  public rightAngle: BehaviorSubject<number>;
 
   /** height of the planes
    */
-  public readonly height: BehaviorSubject<number>;
+  public height: BehaviorSubject<number>;
 
   // projection assets
   protected projectionTop: paper.Group;
@@ -38,7 +38,10 @@ export class MechanismActive extends MechanismFolding implements IProjectable {
 
   constructor(parent: TransformObject3D | null) {
     super(parent);
+  }
 
+  protected override initializationSteps(parent: TransformObject3D | null) {
+    super.initializationSteps(parent);
     const basicRenderService = AppInjector.get(BasicRenderService);
     const scene = basicRenderService.scene;
 

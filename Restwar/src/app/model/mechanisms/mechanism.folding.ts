@@ -52,6 +52,10 @@ export abstract class MechanismFolding extends Mechanism implements IProjectable
 
   constructor(parent: Hinge | TransformObject3D | null) {
     super();
+    this.offset = new BehaviorSubject<number>(DEFAULT_OFFSET);
+    this.foldingForm = new BehaviorSubject<FoldForm>(DEFAULT_FOLDFORM);
+
+    this.initializationSteps(parent);
 
     if (parent) {
       this.parentHinge = parent;
@@ -59,10 +63,14 @@ export abstract class MechanismFolding extends Mechanism implements IProjectable
         parent.addMechanism(this);
       }
     }
-
-    this.offset = new BehaviorSubject<number>(DEFAULT_OFFSET);
-    this.foldingForm = new BehaviorSubject<FoldForm>(DEFAULT_FOLDFORM);
   }
+
+  /**
+   * this method can be overwritten by any inheriting instance to perform
+   * initialization of geometry, before the events triggered by
+   * parent.addMechanisms are executed
+   */
+  protected initializationSteps(parent: Hinge | TransformObject3D | null) {}
 
   override dispose(): void {
     super.dispose();
@@ -89,16 +97,16 @@ export abstract class MechanismFolding extends Mechanism implements IProjectable
    * returns the glue hints for the left side
    * @returns
    */
-  public override projectionGlueHintsLeft(): BehaviorSubject<paper.Point[]> {
-    return this.leftSide.projectionGlueHints();
+  public override projectionGlueHintsLeft(): paper.Group {
+    return this.projection.projectionGlueHintsLeft();
   }
 
   /**
    *
    * @returns returns the glue hints for the right side
    */
-  public override projectionGlueHintsRight(): BehaviorSubject<paper.Point[]> {
-    return this.leftSide.projectionGlueHints();
+  public override projectionGlueHintsRight(): paper.Group {
+    return this.projection.projectionGlueHintsRight();
   }
 
   public projectTopSide(): paper.Item {

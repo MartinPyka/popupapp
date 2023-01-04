@@ -1,10 +1,7 @@
 import { GlueStrip } from './gluestrip';
 import { ProjectionFold } from './projection.fold';
-import * as ptools from 'src/app/utils/projectiontools';
-import { PlaneRectangle } from '../model/planes/plane.rectangle';
 import { FaceRectangle } from '../model/faces/face.rectangle';
 import { Point } from 'paper/dist/paper-core';
-import { ThinSprite } from 'babylonjs/Sprites/thinSprite';
 import { MechanismParallel } from '../model/mechanisms/mechanism.parallel';
 import { takeUntil } from 'rxjs';
 

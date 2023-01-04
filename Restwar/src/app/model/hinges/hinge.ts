@@ -101,7 +101,6 @@ export abstract class Hinge extends TransformObject3D implements IModelDisposabl
     this.onMouseMove = new Subject<HingeMove>();
 
     this._childMechanisms = new BehaviorSubject<Mechanism[]>([]);
-
     // the right side is flipped by 180° on the y-axis,
     // so that the z-axis of the faces are within the 0-180
     // degree fold
@@ -118,6 +117,7 @@ export abstract class Hinge extends TransformObject3D implements IModelDisposabl
     this.onMouseUp.complete();
     this.onMouseMove.complete();
     this._childMechanisms.complete();
+
     this.actionList.forEach((action) => this.mesh.actionManager?.unregisterAction(action));
     if (this.mesh != undefined) {
       this.mesh.dispose();
