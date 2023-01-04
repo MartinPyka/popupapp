@@ -55,6 +55,9 @@ export abstract class MechanismFolding extends Mechanism implements IProjectable
 
     if (parent) {
       this.parentHinge = parent;
+      if (parent instanceof Hinge) {
+        parent.addMechanism(this);
+      }
     }
 
     this.offset = new BehaviorSubject<number>(DEFAULT_OFFSET);
@@ -78,6 +81,22 @@ export abstract class MechanismFolding extends Mechanism implements IProjectable
 
     this.centerHinge.visible(value);
     super.visible(value);
+  }
+
+  /**
+   * returns the glue hints for the left side
+   * @returns
+   */
+  public override projectionGlueHintsLeft(): BehaviorSubject<paper.Point[]> {
+    return this.leftSide.projectionGlueHints();
+  }
+
+  /**
+   *
+   * @returns returns the glue hints for the right side
+   */
+  public override projectionGlueHintsRight(): BehaviorSubject<paper.Point[]> {
+    return this.leftSide.projectionGlueHints();
   }
 
   public projectTopSide(): paper.Item {

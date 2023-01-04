@@ -11,7 +11,7 @@ import {
   Observer,
   Nullable,
 } from 'babylonjs';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { Channel } from 'src/app/core/channels';
 import { MaterialService } from 'src/app/materials/material-service';
 import { TransformObject3D } from '../abstract/transform.object3d';
@@ -69,8 +69,23 @@ export abstract class Hinge extends TransformObject3D implements IModelDisposabl
    */
   private _mesh: Mesh;
 
+  /**
+   * mesh that represents the hinge
+   */
   public get mesh(): Mesh {
     return this._mesh;
+  }
+
+  /**
+   * list of mechanism that are parented to this hinge
+   */
+  private _childMechanisms: BehaviorSubject<Mechanism[]>;
+
+  /**
+   * list of mechanism that are parented to this hinge
+   */
+  public get childMechanisms(): BehaviorSubject<Mechanism[]> {
+    return this._childMechanisms;
   }
 
   constructor(parent: TransformObject3D | null, parentMechanism: Mechanism | null, scene: Scene) {
@@ -84,6 +99,8 @@ export abstract class Hinge extends TransformObject3D implements IModelDisposabl
     this.onMouseDown = new Subject<HingeClick>();
     this.onMouseUp = new Subject<HingeUp>();
     this.onMouseMove = new Subject<HingeMove>();
+
+    this._childMechanisms = new BehaviorSubject<Mechanism[]>([]);
 
     // the right side is flipped by 180° on the y-axis,
     // so that the z-axis of the faces are within the 0-180
@@ -100,6 +117,7 @@ export abstract class Hinge extends TransformObject3D implements IModelDisposabl
     this.onMouseDown.complete();
     this.onMouseUp.complete();
     this.onMouseMove.complete();
+    this._childMechanisms.complete();
     this.actionList.forEach((action) => this.mesh.actionManager?.unregisterAction(action));
     if (this.mesh != undefined) {
       this.mesh.dispose();
@@ -224,5 +242,24 @@ export abstract class Hinge extends TransformObject3D implements IModelDisposabl
         this.mesh.material = MaterialService.matHingeDefault;
       }
     });
+  }
+
+  /**
+   * adds a mechanism to the hinge
+   * @param mechanism
+   */
+  public addMechanism(mechanism: Mechanism) {
+    this._childMechanisms.next([...this._childMechanisms.value, mechanism]);
+  }
+
+  /**
+   * removes a mechanism from the hinge list
+   * @param mechanism
+   */
+  public removeMechanism(mechanism: Mechanism) {
+    const current = this._childMechanisms.getValue();
+    const index = current.indexOf(mechanism);
+    current.splice(index, 1);
+    this._childMechanisms.next(current);
   }
 }

@@ -1,6 +1,8 @@
 import { TransformNode } from 'babylonjs';
+import { BehaviorSubject } from 'rxjs';
 import { AppInjector } from 'src/app/app.module';
 import { EditorService } from 'src/app/services/editor.service';
+import { IProjectionGlueHints } from '../interfaces/interfaces';
 import { Object3D } from './object3d';
 
 /**

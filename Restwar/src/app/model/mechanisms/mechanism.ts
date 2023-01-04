@@ -1,5 +1,5 @@
 import { Type } from '@angular/core';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { Behavior } from 'src/app/behaviors/behavior';
 import { Projection } from 'src/app/projection/projection';
 import { Object3D } from '../abstract/object3d';
@@ -100,4 +100,8 @@ export abstract class Mechanism extends Object3D implements IBehaviorCollection 
     }
     this._behaviorList = this.behaviorList.filter((behavior) => behavior.constructor.name != type.name);
   }
+
+  abstract projectionGlueHintsLeft(): BehaviorSubject<paper.Point[]>;
+
+  abstract projectionGlueHintsRight(): BehaviorSubject<paper.Point[]>;
 }
