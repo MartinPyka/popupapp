@@ -1,4 +1,3 @@
-import { SimplexPerlin3DBlock } from 'babylonjs';
 import { BehaviorSubject, Subject, takeUntil } from 'rxjs';
 import { ProjectionParallel } from 'src/app/projection/projection.parallel';
 import { calc_triangle_angle } from 'src/app/utils/math';
